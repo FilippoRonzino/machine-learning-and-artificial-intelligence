@@ -64,7 +64,7 @@ def download_sp500_data(tickers: list, start_date: str, end_date: str,
                     else:
                         all_data = pd.merge(all_data, ticker_data, left_index=True, right_index=True, how='outer')
                 except Exception as e:
-                    print(f"Error processing {ticker}: {e}")
+                    print(f"Error processing {ticker}: {e}, skipping...")
         
         # avoid hammering the API
         time.sleep(1)
@@ -208,8 +208,7 @@ def load_data_from_csv(filename: str) -> pd.DataFrame:
         print(f"Date range: {data.index.min()} to {data.index.max()}")
         return data
     except Exception as e:
-        print(f"Error loading data from {filename}: {e}")
-        return None
+        raise ValueError(f"Failed to load data from {filename}: {e}")
 
 
 if __name__ == "__main__":
@@ -265,6 +264,6 @@ if __name__ == "__main__":
     metadata_filename = 'data/sp500_csvs/sp500_segments_metadata.csv'
     
     print("\nCreating time segments from training data...")
-    segments_df, metadata = create_time_segments(train_df, segment_length=80, standardize=True)  # Set to True to enable standardization
+    segments_df, metadata = create_time_segments(train_df, segment_length=80, standardize=True)
     
     save_segments_to_csv(segments_df, metadata, segments_filename, metadata_filename)
