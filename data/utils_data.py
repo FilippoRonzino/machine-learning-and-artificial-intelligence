@@ -5,7 +5,6 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import time
-from typing import Dict, Optional
 
 def get_sp500_tickers() -> list:
     """
@@ -40,16 +39,13 @@ def download_sp500_data(tickers: list, start_date: str, end_date: str,
     
     all_data = pd.DataFrame()
     
-    # Process tickers in chunks to avoid potential API limitations
     for i in range(0, len(tickers), chunk_size):
         chunk = tickers[i:i+chunk_size]
         print(f"Processing tickers {i+1} to {min(i+chunk_size, len(tickers))}...")
         
-        # Download data for this chunk of tickers
         data = yf.download(chunk, start=start_date, end=end_date, group_by='ticker')
         
         if len(chunk) == 1:
-            # Handle the case of a single ticker (yfinance returns different format)
             ticker = chunk[0]
             single_df = pd.DataFrame(data[data_type])
             single_df.columns = [ticker]
@@ -58,7 +54,6 @@ def download_sp500_data(tickers: list, start_date: str, end_date: str,
             else:
                 all_data = pd.merge(all_data, single_df, left_index=True, right_index=True, how='outer')
         else:
-            # Extract the specified data type from multi-ticker download
             for ticker in chunk:
                 try:
                     ticker_data = pd.DataFrame(data[ticker][data_type])
@@ -71,7 +66,7 @@ def download_sp500_data(tickers: list, start_date: str, end_date: str,
                 except Exception as e:
                     print(f"Error processing {ticker}: {e}")
         
-        # Pause briefly to avoid hammering the API
+        # avoid hammering the API
         time.sleep(1)
     
     return all_data
@@ -88,20 +83,15 @@ def split_time_series_data(df: pd.DataFrame, train_size: float = 0.8, val_size: 
     :param shuffle: Whether to shuffle the data (default: False, as this is time series data)
     :return: Tuple of (train_df, val_df, test_df)
     """
-    # Verify the split proportions sum to 1
     assert abs(train_size + val_size + test_size - 1.0) < 1e-10, "Split proportions must sum to 1"
     
-    # Sort index to ensure data is in chronological order
     df = df.sort_index()
     
-    # Calculate the split indices
     n = len(df)
     train_end = int(n * train_size)
     val_end = train_end + int(n * val_size)
     
-    # Split the data
     if shuffle:
-        # Note: Shuffling is generally not recommended for time series data
         indices = np.random.permutation(n)
         train_indices = indices[:train_end]
         val_indices = indices[train_end:val_end]
@@ -110,8 +100,7 @@ def split_time_series_data(df: pd.DataFrame, train_size: float = 0.8, val_size: 
         train_df = df.iloc[train_indices]
         val_df = df.iloc[val_indices]
         test_df = df.iloc[test_indices]
-    else:
-        # Time-order preserving split
+    else: # time-order preserving split
         train_df = df.iloc[:train_end]
         val_df = df.iloc[train_end:val_end]
         test_df = df.iloc[val_end:]
@@ -140,7 +129,6 @@ def load_data_from_csv(filename: str) -> pd.DataFrame:
     :return: DataFrame with dates as index and tickers as columns
     """
     try:
-        # Load the data, ensuring dates are parsed as datetime index
         data = pd.read_csv(filename, index_col=0, parse_dates=True)
         print(f"Successfully loaded data from {filename}")
         print(f"Data shape: {data.shape}")
@@ -150,51 +138,6 @@ def load_data_from_csv(filename: str) -> pd.DataFrame:
         print(f"Error loading data from {filename}: {e}")
         return None
 
-def split_time_series_data(df: pd.DataFrame, train_size: float = 0.8, val_size: float = 0.1, 
-                           test_size: float = 0.1, shuffle: bool = False) -> tuple:
-    """
-    Splits a time series DataFrame into training, validation, and test sets based on date.
-    
-    :param df: DataFrame with dates as index and tickers/features as columns
-    :param train_size: Proportion of data to use for training (default: 0.8)
-    :param val_size: Proportion of data to use for validation (default: 0.1)
-    :param test_size: Proportion of data to use for testing (default: 0.1)
-    :param shuffle: Whether to shuffle the data (default: False, as this is time series data)
-    :return: Tuple of (train_df, val_df, test_df)
-    """
-    # Verify the split proportions sum to 1
-    assert abs(train_size + val_size + test_size - 1.0) < 1e-10, "Split proportions must sum to 1"
-    
-    # Sort index to ensure data is in chronological order
-    df = df.sort_index()
-    
-    # Calculate the split indices
-    n = len(df)
-    train_end = int(n * train_size)
-    val_end = train_end + int(n * val_size)
-    
-    # Split the data
-    if shuffle:
-        # Note: Shuffling is generally not recommended for time series data
-        indices = np.random.permutation(n)
-        train_indices = indices[:train_end]
-        val_indices = indices[train_end:val_end]
-        test_indices = indices[val_end:]
-        
-        train_df = df.iloc[train_indices]
-        val_df = df.iloc[val_indices]
-        test_df = df.iloc[test_indices]
-    else:
-        # Time-order preserving split
-        train_df = df.iloc[:train_end]
-        val_df = df.iloc[train_end:val_end]
-        test_df = df.iloc[val_end:]
-    
-    print(f"Split sizes: Train: {len(train_df)} ({len(train_df)/n:.1%}), "
-          f"Val: {len(val_df)} ({len(val_df)/n:.1%}), "
-          f"Test: {len(test_df)} ({len(test_df)/n:.1%})")
-    
-    return train_df, val_df, test_df
 
 if __name__ == "__main__":
     # File paths
