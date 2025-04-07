@@ -1,0 +1,93 @@
+import wfdb
+import numpy as np
+import pandas as pd
+
+def extract_signals(record_name, channel):
+
+    record = wfdb.rdrecord(f"data/ecg_data/{record_name}")
+    signal = record.p_signal[:, channel]
+    return signal
+
+def downsample_signal(signal, factor):
+    return signal[::factor]
+
+def create_downsampled_signals_array(record_names, channel, downsample_factor):
+    downsampled_signals = []
+    min_length = float('inf')  
+    
+    for record_name in record_names:
+        signal = extract_signals(record_name, channel)
+        signal_downsampled = downsample_signal(signal, downsample_factor)
+        downsampled_signals.append(signal_downsampled)
+        min_length = min(min_length, len(signal_downsampled))  
+        
+    downsampled_signals = [signal[:min_length] for signal in downsampled_signals]
+    
+    return np.array(downsampled_signals)
+
+def sample_random_segments_across_patients(signals, n, sample_length=80, threshold=0.1, max_attempts=10000):
+    segments = []
+    n_patients, total_length = signals.shape
+    attempts = 0
+    
+    while len(segments) < n and attempts < max_attempts:
+        attempts += 1
+        
+        patient_idx = np.random.randint(0, n_patients)
+
+        start_index = np.random.randint(0, total_length - sample_length + 1)
+        segment = signals[patient_idx, start_index:start_index + sample_length]
+        
+        if np.sum(np.abs(segment)) > threshold:
+            segments.append(segment)
+    
+    if len(segments) < n:
+        raise ValueError("Not enough active segments found. Consider lowering the threshold or increasing max_attempts.")
+    
+    return np.array(segments)
+
+
+def create_ecg_datasets(train_patients, test_patients, channel, downsample_factor, 
+                        n_train_segments, n_test_segments, sample_length=80, 
+                        threshold=20, max_attempts=10000):
+
+    train_signals = create_downsampled_signals_array(train_patients, channel, downsample_factor)
+    
+    test_signals = create_downsampled_signals_array(test_patients, channel, downsample_factor)
+    
+    train_segments = sample_random_segments_across_patients(train_signals, n_train_segments, 
+                                                            sample_length, threshold, max_attempts)
+    
+    test_segments = sample_random_segments_across_patients(test_signals, n_test_segments, 
+                                                           sample_length, threshold, max_attempts)
+    
+    return train_segments, test_segments
+
+if __name__ == "__main__":
+    train_patients = ['19090', '19088', '18184', '18177', '17453', '17052', '16795', '16786', '16773', '16539', '16483', '16420', '16273', '16272', '16265']
+    test_patients = ['19830', '19140', '19093']
+    channel = 0
+    downsample_factor = 8
+    sample_length=80
+    threshold = 10
+    n_train_segments = 42188
+    n_test_segments = 20312
+    
+    print("Creating ECG datasets...")
+    train_segments, test_segments = create_ecg_datasets(train_patients, test_patients, channel, 
+                                                        downsample_factor, n_train_segments, 
+                                                        n_test_segments, sample_length=sample_length, threshold=threshold, max_attempts=100000)
+    
+    print("Train segments shape:", train_segments.shape)
+    print("Test segments shape:", test_segments.shape)
+    
+    print("Saving datasets to parquet files...")
+    train_segments_df = pd.DataFrame(train_segments)
+    test_segments_df = pd.DataFrame(test_segments)
+    train_segments_df.to_parquet('data/ecg_data/train_ecg.parquet')
+    test_segments_df.to_parquet('data/ecg_data/test_ecg.parquet')
+    print("Datasets saved successfully.")
+    
+
+
+
