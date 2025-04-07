@@ -1,9 +1,12 @@
 import yfinance as yf
 import pandas as pd
+import numpy as np
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import time
+import os
+from typing import Dict, Optional
 
 def get_sp500_tickers() -> list:
     """
@@ -22,70 +25,88 @@ def get_sp500_tickers() -> list:
         tickers.append(ticker)
     return tickers
 
-def download_data(ticker: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
+def download_sp500_data(tickers: list, start_date: str, end_date: str, 
+                         data_type: str = 'Close', chunk_size: int = 50) -> pd.DataFrame:
     """
-    Downloads historical data for a single ticker.
-
-    :param ticker: Ticker symbol
-    :param start_date: Start date for historical data
-    :param end_date: End date for historical data
-    :return: DataFrame with historical data
-    """
-    try:
-        df = yf.download(ticker, start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'))
-        return df
-    except Exception as e:
-        print(f"Error downloading data for {ticker}: {e}")
-        return pd.DataFrame()
-
-def extract_close_prices(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
-    """
-    Extracts the 'Adj Close' column from a DataFrame, renames it to the ticker, 
-    and sets the date as the index.
-
-    :param df: DataFrame with historical data
-    :param ticker: Ticker symbol
-    :return: DataFrame with 'Close' prices and date as index
-    """
-    if 'Adj Close' in df.columns:  
-        adj_close_df = df[['Adj Close']].copy() 
-        adj_close_df.rename(columns={'Adj Close': ticker}, inplace=True)  
-        adj_close_df = adj_close_df.set_index(df.index)
-        return adj_close_df
-    else:
-        return pd.DataFrame()
-
-def build_close_price_df(tickers: list, start_date: datetime, end_date: datetime) -> pd.DataFrame:
-    """
-    Builds a DataFrame with 'Close' prices for all tickers, with dates as index and tickers as columns.
-
-    :param tickers: List of ticker symbols
-    :param start_date: Start date for historical data
-    :param end_date: End date for historical data
-    :return: DataFrame with 'Close' prices
-    """
-    all_closes = pd.DataFrame()
-
-    for ticker in tickers:
-        print(f"Downloading {ticker}...")
-        df = download_data(ticker, start_date, end_date)
-        if not df.empty:
-            close_df = extract_close_prices(df, ticker)
-            all_closes = pd.concat([all_closes, close_df], axis=1)
-        else:
-            print(f"Warning: No data for {ticker}")
-        time.sleep(0.5)  # avoid rate limiting
+    Downloads historical data for S&P 500 stocks.
     
-    return all_closes
+    :param tickers: List of ticker symbols
+    :param start_date: Start date in YYYY-MM-DD format
+    :param end_date: End date in YYYY-MM-DD format
+    :param data_type: Type of data to extract (Open, High, Low, Close, Volume, etc.)
+    :param chunk_size: Number of tickers to process in each batch to avoid API limits
+    :return: DataFrame with dates as index and tickers as columns
+    """
+    print(f"Downloading {data_type} data for {len(tickers)} stocks...")
+    
+    all_data = pd.DataFrame()
+    
+    # Process tickers in chunks to avoid potential API limitations
+    for i in range(0, len(tickers), chunk_size):
+        chunk = tickers[i:i+chunk_size]
+        print(f"Processing tickers {i+1} to {min(i+chunk_size, len(tickers))}...")
+        
+        # Download data for this chunk of tickers
+        data = yf.download(chunk, start=start_date, end=end_date, group_by='ticker')
+        
+        if len(chunk) == 1:
+            # Handle the case of a single ticker (yfinance returns different format)
+            ticker = chunk[0]
+            single_df = pd.DataFrame(data[data_type])
+            single_df.columns = [ticker]
+            if all_data.empty:
+                all_data = single_df
+            else:
+                all_data = pd.merge(all_data, single_df, left_index=True, right_index=True, how='outer')
+        else:
+            # Extract the specified data type from multi-ticker download
+            for ticker in chunk:
+                try:
+                    ticker_data = pd.DataFrame(data[ticker][data_type])
+                    ticker_data.columns = [ticker]
+                    
+                    if all_data.empty:
+                        all_data = ticker_data
+                    else:
+                        all_data = pd.merge(all_data, ticker_data, left_index=True, right_index=True, how='outer')
+                except Exception as e:
+                    print(f"Error processing {ticker}: {e}")
+        
+        # Pause briefly to avoid hammering the API
+        time.sleep(1)
+    
+    return all_data
+
+def save_data_to_csv(data: pd.DataFrame, filename: str) -> None:
+    """
+    Saves the data to a CSV file.
+    
+    :param data: DataFrame to save
+    :param filename: Name of the CSV file
+    """
+    data.to_csv(filename)
+    print(f"Data saved to {filename}")
 
 if __name__ == "__main__":
+    # Parameters
+    start_date = '2020-01-01'
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    data_type = 'Close'  # Options: Open, High, Low, Close, Adj Close, Volume
+    output_filename = 'data/sp500_csvs/sp500_historical_data.csv'
+    
+    # Get S&P 500 tickers
+    print("Getting S&P 500 tickers...")
     tickers = get_sp500_tickers()
-    start_date = datetime(2000, 1, 1)
-    end_date = datetime.now()
-
-    close_prices_df = build_close_price_df(tickers, start_date, end_date)
-
-    print("\nFinal merged Close price DataFrame:")
-    print(close_prices_df.head())
-
-    close_prices_df.to_csv("data/sp500_close_prices.csv")
+    print(f"Found {len(tickers)} tickers")
+    
+    # Download data
+    data = download_sp500_data(tickers, start_date, end_date, data_type)
+    
+    # Save to CSV
+    save_data_to_csv(data, output_filename)
+    
+    # Print summary statistics
+    print(f"\nData shape: {data.shape}")
+    print(f"Date range: {data.index.min()} to {data.index.max()}")
+    print(f"Number of tickers with data: {len(data.columns)}")
+    print(f"Percentage of missing values: {data.isna().mean().mean() * 100:.2f}%")
