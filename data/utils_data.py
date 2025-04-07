@@ -179,8 +179,8 @@ def save_segments_to_csv(segments_df: pd.DataFrame, metadata: pd.DataFrame,
     :param segments_filename: Filename for segments
     :param metadata_filename: Filename for metadata
     """
-    segments_df.to_csv(segments_filename)
-    metadata.to_csv(metadata_filename)
+    segments_df.to_csv(segments_filename, index = False)
+    metadata.to_csv(metadata_filename, index_label="segment_id")
     print(f"Segments saved to {segments_filename}")
     print(f"Metadata saved to {metadata_filename}")
 
