@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-def get_sp500_tickers():
+def get_sp500_tickers() -> list:
     """
     Scrapes the current list of S&P 500 tickers from Wikipedia.
 
@@ -22,7 +22,7 @@ def get_sp500_tickers():
         tickers.append(ticker)
     return tickers
 
-def download_data(ticker: str, start_date: datetime, end_date: datetime):
+def download_data(ticker: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
     """
     Downloads historical data for a single ticker.
 
@@ -38,24 +38,24 @@ def download_data(ticker: str, start_date: datetime, end_date: datetime):
         print(f"Error downloading data for {ticker}: {e}")
         return pd.DataFrame()
 
-def extract_close_prices(df: pd.DataFrame, ticker: str):
+def extract_close_prices(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
     """
-    Extracts the 'Close' column from a DataFrame, renames it to the ticker, 
+    Extracts the 'Adj Close' column from a DataFrame, renames it to the ticker, 
     and sets the date as the index.
 
     :param df: DataFrame with historical data
     :param ticker: Ticker symbol
     :return: DataFrame with 'Close' prices and date as index
     """
-    if 'Close' in df.columns:
-        close_df = df[['Close']].copy() 
-        close_df.rename(columns={'Close': ticker}, inplace=True)  
-        close_df = close_df.set_index(df.index)  
-        return close_df
+    if 'Adj Close' in df.columns:  
+        adj_close_df = df[['Adj Close']].copy() 
+        adj_close_df.rename(columns={'Adj Close': ticker}, inplace=True)  
+        adj_close_df = adj_close_df.set_index(df.index)
+        return adj_close_df
     else:
         return pd.DataFrame()
 
-def build_close_price_df(tickers: list, start_date: datetime, end_date: datetime):
+def build_close_price_df(tickers: list, start_date: datetime, end_date: datetime) -> pd.DataFrame:
     """
     Builds a DataFrame with 'Close' prices for all tickers, with dates as index and tickers as columns.
 
@@ -88,5 +88,4 @@ if __name__ == "__main__":
     print("\nFinal merged Close price DataFrame:")
     print(close_prices_df.head())
 
-    # Save to disk
-    close_prices_df.to_csv("sp500_close_prices.csv")
+    close_prices_df.to_csv("data/sp500_close_prices.csv")
