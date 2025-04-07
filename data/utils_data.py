@@ -111,6 +111,79 @@ def split_time_series_data(df: pd.DataFrame, train_size: float = 0.8, val_size: 
     
     return train_df, val_df, test_df
 
+def create_time_segments(train_df: pd.DataFrame, segment_length: int = 80, standardize: bool = False) -> tuple:
+    """
+    Splits each stock's time series in the training set into disjoint, time-ordered segments
+    of fixed length.
+    
+    :param train_df: DataFrame with dates as index and stock tickers as columns
+    :param segment_length: Length of each segment (default: 80 trading days)
+    :param standardize: If True, each segment is normalized by subtracting the mean and 
+                        dividing by the standard deviation (default: False)
+    :return: Tuple of (segments_df, metadata_df) where segments_df has standardized timestep 
+             indices (0 to segment_length-1) containing all segments
+    """
+    segments_list = []
+    segment_ids = []
+    tickers = []
+    
+    for ticker in train_df.columns:
+        ticker_data = train_df[ticker].dropna()
+        
+        if len(ticker_data) < segment_length:
+            print(f"Skipping {ticker}: insufficient data (only {len(ticker_data)} points)")
+            continue
+            
+        num_segments = len(ticker_data) // segment_length
+        
+        if num_segments == 0:
+            continue
+            
+        # create segments - vectorized approach for better performance
+        segments = np.array_split(ticker_data.values[:num_segments*segment_length], num_segments)
+        
+        for i, segment in enumerate(segments):
+            if len(segment) == segment_length:
+                if standardize:
+                    segment_mean = np.mean(segment)
+                    segment_std = np.std(segment)
+                    if segment_std > 0:
+                        segment = (segment - segment_mean) / segment_std
+                    else:
+                        segment = segment - segment_mean
+                
+                segments_list.append(segment)
+                segment_ids.append(f"{ticker}_segment_{i+1}")
+                tickers.append(ticker)
+    
+    segments_df = pd.DataFrame(segments_list, index=segment_ids).T
+    segments_df.index = range(segment_length)
+    segments_df.columns.name = 'segment_id'
+    
+    metadata = pd.DataFrame({'ticker': tickers}, index=segment_ids)
+    
+    print(f"Created {segments_df.shape[1]} segments from {len(set(tickers))}/{len(train_df.columns)} tickers")
+    print(f"Each segment has {segment_length} timesteps")
+    if standardize:
+        print("Segments were standardized (zero mean, unit variance)")
+    
+    return segments_df, metadata
+
+def save_segments_to_csv(segments_df: pd.DataFrame, metadata: pd.DataFrame, 
+                         segments_filename: str, metadata_filename: str) -> None:
+    """
+    Saves the segments DataFrame and metadata to CSV files.
+    
+    :param segments_df: DataFrame with segments data
+    :param metadata: DataFrame with segment metadata
+    :param segments_filename: Filename for segments
+    :param metadata_filename: Filename for metadata
+    """
+    segments_df.to_csv(segments_filename)
+    metadata.to_csv(metadata_filename)
+    print(f"Segments saved to {segments_filename}")
+    print(f"Metadata saved to {metadata_filename}")
+
 def save_data_to_csv(data: pd.DataFrame, filename: str) -> None:
     """
     Saves the data to a CSV file.
@@ -140,46 +213,36 @@ def load_data_from_csv(filename: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    # File paths
     input_filename = 'data/sp500_csvs/sp500_historical_data.csv'
     train_filename = 'data/sp500_csvs/sp500_train.csv'
     val_filename = 'data/sp500_csvs/sp500_val.csv'
     test_filename = 'data/sp500_csvs/sp500_test.csv'
     
-    # Option to download new data or use existing
-    use_existing_data = False  # Set to False if you want to download fresh data
+    # option to download new data or use existing, set to True to use existing data
+    use_existing_data = True 
     
     if use_existing_data:
-        # Load existing data
         data = load_data_from_csv(input_filename)
         if data is None:
             raise ValueError("Failed to load existing data. Please check the file path.")
     else:
-        # Parameters for downloading new data
         start_date = '2000-01-01'
         end_date = datetime.now().strftime('%Y-%m-%d')
-        data_type = 'Close'  # Options: Open, High, Low, Close, Adj Close, Volume
+        data_type = 'Close'  
         
-        # Get S&P 500 tickers
         print("Getting S&P 500 tickers...")
         tickers = get_sp500_tickers()
         print(f"Found {len(tickers)} tickers")
-        
-        # Download data
+    
         data = download_sp500_data(tickers, start_date, end_date, data_type)
-        
-        # Save to CSV
         save_data_to_csv(data, input_filename)
     
-    # Split data into train, validation, and test sets
     train_df, val_df, test_df = split_time_series_data(data)
     
-    # Save the split datasets
     save_data_to_csv(train_df, train_filename)
     save_data_to_csv(val_df, val_filename)
     save_data_to_csv(test_df, test_filename)
     
-    # Print summary statistics
     print("\nFull dataset:")
     print(f"Data shape: {data.shape}")
     print(f"Date range: {data.index.min()} to {data.index.max()}")
@@ -197,3 +260,11 @@ if __name__ == "__main__":
     print("\nTest dataset:")
     print(f"Data shape: {test_df.shape}")
     print(f"Date range: {test_df.index.min()} to {test_df.index.max()}")
+
+    segments_filename = 'data/sp500_csvs/sp500_segments.csv'
+    metadata_filename = 'data/sp500_csvs/sp500_segments_metadata.csv'
+    
+    print("\nCreating time segments from training data...")
+    segments_df, metadata = create_time_segments(train_df, segment_length=80, standardize=True)  # Set to True to enable standardization
+    
+    save_segments_to_csv(segments_df, metadata, segments_filename, metadata_filename)
