@@ -137,7 +137,7 @@ def generate_ou_dataset(
 
 if __name__ == "__main__":
     
-    os.makedirs("data/synthetic_data_csvs", exist_ok=True)
+    os.makedirs("data/synthetic_data_parquet", exist_ok=True)
     
     n_series = 60000  # Number of time series
     T = 80  # Number of time steps
@@ -149,12 +149,12 @@ if __name__ == "__main__":
     print("Generating Ornstein-Uhlenbeck dataset...")
     ou_dataset = generate_ou_dataset(n_series=n_series, T=T, dt=dt)
     
-    print("Saving datasets to CSV files...")
+    print("Saving datasets to Parquet files...")
     
     harmonic_df = pd.DataFrame(harmonic_dataset)
-    harmonic_df.to_csv("data/synthetic_data_csvs/harmonic_dataset.csv", index=False)
+    harmonic_df.to_parquet("data/synthetic_data_parquet/harmonic_dataset.parquet", index=False)
     
     ou_df = pd.DataFrame(ou_dataset)
-    ou_df.to_csv("data/synthetic_data_csvs/ou_dataset.csv", index=False)
+    ou_df.to_parquet("data/synthetic_data_parquet/ou_dataset.parquet", index=False)
     
-    print("Datasets successfully saved to 'data/synthetic_data_csvs' directory.")
+    print("Datasets successfully saved to 'data/synthetic_data_parquet' directory.")
