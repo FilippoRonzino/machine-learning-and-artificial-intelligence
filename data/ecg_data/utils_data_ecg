@@ -2,16 +2,71 @@ import wfdb
 import numpy as np
 import pandas as pd
 
-def extract_signals(record_name, channel):
+def extract_signals(record_name: str, channel: int) -> np.ndarray:
+    """
+    Extract ECG signal data from a specific record and channel. It needs in the folder data/ecg_data the ecg data from PhysioNet.
+    
+    Parameters:
+    - record_name: Name of the ECG record to load.
+    - channel: Index of the channel to extract from the record.
+    
+    Returns:
+    - signal: The extracted signal data as a numpy array.
+    
+    Raises:
+    - FileNotFoundError: If the specified record file is not found.
+    - ValueError: If the specified channel does not exist in the record.
+    """
+    try:
+        record = wfdb.rdrecord(f"data/ecg_data/{record_name}")
+        if channel < 0 or channel >= record.p_signal.shape[1]:
+            raise ValueError(f"Channel {channel} does not exist in the record {record_name}.")
+        signal = record.p_signal[:, channel]
+        return signal
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Record file {record_name} not found in data/ecg_data.")
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while extracting signals: {e}")
 
-    record = wfdb.rdrecord(f"data/ecg_data/{record_name}")
-    signal = record.p_signal[:, channel]
-    return signal
 
-def downsample_signal(signal, factor):
+def downsample_signal(signal: np.ndarray, factor: int) -> np.ndarray:
+    """
+    Downsample a signal by selecting every nth sample. 
+    
+    Parameters:
+    - signal: The input signal to downsample.
+    - factor: The downsampling factor (selects every 'factor' sample).
+    
+    Returns:
+    - The downsampled signal as a numpy array.
+    
+    Raises:
+    - ValueError: If the downsampling factor is less than or equal to 0.
+    """
+    if factor <= 0:
+        raise ValueError(f"Downsample factor must be a positive integer, got {factor}")
+    
     return signal[::factor]
 
-def create_downsampled_signals_array(record_names, channel, downsample_factor):
+
+def create_downsampled_signals_array(record_names: list, channel: int, downsample_factor: int) -> np.ndarray:
+    """
+    Create an array of downsampled signals from multiple ECG records. It needs in the folder data/ecg_data the ecg data from PhysioNet.
+    
+    Parameters:
+    - record_names: List of ECG record names to process.
+    - channel: Index of the channel to extract from each record.
+    - downsample_factor: Factor by which to downsample each signal.
+    
+    Returns:
+    - downsampled_signals: Array of downsampled signals, truncated to the length of the shortest signal.
+    
+    Raises:
+    - ValueError: If record_names is empty or the returned signals are of zero length.
+    """
+    if not record_names:
+        raise ValueError("List of record names cannot be empty")
+    
     downsampled_signals = []
     min_length = float('inf')  
     
@@ -20,21 +75,51 @@ def create_downsampled_signals_array(record_names, channel, downsample_factor):
         signal_downsampled = downsample_signal(signal, downsample_factor)
         downsampled_signals.append(signal_downsampled)
         min_length = min(min_length, len(signal_downsampled))  
+    
+    if min_length == 0:
+        raise ValueError("One or more signals has zero length after downsampling")
         
     downsampled_signals = [signal[:min_length] for signal in downsampled_signals]
     
     return np.array(downsampled_signals)
 
-def sample_random_segments_across_patients(signals, n, sample_length=80, threshold=0.1, max_attempts=10000):
-    segments = []
+
+def sample_random_segments_across_patients(signals: np.ndarray, n: int, sample_length: int = 80, 
+                                          threshold: float = 0.1, max_attempts: int = 10000) -> np.ndarray:
+    """
+    Sample random segments of a specified length from multiple patient signals.
+    
+    Parameters:
+    - signals: Array of signals from multiple patients.
+    - n: Number of segments to sample.
+    - sample_length: Length of each segment to sample.
+    - threshold: Minimum sum of absolute values required for a segment to be considered active.
+    - max_attempts: Maximum number of sampling attempts before giving up.
+    
+    Returns:
+    - segments: Array of sampled signal segments.
+    
+    Raises:
+    - ValueError: If not enough active segments are found within the maximum attempts or if parameters are invalid.
+    """
+    if sample_length <= 0:
+        raise ValueError(f"Sample length must be a positive integer, got {sample_length}")
+    
+    if threshold < 0:
+        raise ValueError(f"Threshold must be non-negative, got {threshold}")
+    
     n_patients, total_length = signals.shape
+    
+    if total_length < sample_length:
+        raise ValueError(f"Signal length ({total_length}) is shorter than the requested sample length ({sample_length})")
+    
+    segments = []
     attempts = 0
     
     while len(segments) < n and attempts < max_attempts:
         attempts += 1
         
         patient_idx = np.random.randint(0, n_patients)
-
         start_index = np.random.randint(0, total_length - sample_length + 1)
         segment = signals[patient_idx, start_index:start_index + sample_length]
         
@@ -42,18 +127,61 @@ def sample_random_segments_across_patients(signals, n, sample_length=80, thresho
             segments.append(segment)
     
     if len(segments) < n:
-        raise ValueError("Not enough active segments found. Consider lowering the threshold or increasing max_attempts.")
+        collected = len(segments)
+        raise ValueError(f"Not enough active segments found (only {collected}/{n}). Consider lowering the threshold (current: {threshold}) or increasing max_attempts.")
     
     return np.array(segments)
 
 
-def create_ecg_datasets(train_patients, test_patients, channel, downsample_factor, 
-                        n_train_segments, n_test_segments, sample_length=80, 
-                        threshold=20, max_attempts=10000):
-
-    train_signals = create_downsampled_signals_array(train_patients, channel, downsample_factor)
+def create_ecg_datasets(train_patients: list, test_patients: list, channel: int, downsample_factor: int, 
+                        n_train_segments: int, n_test_segments: int, sample_length: int = 80, 
+                        threshold: float = 20, max_attempts: int = 10000) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Create training and testing datasets from ECG signals.
     
+    Parameters:
+    - train_patients: List of patient record names for training data.
+    - test_patients: List of patient record names for testing data.
+    - channel: Index of the channel to extract from each record.
+    - downsample_factor: Factor by which to downsample each signal.
+    - n_train_segments: Number of segments to sample for training.
+    - n_test_segments: Number of segments to sample for testing.
+    - sample_length: Length of each segment to sample.
+    - threshold: Minimum sum of absolute values required for a segment to be considered active.
+    - max_attempts: Maximum number of sampling attempts before giving up.
+    
+    Returns:
+    - train_segments: Array of sampled signal segments for training.
+    - test_segments: Array of sampled signal segments for testing.
+    
+    Raises:
+    - ValueError: If parameters are invalid or if not enough segments can be found.
+    """
+    if not train_patients:
+        raise ValueError("Train patients list cannot be empty")
+    if not test_patients:
+        raise ValueError("Test patients list cannot be empty")
+    
+    if downsample_factor <= 0:
+        raise ValueError(f"Downsample factor must be a positive integer, got {downsample_factor}")
+    
+    if sample_length <= 0:
+        raise ValueError(f"Sample length must be a positive integer, got {sample_length}")
+    
+    if threshold < 0:
+        raise ValueError(f"Threshold must be non-negative, got {threshold}")
+    
+    train_signals = create_downsampled_signals_array(train_patients, channel, downsample_factor)
     test_signals = create_downsampled_signals_array(test_patients, channel, downsample_factor)
+    
+    _, train_length = train_signals.shape
+    _, test_length = test_signals.shape
+    
+    if train_length < sample_length:
+        raise ValueError(f"Training signals length ({train_length}) is shorter than the requested sample length ({sample_length})")
+    
+    if test_length < sample_length:
+        raise ValueError(f"Testing signals length ({test_length}) is shorter than the requested sample length ({sample_length})")
     
     train_segments = sample_random_segments_across_patients(train_signals, n_train_segments, 
                                                             sample_length, threshold, max_attempts)
