@@ -22,7 +22,19 @@ def generate_harmonic_timeseries(
 
     Returns:
     - s_t: The generated harmonic time series as a numpy array.
+
+    Raises:
+    - ValueError: If T, dt, T1, or T2 are not positive.
     """
+    if T <= 0:
+        raise ValueError("T must be positive.")
+    if dt <= 0:
+        raise ValueError("dt must be positive.")
+    if T1 <= 0:
+        raise ValueError("T1 (period of first harmonic) must be positive.")
+    if T2 <= 0:
+        raise ValueError("T2 (period of second harmonic) must be positive.")
+
     t_values = np.arange(1, T + 1) * dt
 
     s1 = (A1 + B1 * t_values) * np.sin(2 * np.pi * t_values / T1 + phi1)
@@ -50,7 +62,19 @@ def generate_ou_timeseries(
 
     Returns:
     - s: The generated Ornstein-Uhlenbeck time series as a numpy array of length T.
+
+    Raises:
+    - ValueError: If T, dt, gamma are not positive, or if sigma is negative.
     """
+    if T <= 0:
+        raise ValueError("T must be positive.")
+    if dt <= 0:
+        raise ValueError("dt must be positive.")
+    if gamma <= 0:
+        raise ValueError("gamma must be positive to avoid division by zero or negative reversion rates.")
+    if sigma < 0:
+        raise ValueError("sigma must be nonnegative.")
+    
     s = np.zeros(T)
     s[0] = s0
     
@@ -79,7 +103,16 @@ def generate_harmonic_dataset(
 
     Returns:
     - dataset: Array of shape (n_series, T) containing the generated time series.
+    Raises:
+    - ValueError: If T, dt, or n_series are not positive.
     """
+    if T <= 0:
+        raise ValueError("T must be positive.")
+    if dt <= 0:
+        raise ValueError("dt must be positive.")
+    if n_series < 0:
+        raise ValueError("n_series cannot be negative.")
+
     dataset = np.zeros((n_series, T))
 
     for i in range(n_series):
@@ -120,7 +153,16 @@ def generate_ou_dataset(
 
     Returns:
     - dataset: Array of shape (n_series, T) containing the generated time series.
+    Raises:
+    - ValueError: If T, dt, or n_series are not positive.
     """
+    if T <= 0:
+        raise ValueError("T must be positive.")
+    if dt <= 0:
+        raise ValueError("dt must be positive.")
+    if n_series < 0:
+        raise ValueError("n_series cannot be negative.")
+
     dataset = np.zeros((n_series, T))
 
     for i in range(n_series):
