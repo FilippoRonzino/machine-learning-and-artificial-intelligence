@@ -23,22 +23,45 @@ def extract_series_from_parquet(file_path: str, row_index: int) -> pd.Series:
     df = pd.read_parquet(file_path)
     return df.iloc[row_index]
 
-def check_stationarity(row: pd.Series) -> bool:
+def check_stationarity(series):
     """
     Check if a time series is stationary using the Augmented Dickey-Fuller test.
-
-    :param row: A pandas Series representing the time series.
-    :return: True if the time series is stationary, False otherwise, p-value <= 0.05.
+    
+    :param series: A pandas Series representing the time series.
+    :return: Tuple of (is_stationary, p_value, suggested_differencing_order)
     """
-
-    result = adfuller(row)
-    return result[1] <= 0.05 
+    result = adfuller(series)
+    p_value = result[1]
+    
+    is_stationary = p_value < 0.05
+    
+    # heuristic for suggesting differencing order
+    suggested_d = 0
+    if not is_stationary:
+        # Try first difference
+        if isinstance(series, pd.Series):
+            first_diff = series.diff().dropna()
+        else:
+            first_diff = pd.Series(series).diff().dropna()
+            
+        first_diff_result = adfuller(first_diff)
+        if first_diff_result[1] < 0.05:
+            suggested_d = 1
+        else:
+            # Try second difference
+            second_diff = first_diff.diff().dropna()
+            second_diff_result = adfuller(second_diff)
+            if second_diff_result[1] < 0.05:
+                suggested_d = 2
+            else:
+                suggested_d = 1  # Default to 1 if we're not sure
+    
+    return is_stationary, p_value, suggested_d
 
 if __name__ == "__main__":
-    # Example usage
     file_path = "data/data_storage/ecg_parquets/test_ecg.parquet" 
-    row_index = 21  # Change this to the desired row index
-
+    row_index = 21 
+    
     series = extract_series_from_parquet(file_path, row_index)
     is_stationary = check_stationarity(series)
 
