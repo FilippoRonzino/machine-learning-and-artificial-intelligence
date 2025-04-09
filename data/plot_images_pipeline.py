@@ -116,5 +116,27 @@ if __name__ == "__main__":
 
     ecg_train_path = os.path.join(current_dir, 'data_storage', 'ecg_parquets', 'train_ecg.parquet')
     ecg_test_path = os.path.join(current_dir, 'data_storage', 'ecg_parquets', 'test_ecg.parquet')
+
+    harmonic_train_path = os.path.join(current_dir, 'data_storage', 'harmonic_ou_parquets', 'train_harmonic.parquet')
+    harmonic_test_path = os.path.join(current_dir, 'data_storage', 'harmonic_ou_parquets', 'test_harmonic.parquet')
+
+    ou_train_path = os.path.join(current_dir, 'data_storage', 'harmonic_ou_parquets', 'train_ou.parquet')
+    ou_test_path = os.path.join(current_dir, 'data_storage', 'harmonic_ou_parquets', 'test_ou.parquet')
+
+    sp500_train_path = os.path.join(current_dir, 'data_storage', 'sp500_parquets', 'train_sp500.parquet')
+    sp500_test_path = os.path.join(current_dir, 'data_storage', 'sp500_parquets', 'test_sp500.parquet')
+
     
     save_images_from_df_file(ecg_train_path, os.path.join(current_dir, 'images', 'ecg', 'train'), size=80)
+    save_images_from_df_file(ecg_test_path, os.path.join(current_dir, 'images', 'ecg', 'test'), size=80)
+    print("ECG images saved successfully.")
+    save_images_from_df_file(harmonic_train_path, os.path.join(current_dir, 'images', 'harmonic', 'train'), size=80)
+    save_images_from_df_file(harmonic_test_path, os.path.join(current_dir, 'images', 'harmonic', 'test'), size=80)
+    print("Harmonic images saved successfully.")
+    save_images_from_df_file(ou_train_path, os.path.join(current_dir, 'images', 'ou', 'train'), size=80)
+    save_images_from_df_file(ou_test_path, os.path.join(current_dir, 'images', 'ou', 'test'), size=80)
+    print("OU images saved successfully.")
+    save_images_from_df_file(sp500_train_path, os.path.join(current_dir, 'images', 'sp500', 'train'), size=80)
+    save_images_from_df_file(sp500_test_path, os.path.join(current_dir, 'images', 'sp500', 'test'), size=80)
+    print("SP500 images saved successfully.")
+    print("Done.")
