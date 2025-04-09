@@ -114,9 +114,7 @@ def save_images_from_df_file(df_file: str, output_dir: str, size: int = 80):
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    ecg_train_path = os.path.join(current_dir, 'ecg_data', 'train_ecg.parquet')
-    ecg_test_path = os.path.join(current_dir, 'ecg_data', 'test_ecg.parquet')
-
-    
+    ecg_train_path = os.path.join(current_dir, 'data_storage', 'ecg_parquets', 'train_ecg.parquet')
+    ecg_test_path = os.path.join(current_dir, 'data_storage', 'ecg_parquets', 'test_ecg.parquet')
     
     save_images_from_df_file(ecg_train_path, os.path.join(current_dir, 'images', 'ecg', 'train'), size=80)
