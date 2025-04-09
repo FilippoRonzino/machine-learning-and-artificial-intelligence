@@ -215,9 +215,9 @@ def load_data_from_parquet(filename: str) -> pd.DataFrame:
 if __name__ == "__main__":
     main_dir = 'data/data_storage/sp500_parquets'
     input_filename = os.path.join(main_dir, 'sp500_historical_data.parquet')
-    train_filename = os.path.join(main_dir, 'train_sp500.parquet')
-    val_filename = os.path.join(main_dir, 'val_sp500.parquet')
-    test_filename = os.path.join(main_dir, 'test_sp500.parquet')
+    train_filename = os.path.join(main_dir, 'sp500_train_df.parquet')
+    val_filename = os.path.join(main_dir, 'sp500_val_df.parquet')
+    test_filename = os.path.join(main_dir, 'sp500_test_df.parquet')
     
     # option to download new data or use existing, set to True to use existing data
     use_existing_data = False 
@@ -239,7 +239,6 @@ if __name__ == "__main__":
         save_data_to_parquet(data, input_filename)
     
     train_df, val_df, test_df = split_time_series_data(data)
-    train_df, val_df, test_df = (df.T for df in (train_df, val_df, test_df))
     
     save_data_to_parquet(train_df, train_filename)
     save_data_to_parquet(val_df, val_filename)
@@ -263,10 +262,26 @@ if __name__ == "__main__":
     print(f"Data shape: {test_df.shape}")
     print(f"Date range: {test_df.index.min()} to {test_df.index.max()}")
 
-    segments_filename = os.path.join(main_dir, 'sp500_segments.parquet')
-    metadata_filename = os.path.join(main_dir, 'sp500_segments_metadata.parquet')
+    segments_train_filename = os.path.join(main_dir, 'train_sp500.parquet')
+    metadata_train_filename = os.path.join(main_dir, 'train_sp500_metadata.parquet')
+    
+    segments_val_filename = os.path.join(main_dir, 'val_sp500.parquet')
+    metadata_val_filename = os.path.join(main_dir, 'val_sp500_metadata.parquet')
+    
+    segments_test_filename = os.path.join(main_dir, 'test_sp500.parquet')
+    metadata_test_filename = os.path.join(main_dir, 'test_sp500_metadata.parquet')
     
     print("\nCreating time segments from training data...")
-    segments_df, metadata = create_time_segments(train_df, segment_length=80, standardize=True)
+    segments_train_df, metadata_train = create_time_segments(train_df, segment_length=80, standardize=True)
+    segments_train_df = segments_train_df.T
+    save_segments_to_parquet(segments_train_df, metadata_train, segments_train_filename, metadata_train_filename)
     
-    save_segments_to_parquet(segments_df, metadata, segments_filename, metadata_filename)
+    print("\nCreating time segments from validation data...")
+    segments_val_df, metadata_val = create_time_segments(val_df, segment_length=80, standardize=True)
+    segments_val_df = segments_val_df.T
+    save_segments_to_parquet(segments_val_df, metadata_val, segments_val_filename, metadata_val_filename)
+    
+    print("\nCreating time segments from test data...")
+    segments_test_df, metadata_test = create_time_segments(test_df, segment_length=80, standardize=True)
+    segments_test_df = segments_test_df.T
+    save_segments_to_parquet(segments_test_df, metadata_test, segments_test_filename, metadata_test_filename)
