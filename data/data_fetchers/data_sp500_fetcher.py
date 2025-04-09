@@ -215,12 +215,12 @@ def load_data_from_parquet(filename: str) -> pd.DataFrame:
 if __name__ == "__main__":
     main_dir = 'data/data_storage/sp500_parquets'
     input_filename = os.path.join(main_dir, 'sp500_historical_data.parquet')
-    train_filename = os.path.join(main_dir, 'sp500_train.parquet')
-    val_filename = os.path.join(main_dir, 'sp500_val.parquet')
-    test_filename = os.path.join(main_dir, 'sp500_test.parquet')
+    train_filename = os.path.join(main_dir, 'train_sp500.parquet')
+    val_filename = os.path.join(main_dir, 'val_sp500.parquet')
+    test_filename = os.path.join(main_dir, 'test_sp500.parquet')
     
     # option to download new data or use existing, set to True to use existing data
-    use_existing_data = True 
+    use_existing_data = False 
     
     if use_existing_data:
         data = load_data_from_parquet(input_filename)
@@ -239,6 +239,7 @@ if __name__ == "__main__":
         save_data_to_parquet(data, input_filename)
     
     train_df, val_df, test_df = split_time_series_data(data)
+    train_df, val_df, test_df = (df.T for df in (train_df, val_df, test_df))
     
     save_data_to_parquet(train_df, train_filename)
     save_data_to_parquet(val_df, val_filename)
