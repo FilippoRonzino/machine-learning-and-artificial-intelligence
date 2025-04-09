@@ -5,17 +5,10 @@ import pandas as pd
 def extract_signals(record_name: str, channel: int) -> np.ndarray:
     """
     Extract ECG signal data from a specific record and channel. It needs in the folder data/ecg_data the ecg data from PhysioNet.
-    
-    Parameters:
-    - record_name: Name of the ECG record to load.
-    - channel: Index of the channel to extract from the record.
-    
-    Returns:
-    - signal: The extracted signal data as a numpy array.
-    
-    Raises:
-    - FileNotFoundError: If the specified record file is not found.
-    - ValueError: If the specified channel does not exist in the record.
+
+    :param record_name: Name of the ECG record to load.
+    :param channel: Index of the channel to extract from the record.
+    :return: signal: The extracted signal data as a numpy array.
     """
     try:
         record = wfdb.rdrecord(f"data/ecg_data/{record_name}")
@@ -31,17 +24,11 @@ def extract_signals(record_name: str, channel: int) -> np.ndarray:
 
 def downsample_signal(signal: np.ndarray, factor: int) -> np.ndarray:
     """
-    Downsample a signal by selecting every nth sample. 
-    
-    Parameters:
-    - signal: The input signal to downsample.
-    - factor: The downsampling factor (selects every 'factor' sample).
-    
-    Returns:
-    - The downsampled signal as a numpy array.
-    
-    Raises:
-    - ValueError: If the downsampling factor is less than or equal to 0.
+    Downsample a signal by selecting every nth sample.
+
+    :param signal: The input signal to downsample.
+    :param factor: The downsampling factor (selects every 'factor' sample).
+    :return: The downsampled signal as a numpy array.
     """
     if factor <= 0:
         raise ValueError(f"Downsample factor must be a positive integer, got {factor}")
@@ -52,17 +39,11 @@ def downsample_signal(signal: np.ndarray, factor: int) -> np.ndarray:
 def create_downsampled_signals_array(record_names: list, channel: int, downsample_factor: int) -> np.ndarray:
     """
     Create an array of downsampled signals from multiple ECG records. It needs in the folder data/ecg_data the ecg data from PhysioNet.
-    
-    Parameters:
-    - record_names: List of ECG record names to process.
-    - channel: Index of the channel to extract from each record.
-    - downsample_factor: Factor by which to downsample each signal.
-    
-    Returns:
-    - downsampled_signals: Array of downsampled signals, truncated to the length of the shortest signal.
-    
-    Raises:
-    - ValueError: If record_names is empty or the returned signals are of zero length.
+
+    :param record_names: List of ECG record names to process.
+    :param channel: Index of the channel to extract from each record.
+    :param downsample_factor: Factor by which to downsample each signal.
+    :return: downsampled_signals: Array of downsampled signals, truncated to the length of the shortest signal.
     """
     if not record_names:
         raise ValueError("List of record names cannot be empty")
@@ -85,22 +66,16 @@ def create_downsampled_signals_array(record_names: list, channel: int, downsampl
 
 
 def sample_random_segments_across_patients(signals: np.ndarray, n: int, sample_length: int = 80, 
-                                          threshold: float = 0.1, max_attempts: int = 10000) -> np.ndarray:
+                                           threshold: float = 0.1, max_attempts: int = 10000) -> np.ndarray:
     """
     Sample random segments of a specified length from multiple patient signals.
-    
-    Parameters:
-    - signals: Array of signals from multiple patients.
-    - n: Number of segments to sample.
-    - sample_length: Length of each segment to sample.
-    - threshold: Minimum sum of absolute values required for a segment to be considered active.
-    - max_attempts: Maximum number of sampling attempts before giving up.
-    
-    Returns:
-    - segments: Array of sampled signal segments.
-    
-    Raises:
-    - ValueError: If not enough active segments are found within the maximum attempts or if parameters are invalid.
+
+    :param signals: Array of signals from multiple patients.
+    :param n: Number of segments to sample.
+    :param sample_length: Length of each segment to sample.
+    :param threshold: Minimum sum of absolute values required for a segment to be considered active.
+    :param max_attempts: Maximum number of sampling attempts before giving up.
+    :return: segments: Array of sampled signal segments.
     """
     if sample_length <= 0:
         raise ValueError(f"Sample length must be a positive integer, got {sample_length}")
@@ -137,25 +112,19 @@ def create_ecg_datasets(train_patients: list, test_patients: list, channel: int,
                         n_train_segments: int, n_test_segments: int, sample_length: int = 80, 
                         threshold: float = 20, max_attempts: int = 10000) -> tuple[np.ndarray, np.ndarray]:
     """
-    Create training and testing datasets from ECG signals.
-    
-    Parameters:
-    - train_patients: List of patient record names for training data.
-    - test_patients: List of patient record names for testing data.
-    - channel: Index of the channel to extract from each record.
-    - downsample_factor: Factor by which to downsample each signal.
-    - n_train_segments: Number of segments to sample for training.
-    - n_test_segments: Number of segments to sample for testing.
-    - sample_length: Length of each segment to sample.
-    - threshold: Minimum sum of absolute values required for a segment to be considered active.
-    - max_attempts: Maximum number of sampling attempts before giving up.
-    
-    Returns:
-    - train_segments: Array of sampled signal segments for training.
-    - test_segments: Array of sampled signal segments for testing.
-    
-    Raises:
-    - ValueError: If parameters are invalid or if not enough segments can be found.
+    Create training and testing datasets from ECG signals. It needs in the folder data/ecg_data the ecg data from PhysioNet.
+
+    :param train_patients: List of patient record names for training data.
+    :param test_patients: List of patient record names for testing data.
+    :param channel: Index of the channel to extract from each record.
+    :param downsample_factor: Factor by which to downsample each signal.
+    :param n_train_segments: Number of segments to sample for training.
+    :param n_test_segments: Number of segments to sample for testing.
+    :param sample_length: Length of each segment to sample.
+    :param threshold: Minimum sum of absolute values required for a segment to be considered active.
+    :param max_attempts: Maximum number of sampling attempts before giving up.
+    :return: train_segments: Array of sampled signal segments for training.
+             test_segments: Array of sampled signal segments for testing.
     """
     if not train_patients:
         raise ValueError("Train patients list cannot be empty")
