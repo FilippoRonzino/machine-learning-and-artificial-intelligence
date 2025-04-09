@@ -26,11 +26,7 @@ def generate_harmonic_timeseries(
         raise ValueError("T must be positive.")
     if dt <= 0:
         raise ValueError("dt must be positive.")
-    if T1 <= 0:
-        raise ValueError("T1 (period of first harmonic) must be positive.")
-    if T2 <= 0:
-        raise ValueError("T2 (period of second harmonic) must be positive.")
-
+   
     t_values = np.arange(1, T + 1) * dt
 
     s1 = (A1 + B1 * t_values) * np.sin(2 * np.pi * t_values / T1 + phi1)
@@ -148,10 +144,10 @@ def generate_ou_dataset(
 
     for i in range(n_series):
         mu = np.random.normal(loc=0.0, scale=1.0)
-        gamma = np.random.normal(loc=8e-8, scale=4e-8)  # Mean reversion rate
-        sigma = np.random.normal(loc=1e-2, scale=5e-3)  # Volatility
+        gamma = np.random.lognormal(mean=8e-8, sigma=4e-8)  # Mean reversion rate
+        sigma = np.random.lognormal(mean=1e-2, sigma=5e-3)  # Volatility
         s0 = np.random.normal(loc=0.0, scale=1.0)       # Initial value
-
+        
         s_t = generate_ou_timeseries(T=T, dt=dt, mu=mu, gamma=gamma, sigma=sigma, s0=s0)
         dataset[i] = s_t
 
@@ -161,7 +157,7 @@ def generate_ou_dataset(
 if __name__ == "__main__":
     os.makedirs("data/data_storage/harmonic_ou_parquets", exist_ok=True)
     
-    n_series = 60000  # Number of time series
+    n_series = 62500  # Number of time series
     T = 80  # Number of time steps
     dt = 1.0  # Time step size
     
@@ -171,12 +167,22 @@ if __name__ == "__main__":
     print("Generating Ornstein-Uhlenbeck dataset...")
     ou_dataset = generate_ou_dataset(n_series=n_series, T=T, dt=dt)
     
-    print("Saving datasets to Parquet files...")
-    
-    harmonic_df = pd.DataFrame(harmonic_dataset)
-    harmonic_df.to_parquet("data/data_storage/harmonic_ou_parquets/harmonic_dataset.parquet", index=False)
-    
-    ou_df = pd.DataFrame(ou_dataset)
-    ou_df.to_parquet("data/data_storage/harmonic_ou_parquets/ou_dataset.parquet", index=False)
-    
+    harmonic_train = harmonic_dataset[:int(0.8 * n_series)]
+    harmonic_val = harmonic_dataset[int(0.8 * n_series):int(0.9 * n_series)]
+    harmonic_test = harmonic_dataset[int(0.9 * n_series):]
+
+    ou_train = ou_dataset[:int(0.8 * n_series)]
+    ou_val = ou_dataset[int(0.8 * n_series):int(0.9 * n_series)]
+    ou_test = ou_dataset[int(0.9 * n_series):]
+
+    print("Saving split datasets to Parquet files...")
+
+    pd.DataFrame(harmonic_train).to_parquet("data/data_storage/harmonic_ou_parquets/train_harmonic.parquet", index=False)
+    pd.DataFrame(harmonic_val).to_parquet("data/data_storage/harmonic_ou_parquets/val_harmonic.parquet", index=False)
+    pd.DataFrame(harmonic_test).to_parquet("data/data_storage/harmonic_ou_parquets/test_harmonic.parquet", index=False)
+
+    pd.DataFrame(ou_train).to_parquet("data/data_storage/harmonic_ou_parquets/train_ou.parquet", index=False)
+    pd.DataFrame(ou_val).to_parquet("data/data_storage/harmonic_ou_parquets/val_ou.parquet", index=False)
+    pd.DataFrame(ou_test).to_parquet("data/data_storage/harmonic_ou_parquets/test_ou.parquet", index=False)
+
     print("Datasets successfully saved to 'data/data_storage/harmonic_ou_parquets' directory.")
