@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from data.data_loader import load_time_series_parquet, check_stationarity
 import pandas as pd
 import numpy as np
@@ -410,3 +411,6 @@ if __name__ == "__main__":
 
     # Plot diagnostics
     auto_model.plot_diagnostics()
+=======
+
+>>>>>>> main
