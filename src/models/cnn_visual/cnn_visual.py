@@ -13,6 +13,7 @@ import numpy as np
 import traceback
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
+import pytorch_lightning as pl
 
 SOURCE_IMAGE_FOLDER = '/Users/edoardoghirardo/Offline docs/github/images' # importing My TEST folder with all different pictures.
 BATCH_SIZE = 32
@@ -68,7 +69,7 @@ class ImageColumnKLDivLoss(nn.Module):
     
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
-    def __init__(self, source_dir, transform=None, overlap = 0.5):
+    def __init__(self, source_dir, transform=None, prediction_percentage = 0.25):
         self.source_dir = source_dir
         self.transform = transform
         
@@ -80,7 +81,7 @@ class ImageTimeSeriesDatasetSingleFolder(Dataset):
         if not self.filenames:
             raise FileNotFoundError(f"No PNG image files found in {source_dir}.")
         
-        self.overlap = overlap
+        self.prediction_percentage = prediction_percentage
 
     def __len__(self):
         return len(self.filenames)
@@ -101,8 +102,8 @@ class ImageTimeSeriesDatasetSingleFolder(Dataset):
         _, _, width = full_tensor.shape
 
         # get indices for the slicing
-        target_start = int(0.5*(1 - self.overlap) * width)
-        input_end   = int(0.5*(1 + self.overlap) * width)
+        target_start = int(self.prediction_percentage * width)
+        input_end   = int((1 - self.prediction_percentage) * width)
 
         # slice input and target
         input_tensor  = full_tensor[:, :, :input_end]
@@ -111,8 +112,7 @@ class ImageTimeSeriesDatasetSingleFolder(Dataset):
         return input_tensor, target_tensor
 
 
-
-class VisualAE_variablesize(nn.Module):
+class VisualAE(pl.LightningModule):
     """
     A fully convolutional Autoencoder designed to handle variable input image sizes.
     It encodes the input image into a feature map and then decodes it back.
@@ -121,7 +121,8 @@ class VisualAE_variablesize(nn.Module):
     """
     def __init__(self):
         # No embedding_dim needed here as the bottleneck is a feature map
-        super(VisualAE_variablesize, self).__init__()
+        super().__init__()
+        self.save_hyperparameters()
 
         # --- Encoder ---
         # Takes variable size [B, 1, H, W] input
@@ -163,12 +164,10 @@ class VisualAE_variablesize(nn.Module):
         )
 
     def encode(self, x):
-        
         embedding_map = self.encoder_conv(x)
         return embedding_map
 
     def decode(self, embedding_map):
-        
         reconstruction = self.decoder_conv(embedding_map)
         return reconstruction
 
@@ -177,38 +176,59 @@ class VisualAE_variablesize(nn.Module):
         reconstruction = self.decode(embedding_map)
         return reconstruction
     
+def initialize_dataset(source_dir, transform=None, overlap=0.5):
+    """
+    Initialize the dataset with the specified source directory and transformations.
+    
+    :param source_dir: Directory containing the images.
+    :param transform: Transformations to apply to the images.
+    :return: Initialized dataset.
+    """
+    try:
+        dataset = ImageTimeSeriesDatasetSingleFolder(source_dir=source_dir, transform=transform, overlap=overlap)
+        print(f"Dataset initialized with {len(dataset)} images.")
+        return dataset
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+        raise
+    except Exception as e:
+        print(f"An error occurred during dataset initialization: {e}")
+        raise
+
+def initialize_dataloader(dataset, batch_size=BATCH_SIZE, shuffle=True):
+    """
+    Initialize the DataLoader with the specified dataset and parameters.
+    
+    :param dataset: The dataset to load.
+    :param batch_size: Size of each batch.
+    :param shuffle: Whether to shuffle the data.
+    :return: Initialized DataLoader.
+    """
+    try:
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+        print(f"DataLoader initialized with {len(dataloader)} batches.")
+        return dataloader
+    except Exception as e:
+        print(f"An error occurred during DataLoader initialization: {e}")
+        raise
+
+
+
+
+
 
 if __name__ == "__main__":
     device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
     print(f"Using device: {device}")
 
-    transform = None  # or transforms.Compose([...]) if desired
-    dataset = ImageTimeSeriesDatasetSingleFolder(SOURCE_IMAGE_FOLDER, transform=transform, overlap=0.4)
-
-    # Use the pad_collate_fn here
-    dataloader = DataLoader(
-        dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True,
-    )
-    print("DataLoader initialized.")
-
-        # --- Initialize dataset ---
-    try:
-        dataset = ImageTimeSeriesDatasetSingleFolder(source_dir=SOURCE_IMAGE_FOLDER)
-        print(f"Dataset initialized with {len(dataset)} images.")
-    except FileNotFoundError as e:
-        print(f"Error: {e}")
-        print("Please ensure the SOURCE_IMAGE_FOLDER path is correct.")
-        exit()
-    except Exception as e:
-        print(f"An error occurred during dataset initialization: {e}")
-        exit()
+    dataset = initialize_dataset(SOURCE_IMAGE_FOLDER, overlap=0.4)
+    dataloader = initialize_dataloader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     # --- Initialize model, optimizer, and loss function ---
-    model = VisualAE_variablesize().to(device)
+    model = VisualAE().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = ImageColumnKLDivLoss().to(device) 
+
 
     # --- Training Loop ---
     print("Starting training...")
@@ -326,4 +346,3 @@ if __name__ == "__main__":
                 print(traceback.format_exc())
     else:
         print("Dataset is empty, skipping visualization.")
-    ')
