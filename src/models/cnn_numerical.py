@@ -1,11 +1,14 @@
-import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, Flatten, Dense
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from models.cnn_numerical.cnn_numerical_utils import load_and_prepare_data
-from visualization.utils_visualization import plot_actual_vs_predicted
 import os
+
+import numpy as np
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.layers import Conv1D, Dense, Flatten
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
+
+from models.utils_models import load_and_prepare_data
+from visualization.utils_visualization import plot_actual_vs_predicted
+
 
 class CNNModel:
     def __init__(self, input_shape, output_steps, learning_rate=0.001):

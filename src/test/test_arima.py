@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from data.data_loader import extract_series_from_parquet
+from models.utils_models import extract_series_from_parquet
 from models.arima import AutoARIMA
 from visualization.utils_visualization import plot_actual_vs_predicted
 
