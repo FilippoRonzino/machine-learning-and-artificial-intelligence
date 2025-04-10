@@ -1,9 +1,8 @@
+from collections import Counter
+from itertools import permutations
+
 import numpy as np
 from PIL import Image, ImageDraw
-from itertools import permutations
-from collections import Counter
-
-
 
 def weighted_permutation_entropy(time_series, order:int=3, delay:int=1) -> float:
     """
@@ -14,21 +13,11 @@ def weighted_permutation_entropy(time_series, order:int=3, delay:int=1) -> float
     the concept of permutation entropy by weighting each permutation pattern with the 
     variance of the values forming that pattern.
     
-    Parameters:
-    -----------
-    time_series : array-like
-        The input time series data.
-    order : int, default=3
-        The order of permutation entropy (embedding dimension). This determines the 
-        length of patterns to search for in the time series.
-    delay : int, default=1
-        The delay between points in the time series when forming patterns (embedding delay).
-    
-    Returns:
-    --------
-    float
-        The weighted permutation entropy value. Higher values indicate more complexity
-        and randomness, while lower values suggest more regularity and predictability.
+    :param time_series: input time series data
+    :param order: The order of permutation entropy (embedding dimension). 
+                  This determines the length of patterns to search for in the time series.
+    :param delay: The delay between points in the time series when forming patterns
+    :return: The weighted permutation entropy value. Higher values indicate more complexity
     """
     if not hasattr(time_series, '__iter__'):
         raise ValueError("Input time_series must be an iterable (e.g., list, numpy array).")
@@ -65,7 +54,7 @@ def weighted_permutation_entropy(time_series, order:int=3, delay:int=1) -> float
     return wpe / np.log2(len(permutations_list)) # normalize by the number of permutations
 
 def wpe_row(row):
-    '''
+    """
     Compute the weighted permutation entropy for a row of data.
-    '''
+    """
     return weighted_permutation_entropy(row, order=3, delay=1)
