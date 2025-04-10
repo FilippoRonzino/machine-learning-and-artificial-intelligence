@@ -6,17 +6,17 @@ from models.arima import AutoARIMA
 from visualization.utils_visualization import plot_actual_vs_predicted
 
 
-def test_arima_on_dataset(data_path, dataset_name, column_index=0, seasonal=False):
+def test_arima_on_dataset(data_path, dataset_name, row_index=0, seasonal=False):
     """
     Test AutoARIMA on the given dataset and plot the results
     
     :param data_path: Path to the dataset
     :param dataset_name: Name of the dataset for logging
-    :column_index: Index of the column to use for time series
+    :row_index: Index of the row to use for time series (parquet has columns timesteps)
     :param seasonal: Whether to use seasonal ARIMA
     :return: A dictionary containing model, metrics, predictions, train_data, and test_data
     """
-    data = extract_series_from_parquet(data_path, column_index)
+    data = extract_series_from_parquet(data_path, row_index)
     print(f"Using {dataset_name} data of length {len(data)}")
     
     train_size = int(len(data) * 0.8)
@@ -73,5 +73,5 @@ if __name__ == "__main__":
     sp500_results = test_arima_on_dataset(
         data_path='data/data_storage/sp500_parquets/test_sp500.parquet',
         dataset_name='S&P 500',
-        column_index=35
+        row_index=35
     )
