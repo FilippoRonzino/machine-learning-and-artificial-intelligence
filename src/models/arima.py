@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from pmdarima import auto_arima
 
-from data.data_loader import check_stationarity, extract_series_from_parquet
+from models.utils_models import check_stationarity, extract_series_from_parquet
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
