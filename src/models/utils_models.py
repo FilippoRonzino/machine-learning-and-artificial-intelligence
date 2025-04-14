@@ -124,6 +124,23 @@ def plot_predictions_visual_model(model, dataset, n_images=5):
     plt.tight_layout()
     plt.show()
 
+def get_device():
+    """
+    Get the appropriate device for PyTorch operations.
+    
+    :return: A torch.device object representing the device to use.
+    """
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
+        print("Using MPS (Metal) device")
+    elif torch.cuda.is_available():
+        device = torch.device("cuda")
+        print("Using CUDA device")
+    else:
+        device = torch.device("cpu")
+        print("Using CPU device")
+    
+    return device
 
 if __name__ == "__main__":
     file_path = "data/data_storage/ecg_parquets/test_ecg.parquet" 
