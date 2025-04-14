@@ -1,5 +1,4 @@
 import os
-import random
 
 import matplotlib.pyplot as plt
 import pytorch_lightning as pl
@@ -11,9 +10,24 @@ from PIL import Image
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 
+from models.utils_models import plot_predictions_visual_model
+
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
+    """
+    Dataset for loading time series image data from a single folder.
+    
+    Loads images and splits them into input and target tensors where the target
+    represents the future portion of the time series.
+    """
     def __init__(self, source_dir, transform=None, prediction_percentage = 0.25):
+        """
+        Initialize the dataset.
+
+        :param source_dir: Directory containing the image files.
+        :param transform: Optional transform to be applied to the images.
+        :param prediction_percentage: Percentage of the image width to be used as the target.
+        """
         self.source_dir = source_dir
         self.transform = transform
         
@@ -28,9 +42,18 @@ class ImageTimeSeriesDatasetSingleFolder(Dataset):
         self.prediction_percentage = prediction_percentage
 
     def __len__(self):
+        """
+        :return: Number of images in the dataset.
+        """
         return len(self.filenames)
 
     def __getitem__(self, idx):
+        """
+        Load an image and split it into input and target tensors.
+
+        :param idx: Index of the image to be loaded.
+        :return: Tuple of input tensor and target tensor.
+        """
         img_name = os.path.join(self.source_dir, self.filenames[idx])
         
         original_image = Image.open(img_name).convert('L')
@@ -52,7 +75,18 @@ class ImageTimeSeriesDatasetSingleFolder(Dataset):
     
 
 class ImageColumnKLDivLoss(nn.Module):
+    """
+    KL divergence loss for comparing columns in image tensors.
+    
+    Calculates the KL divergence between corresponding columns of predicted
+    and target images, treating each column as a probability distribution.
+
+    :param epsilon: Small value to avoid numerical instability
+    """
     def __init__(self, epsilon: float = 1e-10):
+        """
+        Initialize the loss function.
+        """
         super().__init__()
         self.epsilon = epsilon
     
@@ -93,13 +127,32 @@ class ImageColumnKLDivLoss(nn.Module):
         return loss
 
 class CNN_Autoencoder(pl.LightningModule):
+    """
+    CNN-based autoencoder for image time series prediction.
+    
+    Implements an encoder-decoder architecture using convolutional and
+    transposed convolutional layers for predicting future frames of time series data.
+    """
     def __init__(self, input_chanel, chanel_list, activation_fn, batchnorm, pool_type, dropoutrate, kernel_size, padding, stride, lr):
+        """
+        Initialize the autoencoder.
+
+        :param input_chanel: Number of input channels (e.g., 1 for grayscale images).
+        :param chanel_list: List of output channels for each encoder layer.
+        :param activation_fn: Activation function to be used in the layers.
+        :param batchnorm: Boolean indicating whether to use batch normalization.
+        :param pool_type: Type of pooling layer to be used ("max" or "avg").
+        :param dropoutrate: Dropout rate to be used in the layers.
+        :param kernel_size: Size of the convolutional kernels.
+        :param padding: Padding to be used in the convolutional layers.
+        :param stride: Stride to be used in the convolutional layers.
+        :param lr: Learning rate for the optimizer.
+        """
         super().__init__()
         self.save_hyperparameters()
         self.lr = lr
 
         # ENCODER 
-
         encoder_layers = []
         in_channels = input_chanel
         for out_channels in chanel_list:
@@ -126,7 +179,6 @@ class CNN_Autoencoder(pl.LightningModule):
         # The last layer of the encoder is the first layer of the decoder.
         # The first layer of the encoder is the last layer of the decoder.
         # So we need to reverse the channels list.
-
         decoder_layers = []
         chanel_list_rev = list(reversed(chanel_list))
         for i in range(len(chanel_list_rev) - 1):
@@ -152,13 +204,20 @@ class CNN_Autoencoder(pl.LightningModule):
         decoder_layers.append(nn.Sigmoid())
         self.decoder = nn.Sequential(*decoder_layers)
 
-
     def forward(self, x):
+        """
+        :param x: Input tensor of shape (batch_size, input_channels, height, width)
+        :return: Reconstructed tensor of shape (batch_size, input_channels, height, width)
+        """
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded
     
     def training_step(self, batch):
+        """
+        :param batch: Tuple of input tensor and target tensor.
+        :return: Loss value for the training step.
+        """
         x, y = batch
         y_hat = self(x) 
 
@@ -169,6 +228,10 @@ class CNN_Autoencoder(pl.LightningModule):
         return loss
     
     def validation_step(self, batch):
+        """
+        :param batch: Tuple of input tensor and target tensor.
+        :return: Loss value for the validation step.
+        """
         x, y = batch
         y_hat = self(x)
         
@@ -179,15 +242,28 @@ class CNN_Autoencoder(pl.LightningModule):
         return loss
     
     def configure_optimizers(self):
+        """
+        Congigure the optimizer for the model.
+        
+        :return: Adam optimizer with the specified learning rate.
+        """
         return Adam(self.parameters(), lr = self.lr) 
 
 
 class LossTrackerCallback(pl.Callback):
+    """
+    Callback to track and visualize training and validation losses.
+    """
     def __init__(self):
         self.train_losses = []
         self.val_losses = []
 
-    def on_validation_epoch_end(self, trainer, pl_module):
+    def on_validation_epoch_end(self, trainer):
+        """
+        Callback triggered at the end of each validation epoch.
+
+        :param trainer: The trainer instance.
+        """
         val_loss = trainer.callback_metrics.get("val_loss")
         train_loss = trainer.callback_metrics.get("train_loss")
         if train_loss is not None:
@@ -196,6 +272,9 @@ class LossTrackerCallback(pl.Callback):
             self.val_losses.append(val_loss.cpu().item())
 
     def plot_losses(self):
+        """
+        Plot training and validation losses over epochs.
+        """
         plt.figure(figsize=(8, 5))
         plt.plot(self.train_losses, label="Training Loss")
         plt.plot(self.val_losses, label="Validation Loss")
@@ -208,35 +287,6 @@ class LossTrackerCallback(pl.Callback):
         plt.show()
 
 
-def visualize_predictions(model, dataset, n_images=5):
-    model.eval()
-    indices = random.sample(range(len(dataset)), n_images)
-    fig, axes = plt.subplots(n_images, 3, figsize=(12, 3 * n_images))
-
-    for i, idx in enumerate(indices):
-        input_tensor, target_tensor = dataset[idx]
-        input_tensor = input_tensor.unsqueeze(0)
-        with torch.no_grad():
-            reconstructed = model(input_tensor.to(model.device)).cpu().squeeze()
-
-        input_image = input_tensor.squeeze().numpy()
-        target_image = target_tensor.squeeze().numpy()
-        recon_image = reconstructed.numpy()
-
-        axes[i, 0].imshow(input_image, cmap="gray")
-        axes[i, 0].set_title("Input")
-        axes[i, 1].imshow(target_image, cmap="gray")
-        axes[i, 1].set_title("Expected Output")
-        axes[i, 2].imshow(recon_image, cmap="gray")
-        axes[i, 2].set_title("Reconstructed Output")
-
-        for j in range(3):
-            axes[i, j].axis("off")
-
-    plt.tight_layout()
-    plt.show()
-
-
 if __name__ == "__main__":
     if torch.backends.mps.is_available():
         device = torch.device("mps")
@@ -247,7 +297,6 @@ if __name__ == "__main__":
     else:
         device = torch.device("cpu")
         print("Using CPU device")
-
 
     data_dir = "data/images/harmonic/test"
     valid_dir = "data/images/harmonic/val"
@@ -285,6 +334,6 @@ if __name__ == "__main__":
 
     loss_tracker.plot_losses()
 
-    visualize_predictions(model, dataset)
-    visualize_predictions(model, validation_data)
+    plot_predictions_visual_model(model, dataset)
+    plot_predictions_visual_model(model, validation_data)
 
