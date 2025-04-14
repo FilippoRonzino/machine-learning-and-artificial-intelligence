@@ -11,7 +11,8 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from models.utils_models import get_device, plot_predictions_visual_model
+from models.utils_models import get_device
+from visualization.utils_visualization import plot_predictions_visual_model
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
