@@ -61,16 +61,16 @@ def check_stationarity(series):
     
     return is_stationary, p_value, suggested_d
 
-def prepare_data(series, prediction_percentage=25):
+def prepare_data(series, prediction_percentage=0.25):
     total_steps = len(series)
-    input_steps = int(total_steps * ((100 - prediction_percentage) / 100))
+    input_steps = int(total_steps * (1 - prediction_percentage))
 
     X = series[:input_steps].reshape((1, input_steps, 1))
     y = series[-input_steps:].reshape((1, input_steps))  
 
     return X, y
 
-def load_and_prepare_data(file_path, prediction_percentage=25):
+def load_and_prepare_data(file_path, prediction_percentage=0.25):
     df = load_time_series_parquet(file_path)
     if df is None:
         raise ValueError(f"Failed to load data from {file_path}")
@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
     print(f"Is the time series stationary? {'Yes' if is_stationary else 'No'}")
 
-    prediction_percentage = 25
+    prediction_percentage = 0.25
 
     X, y = load_and_prepare_data(file_path, prediction_percentage)
     print("X shape:", X[0].shape)
