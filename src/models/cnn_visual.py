@@ -8,11 +8,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
 from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset
-from pytorch_lightning.callbacks import ModelCheckpoint
-
-from models.utils_models import get_device
-
+from torch.utils.data import Dataset
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
@@ -382,28 +378,3 @@ class LossTrackerCallback(pl.Callback):
     # print("Generating predictions visualization...")
     # # plot_predictions_visual_model(model, dataset)
     # # plot_predictions_visual_model(model, validation_data)
-
-if __name__ == "__main__":
-    # Example usage
-    data_dir = "data/images/harmonic/test"
-    dataset = ImageTimeSeriesDatasetSingleFolder(data_dir, prediction_percentage=0.25)
-    
-    # Print the shape of the first sample
-    input_tensor, target_tensor = dataset[0]
-    print("Input tensor shape:", input_tensor.shape)
-    print("Target tensor shape:", target_tensor.shape)
-    
-    # Visualize the first sample in one figure
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-    
-    ax1.imshow(input_tensor.squeeze(0), cmap='gray')
-    ax1.set_title("Input Tensor")
-    
-    ax2.imshow(target_tensor.squeeze(0), cmap='gray')
-    ax2.set_title("Target Tensor")
-    
-    plt.tight_layout()
-    plt.show()
-
-    # compute the KL divergence loss between two tensors
-    loss_instance = ImageColumnKLDivLoss()
