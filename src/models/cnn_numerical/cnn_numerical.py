@@ -1,5 +1,5 @@
-from models.utils_models import load_and_prepare_data
-from visualization.utils_visualization import plot_actual_vs_predicted
+from models.utils_models import load_and_prepare_data, get_device
+from visualization.utils_visualization import plot_model_predictions
 import pytorch_lightning as pl 
 import torch
 import torch.nn as nn
@@ -28,7 +28,7 @@ INPUT_FEATURES = 1
 OUTPUT_FEATURES = 1        
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
-MAX_EPOCHS = 2
+MAX_EPOCHS = 1
 
 # CNN parameters
 CNN_LAYERS = 3              # Number of convolutional layers
@@ -120,7 +120,7 @@ class CNNTimeSeriesPredictor(pl.LightningModule):
             raise RuntimeError(f"Shape mismatch for loss: y_hat_relevant={y_hat.shape}, y_relevant={y.shape}")
         
         loss = F.mse_loss(y_hat, y)
-        self.log("train_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+        self.log("val_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
         return loss
 
     def configure_optimizers(self):
@@ -155,8 +155,13 @@ class LossTrackerCallback(pl.Callback):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+    
+
 
 if __name__ == "__main__":
+    
+    device = get_device()
+
     model = CNNTimeSeriesPredictor(
         input_features=INPUT_FEATURES,
         input_seq_len=INPUT_SEQUENCE_LENGTH,
@@ -170,12 +175,14 @@ if __name__ == "__main__":
         lr=LEARNING_RATE
     )
 
+    model = model.to(device)
+
     base_dir = "/Users/giuseppeiannone/machine-learning-and-artificial-intelligence"
     file_path_train = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "train_harmonic.parquet")
     file_path_test = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "test_harmonic.parquet")
 
-    X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=25)
-    X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=25)
+    X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
+    X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
 
     print("X_train sample shape:", X_train[0].shape)
     print("y_train sample shape:", y_train[0].shape)
@@ -194,7 +201,7 @@ if __name__ == "__main__":
         max_epochs=MAX_EPOCHS,
         enable_checkpointing=False,
         logger=False,
-        accelerator="gpu" if torch.cuda.is_available() else "cpu",
+        accelerator="auto",
         callbacks=[loss_tracker],
         #num_sanity_val_steps=0
     )
@@ -206,32 +213,4 @@ if __name__ == "__main__":
     print("Plotting losses...")
     loss_tracker.plot_losses()
 
-    # --- Example Prediction (Adjusted Plotting) TO  CHANGE ---
-    print("\n--- Example Prediction ---")
-    model.eval().to('cpu')  # Set model to evaluation mode on CPU
-
-    sample_idx = 0
-    x_sample, y_sample = val_dataset[sample_idx]  # x_sample: [60, F], y_sample: [60, F]
-    x_sample_batch = x_sample.unsqueeze(0)         # Add batch dimension: [1, 60, F]
-
-    # Run inference in no_grad mode
-    with torch.no_grad():
-        y_pred_full = model(x_sample_batch)  # y_pred_full: [1, 60, F]
-
-    # Extract the future predictions and true future values for the last ACTUAL_PREDICTION_LENGTH steps
-    y_pred_future = y_pred_full[0, -ACTUAL_PREDICTION_LENGTH:, :]  # shape: [20, F]
-    y_true_future = y_sample[-ACTUAL_PREDICTION_LENGTH:, :]         # shape: [20, F]
-
-    # Flatten the historical input data to a 1D array
-    x_part = x_sample.flatten().cpu().numpy()
-
-    # Flatten the future true and predicted segments to 1D arrays
-    y_true_future_flat = y_true_future.flatten().cpu().numpy()
-    y_pred_future_flat = y_pred_future.flatten().cpu().numpy()
-
-    # Concatenate the historical input with the future parts to create complete timelines
-    y_true_combined = np.concatenate((x_part, y_true_future_flat))
-    y_pred_combined = np.concatenate((x_part, y_pred_future_flat))
-
-
-    plot_actual_vs_predicted(y_true_combined, y_pred_combined, 25)
+    plot_model_predictions(model, val_loader, n_plots=20)
