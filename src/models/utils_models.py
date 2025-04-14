@@ -1,3 +1,5 @@
+import random
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
@@ -86,6 +88,41 @@ def load_and_prepare_data(file_path, prediction_percentage=25):
     X_all = [torch.tensor(X).float() for X in X_all]
     y_all = [torch.tensor(y).float().unsqueeze(-1) for y in y_all]
     return X_all, y_all
+
+def plot_predictions_visual_model(model, dataset, n_images=5):
+    """
+    Plot model predictions (visual models) against ground truth.
+
+    :param model: Trained model (CNN_Autoencoder).
+    :param dataset: Dataset to visualize predictions from.
+    :param n_images: Number of images to visualize.
+    """
+    model.eval()
+    indices = random.sample(range(len(dataset)), n_images)
+    fig, axes = plt.subplots(n_images, 3, figsize=(12, 3 * n_images))
+
+    for i, idx in enumerate(indices):
+        input_tensor, target_tensor = dataset[idx]
+        input_tensor = input_tensor.unsqueeze(0)
+        with torch.no_grad():
+            reconstructed = model(input_tensor.to(model.device)).cpu().squeeze()
+
+        input_image = input_tensor.squeeze().numpy()
+        target_image = target_tensor.squeeze().numpy()
+        recon_image = reconstructed.numpy()
+
+        axes[i, 0].imshow(input_image, cmap="gray")
+        axes[i, 0].set_title("Input")
+        axes[i, 1].imshow(target_image, cmap="gray")
+        axes[i, 1].set_title("Expected Output")
+        axes[i, 2].imshow(recon_image, cmap="gray")
+        axes[i, 2].set_title("Reconstructed Output")
+
+        for j in range(3):
+            axes[i, j].axis("off")
+
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == "__main__":
