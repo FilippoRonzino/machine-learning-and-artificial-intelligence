@@ -11,7 +11,7 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from models.utils_models import plot_predictions_visual_model
+from models.utils_models import get_device, plot_predictions_visual_model
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
@@ -289,15 +289,7 @@ class LossTrackerCallback(pl.Callback):
 
 
 if __name__ == "__main__":
-    if torch.backends.mps.is_available():
-        device = torch.device("mps")
-        print("Using MPS (Metal) device")
-    elif torch.cuda.is_available():
-        device = torch.device("cuda")
-        print("Using CUDA device")
-    else:
-        device = torch.device("cpu")
-        print("Using CPU device")
+    device = get_device()
 
     data_dir = "data/images/harmonic/test"
     valid_dir = "data/images/harmonic/val"
