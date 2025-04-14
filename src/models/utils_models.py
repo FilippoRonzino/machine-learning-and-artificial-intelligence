@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import torch
 from statsmodels.tsa.stattools import adfuller
 
 def load_time_series_parquet(file_path: str) -> pd.DataFrame:
@@ -82,6 +83,8 @@ def load_and_prepare_data(file_path, prediction_percentage=25):
         y_all.append(y)
     X_all = np.concatenate(X_all, axis=0)
     y_all = np.concatenate(y_all, axis=0)
+    X_all = [torch.tensor(X).float() for X in X_all]
+    y_all = [torch.tensor(y).float().unsqueeze(-1) for y in y_all]
     return X_all, y_all
 
 
