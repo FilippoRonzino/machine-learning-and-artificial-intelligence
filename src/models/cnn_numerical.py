@@ -1,5 +1,4 @@
 from models.utils_models import load_and_prepare_data, get_device
-from visualization.utils_visualization import plot_predictions_numerical_model
 import pytorch_lightning as pl 
 import torch
 import torch.nn as nn
@@ -157,59 +156,58 @@ class LossTrackerCallback(pl.Callback):
     
 
 
-if __name__ == "__main__":
-    
-    device = get_device()
+# if __name__ == "__main__":
+    # device = get_device()
 
-    model = CNNTimeSeriesPredictor(
-        input_features=INPUT_FEATURES,
-        input_seq_len=INPUT_SEQUENCE_LENGTH,
-        output_features=OUTPUT_FEATURES,
-        model_output_seq_len=MODEL_OUTPUT_SEQUENCE_LENGTH,  
-        actual_prediction_len=ACTUAL_PREDICTION_LENGTH,     
-        cnn_layers=CNN_LAYERS,
-        kernel_size=KERNEL_SIZE,
-        base_filters=BASE_FILTERS,
-        fc_size=FC_SIZE,
-        lr=LEARNING_RATE
-    )
+    # model = CNNTimeSeriesPredictor(
+    #     input_features=INPUT_FEATURES,
+    #     input_seq_len=INPUT_SEQUENCE_LENGTH,
+    #     output_features=OUTPUT_FEATURES,
+    #     model_output_seq_len=MODEL_OUTPUT_SEQUENCE_LENGTH,  
+    #     actual_prediction_len=ACTUAL_PREDICTION_LENGTH,     
+    #     cnn_layers=CNN_LAYERS,
+    #     kernel_size=KERNEL_SIZE,
+    #     base_filters=BASE_FILTERS,
+    #     fc_size=FC_SIZE,
+    #     lr=LEARNING_RATE
+    # )
 
-    model = model.to(device)
+    # model = model.to(device)
 
-    base_dir = "/Users/giuseppeiannone/machine-learning-and-artificial-intelligence"
-    file_path_train = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "train_harmonic.parquet")
-    file_path_test = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "test_harmonic.parquet")
+    # base_dir = "/Users/giuseppeiannone/machine-learning-and-artificial-intelligence"
+    # file_path_train = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "train_harmonic.parquet")
+    # file_path_test = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "test_harmonic.parquet")
 
-    X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
-    X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
+    # X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
+    # X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
 
-    print("X_train sample shape:", X_train[0].shape)
-    print("y_train sample shape:", y_train[0].shape)
-    print(len(X_train), "samples loaded for training")
-    print(len(X_test), "samples loaded for testing")
+    # print("X_train sample shape:", X_train[0].shape)
+    # print("y_train sample shape:", y_train[0].shape)
+    # print(len(X_train), "samples loaded for training")
+    # print(len(X_test), "samples loaded for testing")
 
-    train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
-    val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
+    # train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
+    # val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=7)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, num_workers=7)
+    # train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=7)
+    # val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, num_workers=7)
 
-    print("Setting up trainer...")
-    loss_tracker = LossTrackerCallback()
-    trainer = pl.Trainer(
-        max_epochs=MAX_EPOCHS,
-        enable_checkpointing=False,
-        logger=False,
-        accelerator="auto",
-        callbacks=[loss_tracker],
-        #num_sanity_val_steps=0
-    )
+    # print("Setting up trainer...")
+    # loss_tracker = LossTrackerCallback()
+    # trainer = pl.Trainer(
+    #     max_epochs=MAX_EPOCHS,
+    #     enable_checkpointing=False,
+    #     logger=False,
+    #     accelerator="auto",
+    #     callbacks=[loss_tracker],
+    #     #num_sanity_val_steps=0
+    # )
 
-    print("Starting training...")
-    trainer.fit(model, train_loader, val_loader)
-    print("Training finished.")
+    # print("Starting training...")
+    # trainer.fit(model, train_loader, val_loader)
+    # print("Training finished.")
 
-    print("Plotting losses...")
-    loss_tracker.plot_losses()
+    # print("Plotting losses...")
+    # loss_tracker.plot_losses()
 
-    plot_predictions_numerical_model(model, val_dataset, n_plots=5)
+    # # plot_predictions_numerical_model(model, val_dataset, n_plots=5)

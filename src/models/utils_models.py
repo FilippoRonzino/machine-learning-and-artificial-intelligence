@@ -107,6 +107,15 @@ def get_device():
     
     return device
 
+def get_val_loss(filename):
+    try:
+        # Extract the value after "val_loss="
+        val_loss_str = filename.split('val_loss=')[-1].split('-')[0].split('.ckpt')[0]
+        return float(val_loss_str)
+    except (ValueError, IndexError):
+        return float('inf')  
+      
+
 if __name__ == "__main__":
     file_path = "data/data_storage/ecg_parquets/test_ecg.parquet" 
     row_index = 21 
