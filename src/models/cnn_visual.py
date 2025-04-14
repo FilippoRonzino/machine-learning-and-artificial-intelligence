@@ -8,11 +8,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
 from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset
-from pytorch_lightning.callbacks import ModelCheckpoint
-
-from models.utils_models import get_device
-from visualization.utils_visualization import plot_predictions_visual_model
+from torch.utils.data import Dataset
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
@@ -223,8 +219,10 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x) 
 
-        loss_instance = ImageColumnKLDivLoss()
-        loss = loss_instance.forward(y_hat, y)
+        # loss_instance = ImageColumnKLDivLoss()
+        # loss = loss_instance.forward(y_hat, y)
+
+        loss = F.mse_loss(y_hat, y)
         self.log("train_loss", loss, prog_bar=True)     
 
         return loss
@@ -237,8 +235,10 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         
-        loss_instance = ImageColumnKLDivLoss()
-        loss = loss_instance.forward(y_hat, y)
+        # loss_instance = ImageColumnKLDivLoss()
+        # loss = loss_instance.forward(y_hat, y)
+
+        loss = F.mse_loss(y_hat, y)
         self.log("val_loss", loss, prog_bar=True)
 
         return loss
@@ -289,96 +289,96 @@ class LossTrackerCallback(pl.Callback):
         plt.show()
 
 
-if __name__ == "__main__":
-    device = get_device()
+# if __name__ == "__main__":
+    # device = get_device()
 
-    data_dir = "data/images/harmonic/test"
-    valid_dir = "data/images/harmonic/val"
-    dataset = ImageTimeSeriesDatasetSingleFolder(data_dir, prediction_percentage=0.25)
-    validation_data = ImageTimeSeriesDatasetSingleFolder(valid_dir, prediction_percentage=0.25)
+    # data_dir = "data/images/harmonic/test"
+    # valid_dir = "data/images/harmonic/val"
+    # dataset = ImageTimeSeriesDatasetSingleFolder(data_dir, prediction_percentage=0.25)
+    # validation_data = ImageTimeSeriesDatasetSingleFolder(valid_dir, prediction_percentage=0.25)
 
-    train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(validation_data, batch_size=32)
+    # train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    # val_loader = DataLoader(validation_data, batch_size=32)
 
-    # Create specific subfolder for this model's checkpoints
-    checkpoint_dir = 'src/models/checkpoints/cnn_visual/'
-    os.makedirs(checkpoint_dir, exist_ok=True)
-    best_model_path = None
+    # # Create specific subfolder for this model's checkpoints
+    # checkpoint_dir = 'src/models/checkpoints/cnn_visual/'
+    # os.makedirs(checkpoint_dir, exist_ok=True)
+    # best_model_path = None
     
-    # Check if there are saved models
-    if os.path.exists(checkpoint_dir):
-        checkpoint_files = [f for f in os.listdir(checkpoint_dir) if f.endswith('.ckpt')]
-        if checkpoint_files:
-            # Parse validation loss from the filename using a more robust approach
-            def get_val_loss(filename):
-                try:
-                    # Extract the value after "val_loss="
-                    val_loss_str = filename.split('val_loss=')[-1].split('-')[0].split('.ckpt')[0]
-                    return float(val_loss_str)
-                except (ValueError, IndexError):
-                    return float('inf')  # Return infinity for files that don't match pattern
+    # # Check if there are saved models
+    # if os.path.exists(checkpoint_dir):
+    #     checkpoint_files = [f for f in os.listdir(checkpoint_dir) if f.endswith('.ckpt')]
+    #     if checkpoint_files:
+    #         # Parse validation loss from the filename using a more robust approach
+    #         def get_val_loss(filename):
+    #             try:
+    #                 # Extract the value after "val_loss="
+    #                 val_loss_str = filename.split('val_loss=')[-1].split('-')[0].split('.ckpt')[0]
+    #                 return float(val_loss_str)
+    #             except (ValueError, IndexError):
+    #                 return float('inf')  # Return infinity for files that don't match pattern
                 
-            # Sort by validation loss
-            checkpoint_files.sort(key=get_val_loss)
-            best_model_path = os.path.join(checkpoint_dir, checkpoint_files[0])
-            print(f"Found best model: {best_model_path}")
+    #         # Sort by validation loss
+    #         checkpoint_files.sort(key=get_val_loss)
+    #         best_model_path = os.path.join(checkpoint_dir, checkpoint_files[0])
+    #         print(f"Found best model: {best_model_path}")
 
-    # Ask user whether to train or load existing model
-    retrain = False
-    if best_model_path:
-        response = input("Best model found. Do you want to retrain? (y/n): ").lower()
-        retrain = response == 'y'
-    else:
-        raise FileNotFoundError("No existing model found. Retraining is required, please set retrain=True.")
+    # # Ask user whether to train or load existing model
+    # retrain = False
+    # if best_model_path:
+    #     response = input("Best model found. Do you want to retrain? (y/n): ").lower()
+    #     retrain = response == 'y'
+    # else:
+    #     raise FileNotFoundError("No existing model found. Retraining is required, please set retrain=True.")
 
-    if retrain:
-        print("Training new model...")
-        # Create model from scratch
-        model = CNN_Autoencoder(
-            input_chanel=1,
-            chanel_list=[32, 64, 128],
-            activation_fn=nn.ReLU,
-            batchnorm=True,  
-            pool_type="max", 
-            dropoutrate=0.2,
-            kernel_size=3,
-            padding=1,
-            stride=1,
-            lr=1e-3
-        )
+    # if retrain:
+    #     print("Training new model...")
+    #     # Create model from scratch
+    #     model = CNN_Autoencoder(
+    #         input_chanel=1,
+    #         chanel_list=[32, 64, 128],
+    #         activation_fn=nn.ReLU,
+    #         batchnorm=True,  
+    #         pool_type="max", 
+    #         dropoutrate=0.2,
+    #         kernel_size=3,
+    #         padding=1,
+    #         stride=1,
+    #         lr=1e-3
+    #     )
         
-        model = model.to(device)
+    #     model = model.to(device)
 
-        checkpoint_callback = ModelCheckpoint(
-            dirpath=checkpoint_dir,
-            filename='epoch={epoch}-val_loss={val_loss:.2f}',
-            save_top_k=3,
-            monitor='val_loss',
-            mode='min'
-        )
+    #     checkpoint_callback = ModelCheckpoint(
+    #         dirpath=checkpoint_dir,
+    #         filename='epoch={epoch}-val_loss={val_loss:.2f}',
+    #         save_top_k=3,
+    #         monitor='val_loss',
+    #         mode='min'
+    #     )
 
-        loss_tracker = LossTrackerCallback()
-        trainer = pl.Trainer(
-            max_epochs=3,
-            enable_checkpointing=True,
-            logger=False,
-            accelerator="auto",
-            callbacks=[loss_tracker, checkpoint_callback],
-        )
+    #     loss_tracker = LossTrackerCallback()
+    #     trainer = pl.Trainer(
+    #         max_epochs=3,
+    #         enable_checkpointing=True,
+    #         logger=False,
+    #         accelerator="auto",
+    #         callbacks=[loss_tracker, checkpoint_callback],
+    #     )
 
-        trainer.fit(model, train_loader, val_loader)
-        loss_tracker.plot_losses()
+    #     trainer.fit(model, train_loader, val_loader)
+    #     loss_tracker.plot_losses()
         
-        # Update best model path to the newly trained model
-        best_model_path = checkpoint_callback.best_model_path
-        print(f"New best model saved at: {best_model_path}")
-    else:
-        print(f"Loading existing model from {best_model_path}")
-        model = CNN_Autoencoder.load_from_checkpoint(best_model_path)
-        model = model.to(device)
-        model.eval()  # Set model to evaluation mode
+    #     # Update best model path to the newly trained model
+    #     best_model_path = checkpoint_callback.best_model_path
+    #     print(f"New best model saved at: {best_model_path}")
+    # else:
+    #     print(f"Loading existing model from {best_model_path}")
+    #     model = CNN_Autoencoder.load_from_checkpoint(best_model_path)
+    #     model = model.to(device)
+    #     model.eval()  # Set model to evaluation mode
 
-    # Visualize predictions with the final model
-    print("Generating predictions visualization...")
-    plot_predictions_visual_model(model, dataset)
-    plot_predictions_visual_model(model, validation_data)
+    # # Visualize predictions with the final model
+    # print("Generating predictions visualization...")
+    # # plot_predictions_visual_model(model, dataset)
+    # # plot_predictions_visual_model(model, validation_data)
