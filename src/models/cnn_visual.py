@@ -219,8 +219,10 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x) 
 
-        loss_instance = ImageColumnKLDivLoss()
-        loss = loss_instance.forward(y_hat, y)
+        # loss_instance = ImageColumnKLDivLoss()
+        # loss = loss_instance.forward(y_hat, y)
+
+        loss = F.mse_loss(y_hat, y)
         self.log("train_loss", loss, prog_bar=True)     
 
         return loss
@@ -233,8 +235,10 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         
-        loss_instance = ImageColumnKLDivLoss()
-        loss = loss_instance.forward(y_hat, y)
+        # loss_instance = ImageColumnKLDivLoss()
+        # loss = loss_instance.forward(y_hat, y)
+
+        loss = F.mse_loss(y_hat, y)
         self.log("val_loss", loss, prog_bar=True)
 
         return loss
