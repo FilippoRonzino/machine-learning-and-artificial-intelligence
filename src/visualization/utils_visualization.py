@@ -1,4 +1,7 @@
+import random
 import matplotlib.pyplot as plt
+from models.cnn_numerical import CNNTimeSeriesPredictor
+from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolder
 import numpy as np
 import torch
 
@@ -51,45 +54,92 @@ def plot_actual_vs_predicted(y_true: np.ndarray,
     
     plt.show()
 
-def plot_model_predictions(model, dataloader, n_plots=5)-> None:
+def plot_predictions_numerical_model(model: CNNTimeSeriesPredictor, 
+                                     dataset: torch.utils.data.TensorDataset, 
+                                     n_plots: int = 5) -> None:
     """
-    Plots actual vs predicted values from the model on `n_plots` random samples from the dataloader.
+    Plots actual vs predicted values from the model on `n_plots` random samples from the dataset.
     It only plots the last `actual_prediction_len` steps of the output sequence.
-    :param model: The trained model.
-    :param dataloader: DataLoader containing the data.
+    
+    :param model: The trained model (CNNTimeSeriesPredictor).
+    :param dataset: Dataset containing the data (TensorDataset).
     :param n_plots: Number of plots to generate.
     """
     model.eval()
-    count = 0
+    indices = random.sample(range(len(dataset)), n_plots)
+
+    for idx in indices:
+        x_sample, y_sample = dataset[idx]
+        x_input = x_sample.unsqueeze(0)  # Add batch dimension
+
+        with torch.no_grad():
+            y_pred_full = model(x_input.to(model.device))  # Move input to device, output is [1, T, D]
+
+        y_pred_future = y_pred_full[0, -model.actual_prediction_len:, :].cpu()
+        y_true_future = y_sample[-model.actual_prediction_len:, :].cpu()
+
+        x_part = x_sample.flatten().cpu().numpy()
+        y_true_future_flat = y_true_future.flatten().numpy()
+        y_pred_future_flat = y_pred_future.flatten().numpy()
+
+        y_true_combined = np.concatenate((x_part, y_true_future_flat))
+        y_pred_combined = np.concatenate((x_part, y_pred_future_flat))
+
+        plot_actual_vs_predicted(
+            y_true_combined,
+            y_pred_combined,
+            percentage_predicted=0.25
+        )
+
+
+def plot_predictions_visual_model(model: CNN_Autoencoder, 
+                                  dataset: ImageTimeSeriesDatasetSingleFolder, 
+                                  n_images: int = 5) -> None:
+    """
+    Plot model predictions (visual models) against ground truth.
+
+    :param model: Trained model (CNN_Autoencoder).
+    :param dataset: Dataset to visualize predictions from (ImageTimeSeriesDatasetSingleFolder).
+    :param n_images: Number of images to visualize.
+    """
+    model.eval()
+    indices = random.sample(range(len(dataset)), n_images)
+    fig, axes = plt.subplots(n_images, 3, figsize=(12, 3 * n_images))
+
+    for i, idx in enumerate(indices):
+        input_tensor, target_tensor = dataset[idx]
+        input_tensor = input_tensor.unsqueeze(0)
+        with torch.no_grad():
+            reconstructed = model(input_tensor.to(model.device)).cpu().squeeze()
+
+        input_image = input_tensor.squeeze().numpy()
+        target_image = target_tensor.squeeze().numpy()
+        recon_image = reconstructed.numpy()
+
+        axes[i, 0].imshow(input_image, cmap="gray")
+        axes[i, 0].set_title("Input")
+        axes[i, 1].imshow(target_image, cmap="gray")
+        axes[i, 1].set_title("Expected Output")
+        axes[i, 2].imshow(recon_image, cmap="gray")
+        axes[i, 2].set_title("Reconstructed Output")
+
+        for j in range(3):
+            axes[i, j].axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_predictions(model: CNNTimeSeriesPredictor | CNN_Autoencoder, 
+                     dataset: torch.utils.data.TensorDataset | ImageTimeSeriesDatasetSingleFolder, 
+                     n_plots: int = 5) -> None:
+    """
+    Plot predictions from the model on the dataset.
     
-    for batch in dataloader:
-        x_batch, y_batch = batch  
-
-        for i in range(x_batch.size(0)):
-            if count >= n_plots:
-                return
-
-            x_sample = x_batch[i]                        
-            y_sample = y_batch[i]                        
-            x_input = x_sample.unsqueeze(0)             
-
-            with torch.no_grad():
-                y_pred_full = model(x_input)             
-
-            y_pred_future = y_pred_full[0, -model.actual_prediction_len:, :]
-            y_true_future = y_sample[-model.actual_prediction_len:, :]
-
-            x_part = x_sample.flatten().cpu().numpy()
-            y_true_future_flat = y_true_future.flatten().cpu().numpy()
-            y_pred_future_flat = y_pred_future.flatten().cpu().numpy()
-            
-            y_true_combined = np.concatenate((x_part, y_true_future_flat))
-            y_pred_combined = np.concatenate((x_part, y_pred_future_flat))
-
-            plot_actual_vs_predicted(
-                y_true_combined, 
-                y_pred_combined, 
-                percentage_predicted=0.25
-            )
-
-            count += 1
+    :param model: The trained model (CNNTimeSeriesPredictor or CNN_Autoencoder).
+    :param dataset: Dataset containing the data.
+    :param n_plots: Number of plots to generate.
+    """
+    if isinstance(model, CNNTimeSeriesPredictor):
+        plot_predictions_numerical_model(model, dataset, n_plots)
+    elif isinstance(model, CNN_Autoencoder):
+        plot_predictions_visual_model(model, dataset, n_plots)

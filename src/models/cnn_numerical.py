@@ -1,5 +1,5 @@
 from models.utils_models import load_and_prepare_data, get_device
-from visualization.utils_visualization import plot_model_predictions
+from visualization.utils_visualization import plot_predictions_numerical_model
 import pytorch_lightning as pl 
 import torch
 import torch.nn as nn
@@ -8,7 +8,6 @@ from torch.optim import Adam
 from torch.utils.data import TensorDataset, DataLoader
 import os
 import matplotlib.pyplot as plt
-import numpy as np
 
 # --- Configuration ---
 TOTAL_SEQUENCE_LENGTH = 80
@@ -213,4 +212,4 @@ if __name__ == "__main__":
     print("Plotting losses...")
     loss_tracker.plot_losses()
 
-    plot_model_predictions(model, val_loader, n_plots=20)
+    plot_predictions_numerical_model(model, val_dataset, n_plots=5)
