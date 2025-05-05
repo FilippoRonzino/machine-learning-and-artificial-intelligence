@@ -22,6 +22,12 @@ class ClassInputType(Enum):
     IMAGE = "image"
     NUMERICAL = "numerical"
 
+class TrainingMode(Enum):
+    """Enum to specify the training action."""
+    RETRAIN_FROM_SCRATCH = "retrain"
+    CONTINUE_TRAINING = "continue"
+    USE_EXISTING = "use_existing"
+
 class ModelTrainer:
     """
     A class to manage the training, evaluation, and testing of DL models
@@ -64,6 +70,7 @@ class ModelTrainer:
 
         :return: Path to the best model checkpoint
         """
+        self.best_model_path = None
         if os.path.exists(self.checkpoint_dir):
             checkpoint_files = [f for f in os.listdir(self.checkpoint_dir) if f.endswith('.ckpt')]
             if checkpoint_files:                    
@@ -73,58 +80,92 @@ class ModelTrainer:
                 return self.best_model_path
         return None
     
-    def train(self, max_epochs=3, retrain=False):
+    def train(self, max_epochs=100, training_mode: TrainingMode = TrainingMode.RETRAIN_FROM_SCRATCH):
         """
         Train the model or load a pre-trained model.
         
         :param max_epochs: Maximum number of epochs for training
-        :param retrain: Whether to retrain the model or not
+        :param training_mode: Action to take (RETRAIN_FROM_SCRATCH, CONTINUE_TRAINING, USE_EXISTING)
         :return: Trained model
         """
-        if not retrain:
-            self.best_model_path = self.find_best_model()
-        
-        if retrain or self.best_model_path is None:
-            if self.best_model_path is None and not retrain:
-                print("No existing model found. Training new model...")
-            elif retrain:
-                print("Retraining model...")
-                
+        self.find_best_model()
+        model_to_train_or_load = None 
+
+        if training_mode == TrainingMode.RETRAIN_FROM_SCRATCH:
+            print("Retraining model from scratch...")
             if self.model_class is None:
                 raise ValueError("Model class must be provided for training")
-                
-            self.model = self.model_class(**self.model_params)
-            self.model = self.model.to(self.device)
-            
+            model_to_train_or_load = self.model_class(**self.model_params)
+            model_to_train_or_load = model_to_train_or_load.to(self.device)
+            # Reset best_model_path as we are starting fresh
+            self.best_model_path = None
+
+
+        elif training_mode == TrainingMode.CONTINUE_TRAINING:
+            if self.best_model_path:
+                print(f"Continuing training from existing model: {self.best_model_path}")
+                model_to_train_or_load = self.model_class.load_from_checkpoint(self.best_model_path)
+                model_to_train_or_load = model_to_train_or_load.to(self.device)
+            else:
+                print("No existing model found to continue. Training new model from scratch...")
+                if self.model_class is None:
+                    raise ValueError("Model class must be provided for training")
+                model_to_train_or_load = self.model_class(**self.model_params)
+                model_to_train_or_load = model_to_train_or_load.to(self.device)
+                training_mode = TrainingMode.RETRAIN_FROM_SCRATCH
+
+        elif training_mode == TrainingMode.USE_EXISTING:
+            if self.best_model_path:
+                print(f"Loading existing model from {self.best_model_path}")
+                model_to_train_or_load = self.model_class.load_from_checkpoint(self.best_model_path)
+                model_to_train_or_load = model_to_train_or_load.to(self.device)
+                model_to_train_or_load.eval()
+                self.model = model_to_train_or_load 
+                return self.model
+            else:
+                raise FileNotFoundError("Tried to load existing model, but no checkpoint found.")
+        
+        if training_mode == TrainingMode.RETRAIN_FROM_SCRATCH or training_mode == TrainingMode.CONTINUE_TRAINING:
+            if model_to_train_or_load is None:
+                raise RuntimeError("Model was not initialized for training.")
+
+            self.model = model_to_train_or_load
+
             checkpoint_callback = ModelCheckpoint(
                 dirpath=self.checkpoint_dir,
-                filename='epoch={epoch}-val_loss={val_loss:.2f}',
+                filename='epoch={epoch}-val_loss={val_loss:.6f}',
                 save_top_k=3,
                 monitor='val_loss',
-                mode='min'
+                mode='min',
             )
-            
+        
             loss_tracker = LossTrackerCallback()
             trainer = pl.Trainer(
                 max_epochs=max_epochs,
                 enable_checkpointing=True,
-                logger=False,
-                accelerator="auto",
+                logger=False, 
+                accelerator="auto", 
                 callbacks=[loss_tracker, checkpoint_callback],
             )
-            
+
+            print(f"Starting trainer.fit for {max_epochs} epochs...")
             trainer.fit(self.model, self.train_loader, self.test_loader)
             loss_tracker.plot_losses()
-            
-            self.best_model_path = checkpoint_callback.best_model_path
-            print(f"New best model saved at: {self.best_model_path}")
-        else:
-            print(f"Loading existing model from {self.best_model_path}")
-            self.model = self.model_class.load_from_checkpoint(self.best_model_path)
-            self.model = self.model.to(self.device)
-            self.model.eval()  
-            
+
+            if hasattr(checkpoint_callback, 'best_model_path') and checkpoint_callback.best_model_path:
+                self.best_model_path = checkpoint_callback.best_model_path
+                print(f"Training finished. Best model saved at: {self.best_model_path}")
+            else:
+                print("Training finished, but couldn't find best_model_path from callback.")
+                self.find_best_model()
+
+
+        elif self.model is None:
+            raise RuntimeError("Model training/loading process failed.")
+
+        self.model.eval() 
         return self.model
+
     
     def evaluate(self, test_datasets, plot_function=plot_predictions):
         """
@@ -140,19 +181,30 @@ class ModelTrainer:
         for dataset in test_datasets:
             plot_function(self.model, dataset)
     
-    def ask_retrain(self):
+    def ask_retrain(self) -> TrainingMode:
         """
-        Ask user whether to retrain or use an existing model.
-        
-        :return: True if user wants to retrain, False otherwise
-        """
-        if self.find_best_model():
-            response = input(f"Best model found for {self.model_name}. Do you want to retrain? (y/n): ").lower()
-            return response == 'y'
-        else:
-            print("No existing model found. Will train new model.")
-            return True
+        Ask user whether to retrain, continue training, or use an existing model.
 
+        :return: TrainingMode enum indicating user's choice
+        """
+        if self.find_best_model(): 
+            while True: 
+                response = input(
+                    f"Best model found for {self.model_name} ({os.path.basename(self.best_model_path)}).\n"
+                    "Options: (r)etrain from scratch, (c)ontinue training, (u)se existing? [u]: "
+                ).lower().strip()
+
+                if response == 'r':
+                    return TrainingMode.RETRAIN_FROM_SCRATCH
+                elif response == 'c':
+                    return TrainingMode.CONTINUE_TRAINING
+                elif response == 'u' or response == '': 
+                    return TrainingMode.USE_EXISTING
+                else:
+                    print("Invalid input. Please enter 'r', 'c', or 'u'.")
+        else:
+            print("No existing model found. Will train new model from scratch.")
+            return TrainingMode.RETRAIN_FROM_SCRATCH
 
 def train_and_evaluate_model(
     model_name: str,
@@ -162,7 +214,7 @@ def train_and_evaluate_model(
     data_path: Union[str, dict],
     prediction_percentage: float = 0.25,
     batch_size: int = 32,
-    max_epochs: int = 3,
+    max_epochs: int = 100,
     force_retrain: bool = False,
     n_plots: int = 5
 ):
@@ -260,7 +312,7 @@ if __name__ == "__main__":
         input_type=ClassInputType.IMAGE,
         data_path=image_data_paths,
         prediction_percentage=0.25,
-        max_epochs=3
+        max_epochs=100
     )
     
     # Example for CNN_Numerical model
@@ -294,7 +346,7 @@ if __name__ == "__main__":
         input_type=ClassInputType.NUMERICAL,
         data_path=numerical_data_paths,
         prediction_percentage=0.25,
-        max_epochs=3,
+        max_epochs=100,
         batch_size=32
     )
     
