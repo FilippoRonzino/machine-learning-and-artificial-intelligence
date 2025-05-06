@@ -1,0 +1,2 @@
+val_loss,timestamp,checkpoint_dir_name,done,training_iteration,trial_id,date,time_this_iter_s,time_total_s,pid,hostname,node_ip,time_since_restore,iterations_since_restore
+0.3951190114021301,1746527761,,False,1,dc0a7_00000,2025-05-06_12-36-01,15.693472862243652,15.693472862243652,24360,MacBook-Pro-di-Filippo-2.local,127.0.0.1,15.693472862243652,1
