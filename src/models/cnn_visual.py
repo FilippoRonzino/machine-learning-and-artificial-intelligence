@@ -166,8 +166,8 @@ class CNN_Autoencoder(pl.LightningModule):
                 pass
             else:
                 raise ValueError("pool_type must be 'max', 'avg', or 'none'.")
-            # if dropoutrate > 0:
-                # encoder_layers.append(nn.Dropout2d(dropoutrate))
+            if dropoutrate > 0:
+                encoder_layers.append(nn.Dropout2d(dropoutrate))
 
             encoder_layers.append(activation_fn())
             in_channels = out_channels
@@ -193,8 +193,8 @@ class CNN_Autoencoder(pl.LightningModule):
             if batchnorm:
                 decoder_layers.append(nn.BatchNorm2d(chanel_list_rev[i+1]))
 
-            # if dropoutrate > 0:
-                # decoder_layers.append(nn.Dropout2d(dropoutrate))
+            if dropoutrate > 0:
+                decoder_layers.append(nn.Dropout2d(dropoutrate))
             
             decoder_layers.append(activation_fn())
         # TODO: Last layer project back to original number of input channels
