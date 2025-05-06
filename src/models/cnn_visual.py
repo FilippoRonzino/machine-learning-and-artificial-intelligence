@@ -162,8 +162,12 @@ class CNN_Autoencoder(pl.LightningModule):
                 encoder_layers.append(nn.MaxPool2d(kernel_size, stride, padding))
             elif pool_type == "avg":
                 encoder_layers.append(nn.AvgPool2d(kernel_size, stride, padding))
-            # if dropoutrate > 0:
-                # encoder_layers.append(nn.Dropout2d(dropoutrate))
+            elif pool_type == "none":
+                pass
+            else:
+                raise ValueError("pool_type must be 'max', 'avg', or 'none'.")
+            if dropoutrate > 0:
+                encoder_layers.append(nn.Dropout2d(dropoutrate))
 
             encoder_layers.append(activation_fn())
             in_channels = out_channels
@@ -189,8 +193,8 @@ class CNN_Autoencoder(pl.LightningModule):
             if batchnorm:
                 decoder_layers.append(nn.BatchNorm2d(chanel_list_rev[i+1]))
 
-            # if dropoutrate > 0:
-                # decoder_layers.append(nn.Dropout2d(dropoutrate))
+            if dropoutrate > 0:
+                decoder_layers.append(nn.Dropout2d(dropoutrate))
             
             decoder_layers.append(activation_fn())
         # TODO: Last layer project back to original number of input channels
@@ -219,10 +223,9 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x) 
 
-        # loss_instance = ImageColumnKLDivLoss()
-        # loss = loss_instance.forward(y_hat, y)
+        loss_instance = ImageColumnKLDivLoss()
+        loss = loss_instance.forward(y_hat, y)
 
-        loss = F.mse_loss(y_hat, y)
         self.log("train_loss", loss, prog_bar=True)     
 
         return loss
@@ -235,10 +238,9 @@ class CNN_Autoencoder(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         
-        # loss_instance = ImageColumnKLDivLoss()
-        # loss = loss_instance.forward(y_hat, y)
+        loss_instance = ImageColumnKLDivLoss()
+        loss = loss_instance.forward(y_hat, y)
 
-        loss = F.mse_loss(y_hat, y)
         self.log("val_loss", loss, prog_bar=True)
 
         return loss
