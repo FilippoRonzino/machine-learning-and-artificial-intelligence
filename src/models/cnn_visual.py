@@ -162,6 +162,10 @@ class CNN_Autoencoder(pl.LightningModule):
                 encoder_layers.append(nn.MaxPool2d(kernel_size, stride, padding))
             elif pool_type == "avg":
                 encoder_layers.append(nn.AvgPool2d(kernel_size, stride, padding))
+            elif pool_type == "none":
+                pass
+            else:
+                raise ValueError("pool_type must be 'max', 'avg', or 'none'.")
             # if dropoutrate > 0:
                 # encoder_layers.append(nn.Dropout2d(dropoutrate))
 
