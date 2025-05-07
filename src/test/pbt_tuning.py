@@ -283,13 +283,13 @@ def run_numerical():
 
 
 if __name__ == "__main__":
-    # print("Running PBT tuning for numerical datasets...")
-    # numerical_df = run_numerical()
+    print("Running PBT tuning for numerical datasets...")
+    numerical_df = run_numerical()
     
     print("\nRunning PBT tuning for visual datasets...")
     visual_df = run_visual()
     
-    # combined_df = pd.concat([numerical_df, visual_df], ignore_index=True)
+    combined_df = pd.concat([numerical_df, visual_df], ignore_index=True)
     
-    # combined_df.to_parquet(os.path.join(PROJECT_ROOT, "src/test/pbt_results.parquet"), index=False)
-    # print(f"Results saved to {os.path.join(PROJECT_ROOT, 'src/test/pbt_results.parquet')}")
+    combined_df.to_parquet(os.path.join(PROJECT_ROOT, "src/test/pbt_results.parquet"), index=False)
+    print(f"Results saved to {os.path.join(PROJECT_ROOT, 'src/test/pbt_results.parquet')}")
