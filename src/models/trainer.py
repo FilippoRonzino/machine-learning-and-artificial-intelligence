@@ -4,7 +4,7 @@ from typing import Type, Union
 
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from torch.utils.data import DataLoader
 
 from models.cnn_numerical import CNNTimeSeriesPredictor
@@ -16,6 +16,21 @@ from models.cnn_visual import (
 from models.utils_models import get_device, get_val_loss, load_and_prepare_data
 from visualization.utils_visualization import plot_predictions
 
+from pytorch_lightning.loggers import TensorBoardLogger
+
+
+
+
+# use: run in terminal: tensorboard --logdir lightning_logs
+class LoggingCallback(pl.Callback):
+    def on_validation_epoch_end(self, trainer, pl_module):
+        logs = trainer.callback_metrics
+        epoch = trainer.current_epoch
+        print(f"Epoch {epoch} | val_loss: {logs['val_loss']:.4f} | train_loss: {logs['train_loss']:.4f}")
+        
+        # Save to CSV or other format if needed
+        with open('training_log.csv', 'a') as f:
+            f.write(f"{epoch},{logs['train_loss']:.6f},{logs['val_loss']:.6f}\n")
 
 class ClassInputType(Enum):
     """Enum to specify input data type for models."""
@@ -77,6 +92,10 @@ class ModelTrainer:
                 checkpoint_files.sort(key=get_val_loss)
                 self.best_model_path = os.path.join(self.checkpoint_dir, checkpoint_files[0])
                 print(f"Found best model: {self.best_model_path}")
+                # delete all other checkpoints
+                for f in checkpoint_files[3:]:
+                    os.remove(os.path.join(self.checkpoint_dir, f))
+                print(f"Deleted other checkpoints in {self.checkpoint_dir}")
                 return self.best_model_path
         return None
     
@@ -99,6 +118,7 @@ class ModelTrainer:
             model_to_train_or_load = model_to_train_or_load.to(self.device)
             # Reset best_model_path as we are starting fresh
             self.best_model_path = None
+            last_epoch = -1
 
 
         elif training_mode == TrainingMode.CONTINUE_TRAINING:
@@ -106,6 +126,13 @@ class ModelTrainer:
                 print(f"Continuing training from existing model: {self.best_model_path}")
                 model_to_train_or_load = self.model_class.load_from_checkpoint(self.best_model_path)
                 model_to_train_or_load = model_to_train_or_load.to(self.device)
+                # Extract the last epoch number from checkpoint filename
+                try:
+                    last_epoch = int(os.path.basename(self.best_model_path).split('epoch=')[2].split('-')[0])
+                    print(f"Resuming from epoch {last_epoch}")
+                except (IndexError, ValueError):
+                    print("Could not determine last epoch from filename")
+                    last_epoch = -1
             else:
                 print("No existing model found to continue. Training new model from scratch...")
                 if self.model_class is None:
@@ -131,6 +158,7 @@ class ModelTrainer:
 
             self.model = model_to_train_or_load
 
+            # Create the checkpoint callback as usual
             checkpoint_callback = ModelCheckpoint(
                 dirpath=self.checkpoint_dir,
                 filename='epoch={epoch}-val_loss={val_loss:.6f}',
@@ -138,18 +166,34 @@ class ModelTrainer:
                 monitor='val_loss',
                 mode='min',
             )
-        
-            loss_tracker = LossTrackerCallback()
-            trainer = pl.Trainer(
-                max_epochs=max_epochs,
-                enable_checkpointing=True,
-                logger=False, 
-                accelerator="auto", 
-                callbacks=[loss_tracker, checkpoint_callback],
+
+            # Create an early stopping callback
+            early_stopping_callback = EarlyStopping(
+                monitor='val_loss',
+                patience=10,
+                min_delta=0.1,
+                mode='min',
+                verbose=True
             )
 
+            loss_tracker = LossTrackerCallback()
+
+            logger = TensorBoardLogger("lightning_logs", name=self.model_name)
+
+
+            trainer = pl.Trainer(
+                max_epochs=max_epochs + last_epoch,
+                enable_checkpointing=True,
+                logger=logger, 
+                accelerator="auto", 
+                callbacks=[loss_tracker, checkpoint_callback, early_stopping_callback],
+            )
+            # Set the current epoch to the last epoch
+            trainer.fit_loop.epoch_progress.current.increment_by(last_epoch+1)
+
             print(f"Starting trainer.fit for {max_epochs} epochs...")
-            trainer.fit(self.model, self.train_loader, self.test_loader)
+
+            trainer.fit(self.model, self.train_loader, self.test_loader, ckpt_path=self.best_model_path)
             loss_tracker.plot_losses()
 
             if hasattr(checkpoint_callback, 'best_model_path') and checkpoint_callback.best_model_path:
@@ -233,6 +277,7 @@ def train_and_evaluate_model(
     :param n_plots: Number of plots to generate for evaluation
     :return: Trained model
     """
+
     if input_type == ClassInputType.IMAGE:
         if not isinstance(data_path, dict) or 'train' not in data_path or 'test' not in data_path:
             raise ValueError("For image data, data_path must be a dictionary with 'train' and 'test' keys")
@@ -282,25 +327,27 @@ def train_and_evaluate_model(
 
 
 if __name__ == "__main__":
+    
+
     # Example for CNN_Visual model
     print("====== CNN Visual Model Example ======")
     # Define model parameters for visual model
     cnn_visual_params = {
         "input_chanel": 1,
-        "chanel_list": [32, 64, 128],
+        "chanel_list": [32, 64],
         "activation_fn": torch.nn.ReLU,
         "batchnorm": True,
         "pool_type": "max",
         "dropoutrate": 0.2,
-        "kernel_size": 3,
-        "padding": 1,
+        "kernel_size": 5,
+        "padding": 2,
         "stride": 1,
         "lr": 1e-3
     }
     
     # Define data paths for image data
     image_data_paths = {
-        "train": "data/images/harmonic/test",
+        "train": "data/images/harmonic/train",
         "test": "data/images/harmonic/val"
     }
     
@@ -335,7 +382,7 @@ if __name__ == "__main__":
     # Define data paths for numerical data
     numerical_data_paths = {
         "train": "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet",
-        "test": "data/data_storage/harmonic_ou_parquets/test_harmonic.parquet"
+        "test": "data/data_storage/harmonic_ou_parquets/val_harmonic.parquet"
     }
     
     # Train and evaluate numerical model

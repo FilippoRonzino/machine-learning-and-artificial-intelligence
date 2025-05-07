@@ -9,3 +9,5 @@ tqdm>=4.62
 torchvision
 statsmodels
 pyarrow
+tensorboard>=2.19.0
+tensorflow>=2.19.0
