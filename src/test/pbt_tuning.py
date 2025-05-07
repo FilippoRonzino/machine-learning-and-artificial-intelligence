@@ -33,10 +33,10 @@ class PBTHyperparameterTuning:
         self.gpus_per_trial = gpus_per_trial if torch.cuda.is_available() else 0
         if gpus_per_trial > 0 and not torch.cuda.is_available():
             print("WARNING: GPU requested but not available. Using CPU instead.")
-        self.checkpoint_dir = os.path.abspath(f'src/test/pbt_checkpoints/{model_name}/')
+        self.checkpoint_dir = os.path.abspath(f'pbt_checkpoints/{model_name}/')
         os.makedirs(self.checkpoint_dir, exist_ok=True)
         self.param_space = self._get_param_space()
-
+    
     def _get_param_space(self):
         """
         Define the hyperparameter search space for PBT tuning depending on the model class.
@@ -52,7 +52,6 @@ class PBTHyperparameterTuning:
                 "pool_type": tune.choice(["max", "avg", "none"]),
                 "dropoutrate": tune.uniform(0.0, 0.5),
                 "kernel_size": tune.choice([3, 5, 7]),
-                "padding": tune.sample_from(lambda spec: (spec.config["kernel_size"] - 1) // 2),
                 "stride": 1,
                 "lr": 1e-3,
                 "batch_size": tune.choice([16, 32])
@@ -102,6 +101,12 @@ class PBTHyperparameterTuning:
         model_config = config.copy()
         batch_size = model_config.pop("batch_size", 32)
         
+        if self.model_class == CNN_Autoencoder:
+            kernel_size = model_config["kernel_size"] 
+            calculated_padding = (kernel_size - 1) // 2
+            model_config["padding"] = calculated_padding 
+
+
         if self.model_class == CNN_Autoencoder and "activation_fn" in model_config:
             if model_config["activation_fn"] == "relu":
                 model_config["activation_fn"] = torch.nn.ReLU
@@ -229,9 +234,13 @@ def run_numerical():
             "train": os.path.join(PROJECT_ROOT, "data/data_storage/ecg_parquets/train_ecg.parquet"),
             "val": os.path.join(PROJECT_ROOT, "data/data_storage/ecg_parquets/val_ecg.parquet")
         }),
-        ("harmonic_ou", {
+        ("harmonic", {
             "train": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"),
             "val": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/val_harmonic.parquet")
+        }),
+        ("ou", {
+            "train": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/train_ou.parquet"),
+            "val": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/val_ou.parquet")
         }),
         ("sp500", {
             "train": os.path.join(PROJECT_ROOT, "data/data_storage/sp500_parquets/train_sp500.parquet"),
