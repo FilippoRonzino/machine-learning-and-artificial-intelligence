@@ -408,11 +408,11 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
                 min_delta=min_d
             )
             
-            trained_models[row['model_name']] = model
-            print(f"Successfully trained model: {row['model_name']}")
+            trained_models[model_name] = model
+            print(f"Successfully trained model: {model_name}")
             
         except Exception as e:
-            print(f"Error training model {row['model_name']}: {str(e)}")
+            print(f"Error training model {model_name}: {str(e)}")
             continue
     
     print(f"\nCompleted training {len(trained_models)}/{len(parameter_df)} models")
@@ -420,30 +420,9 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
 
 
 if __name__ == "__main__":
+    parameter_df_path = os.path.join("src", "test", "pbt_results.parquet")
+    parameter_df = pd.read_parquet(parameter_df_path)
 
-    df_dict = {
-        "flag": 'cnn_v',
-        "dataset": 'harmonic',
-        "parameters": {
-            "input_chanel": 1,
-            "chanel_list": [32, 64],
-            "activation_fn": torch.nn.ReLU,
-            "batchnorm": True,
-            "pool_type": "max",
-            "dropoutrate": 0.2,
-            "kernel_size": 5,
-            "padding": 2,
-            "stride": 1,
-            "lr": 1e-3,
-            "batch_size": 32
-            }
-    }
-    parameter_df = pd.DataFrame([df_dict])
-
-    # parameter_df_path = ""
-    # parameter_df = pd.read_parquet(parameter_df_path)
-
-    
     visual_min_delta = 0.1
     visual_patience = 10
     numerical_min_delta = 0.01
@@ -452,9 +431,9 @@ if __name__ == "__main__":
     patience = (visual_patience, numerical_patience)
     min_delta = (visual_min_delta, numerical_min_delta)
     
-    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
+    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=1, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
 
-
+    # =============== Deprecated Example Code ===============
     # # Example for CNN_Visual model
     # print("====== CNN Visual Model Example ======")
     # # Define model parameters for visual model
