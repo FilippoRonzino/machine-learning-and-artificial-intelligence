@@ -363,6 +363,8 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
             batch_size = params.pop('batch_size')
             
             if row['flag'] == 'cnn_v':
+                padding = (params['kernel_size'] - 1) / 2
+                params['padding'] = padding
                 model_class = CNN_Autoencoder
                 input_type = ClassInputType.IMAGE
                 model_name = f"cnn_visual_{row['dataset']}"
