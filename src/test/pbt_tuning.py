@@ -1,5 +1,7 @@
 import os
+from collections import OrderedDict
 
+import pandas as pd
 import pytorch_lightning as pl
 import ray
 import torch
@@ -14,6 +16,7 @@ from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolde
 from models.trainer import ClassInputType
 from models.utils_models import load_and_prepare_data
 
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 
 class PBTHyperparameterTuning:
     """
@@ -43,15 +46,15 @@ class PBTHyperparameterTuning:
         if self.model_class == CNN_Autoencoder:
             return {
                 "input_chanel": 1,
-                "chanel_list": tune.choice([[16, 32], [32, 64], [32, 64, 128]]),
+                "chanel_list": [128, 256, 512],
                 "activation_fn": tune.choice(["relu", "leaky_relu", "elu"]),
                 "batchnorm": tune.choice([True, False]),
-                "pool_type": tune.choice(["max", "avg"]),
+                "pool_type": tune.choice(["max", "avg", "none"]),
                 "dropoutrate": tune.uniform(0.0, 0.5),
-                "kernel_size": tune.choice([2, 3, 5]),
-                "padding": lambda spec: (spec.config.kernel_size - 1) // 2,  # padding based on kernel_size
-                # "stride": tune.choice([1, 2]),
-                "lr": tune.loguniform(1e-4, 1e-2),
+                "kernel_size": tune.choice([3, 5, 7]),
+                "padding": tune.sample_from(lambda spec: (spec.config["kernel_size"] - 1) // 2),
+                "stride": 1,
+                "lr": 1e-3,
                 "batch_size": tune.choice([16, 32])
             }
         elif self.model_class == CNNTimeSeriesPredictor:
@@ -62,15 +65,15 @@ class PBTHyperparameterTuning:
                 "model_output_seq_len": 60,
                 "actual_prediction_len": 20,
                 "cnn_layers": tune.choice([2, 3, 4, 5]),
-                "kernel_size": tune.choice([2, 3, 5]),
+                "kernel_size": tune.choice([3, 5, 7]),
                 "base_filters": tune.choice([16, 32, 64]),
                 "fc_size": tune.choice([64, 128, 256]),
-                "lr": tune.loguniform(1e-4, 1e-2),
+                "lr": 1e-3,
                 "batch_size": tune.choice([16, 32])
             }
         else:
             raise ValueError("Unsupported model class for PBT tuning, please use CNN_Autoencoder or CNNTimeSeriesPredictor.")
-
+        
     def _prepare_dataset(self):
         """
         Prepare the dataset for training and validation as in trainer.py.
@@ -79,10 +82,10 @@ class PBTHyperparameterTuning:
         """
         if self.input_type == ClassInputType.IMAGE:
             train = ImageTimeSeriesDatasetSingleFolder(self.data_path['train'], prediction_percentage=self.prediction_percentage)
-            val = ImageTimeSeriesDatasetSingleFolder(self.data_path['test'], prediction_percentage=self.prediction_percentage)
+            val = ImageTimeSeriesDatasetSingleFolder(self.data_path['val'], prediction_percentage=self.prediction_percentage)
         else:
             X_train, y_train = load_and_prepare_data(self.data_path['train'], prediction_percentage=self.prediction_percentage)
-            X_val, y_val = load_and_prepare_data(self.data_path['test'], prediction_percentage=self.prediction_percentage)
+            X_val, y_val = load_and_prepare_data(self.data_path['val'], prediction_percentage=self.prediction_percentage)
             train = torch.utils.data.TensorDataset(torch.stack(X_train), torch.stack(y_train))
             val = torch.utils.data.TensorDataset(torch.stack(X_val), torch.stack(y_val))
         return train, val
@@ -156,29 +159,128 @@ class PBTHyperparameterTuning:
         return best_config
 
 
-if __name__ == "__main__":
-    import os
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+def run_visual():
+    """
+    Run PBT hyperparameter tuning for visual CNN models on different image datasets.
     
-    numerical_data_paths = {
-        "train": os.path.join(project_root, "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"),
-        "test": os.path.join(project_root, "data/data_storage/harmonic_ou_parquets/test_harmonic.parquet")
-    }
+    Returns:
+        DataFrame with columns: model_type, dataset, params
+    """
+    image_datasets = OrderedDict([
+        ("ecg", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/ecg/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/ecg/val")
+        }),
+        ("harmonic", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/harmonic/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/harmonic/val")
+        }),
+        ("ou", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/ou/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/ou/val")
+        }),
+        ("sp500", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/sp500/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/sp500/val")
+        })
+    ])
+    
+    results = []
+    
+    for dataset_name, paths in image_datasets.items():
+        if not os.path.exists(paths["train"]) or not os.path.exists(paths["val"]):
+            raise FileNotFoundError(f"Dataset {dataset_name} not found in specified paths.")
+        print(f"Running PBT tuning on {dataset_name} visual dataset...")
+        
+        pbt = PBTHyperparameterTuning(
+            model_name=f"cnn_visual_{dataset_name}_pbt",
+            model_class=CNN_Autoencoder,
+            input_type=ClassInputType.IMAGE,
+            data_path=paths,
+            num_samples=3,
+            max_epochs=10,
+            gpus_per_trial=0,  # Set to higher value if GPU is available
+            prediction_percentage=0.25
+        )
+        
+        try:
+            best_config = pbt.run_pbt()
+            print(f"Best config for {dataset_name} visual dataset:", best_config)
+            
+            results.append({
+                "model_type": "cnn_v",
+                "dataset": dataset_name,
+                "params": best_config
+            })
+        except Exception as e:
+            print(f"Error tuning {dataset_name} visual dataset: {str(e)}")
+    
+    return pd.DataFrame(results)
 
-    if not os.path.exists(numerical_data_paths["train"]):
-        raise FileNotFoundError(f"Training data file not found: {numerical_data_paths['train']}")
-    if not os.path.exists(numerical_data_paths["test"]):
-        raise FileNotFoundError(f"Test data file not found: {numerical_data_paths['test']}")
+def run_numerical():
+    """
+    Run PBT hyperparameter tuning for numerical CNN models on different time series datasets.
+    
+    Returns:
+        DataFrame with columns: model_type, dataset, params
+    """
+    numerical_datasets = OrderedDict([
+        ("ecg", {
+            "train": os.path.join(PROJECT_ROOT, "data/data_storage/ecg_parquets/train_ecg.parquet"),
+            "val": os.path.join(PROJECT_ROOT, "data/data_storage/ecg_parquets/val_ecg.parquet")
+        }),
+        ("harmonic_ou", {
+            "train": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"),
+            "val": os.path.join(PROJECT_ROOT, "data/data_storage/harmonic_ou_parquets/val_harmonic.parquet")
+        }),
+        ("sp500", {
+            "train": os.path.join(PROJECT_ROOT, "data/data_storage/sp500_parquets/train_sp500.parquet"),
+            "val": os.path.join(PROJECT_ROOT, "data/data_storage/sp500_parquets/val_sp500.parquet")
+        })
+    ])
+    
+    results = []
+    
+    for dataset_name, paths in numerical_datasets.items():
+        if not os.path.exists(paths["train"]) or not os.path.exists(paths["val"]):
+            raise FileNotFoundError(f"Dataset {dataset_name} not found in specified paths.")
+        print(f"Running PBT tuning on {dataset_name} numerical dataset...")
+        
+        pbt = PBTHyperparameterTuning(
+            model_name=f"cnn_numerical_{dataset_name}_pbt",
+            model_class=CNNTimeSeriesPredictor,
+            input_type=ClassInputType.NUMERICAL,
+            data_path=paths,
+            num_samples=3,
+            max_epochs=10,
+            gpus_per_trial=0,  # Set to higher value if GPU is available
+            prediction_percentage=0.25
+        )
+        
+        try:
+            best_config = pbt.run_pbt()
+            print(f"Best config for {dataset_name} numerical dataset:", best_config)
+            
+            results.append({
+                "model_type": "cnn_n",
+                "dataset": dataset_name,
+                "params": best_config
+            })
+        except Exception as e:
+            print(f"Error tuning {dataset_name} numerical dataset: {str(e)}")
 
-    pbt = PBTHyperparameterTuning(
-        model_name="cnn_numerical_pbt",
-        model_class=CNNTimeSeriesPredictor,
-        input_type=ClassInputType.NUMERICAL,
-        data_path=numerical_data_paths,
-        num_samples=3,
-        max_epochs=10,
-        gpus_per_trial=0,
-        prediction_percentage=0.25
-    )
-    best_config = pbt.run_pbt()
-    print("Best config:", best_config)
+    return pd.DataFrame(results)
+
+
+
+if __name__ == "__main__":
+    print("Running PBT tuning for numerical datasets...")
+    numerical_df = run_numerical()
+    
+    print("\nRunning PBT tuning for visual datasets...")
+    visual_df = run_visual()
+    
+    combined_df = pd.concat([numerical_df, visual_df], ignore_index=True)
+    
+    combined_df.to_parquet(os.path.join(PROJECT_ROOT, "src/test/pbt_results.parquet"), index=False)
+    print(f"Results saved to {os.path.join(PROJECT_ROOT, 'src/test/pbt_results.parquet')}")
