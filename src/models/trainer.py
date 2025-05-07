@@ -338,7 +338,7 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
     
     :param parameter_df: DataFrame containing model configurations
         Expected columns:
-        - flag: either 'cnn_v' or 'cnn_n'
+        - model_type: either 'cnn_v' or 'cnn_n'
         - dataset: name of the dataset ('ecg', 'harmonic', 'ou', 'sp500')
         - params: dictionary of model parameters
     :param force_retrain: Whether to force retraining all models
@@ -356,13 +356,15 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
     
     for idx, row in parameter_df.iterrows():
         try:
-            print(f"\n{'='*20} Training model {idx+1}/{len(parameter_df)}: {row['flag']} on {row['dataset']} {'='*20}")
+            print(f"\n{'='*20} Training model {idx+1}/{len(parameter_df)}: {row['model_type']} on {row['dataset']} {'='*20}")
 
-            params = row['parameters']
+            params = row['params']
 
             batch_size = params.pop('batch_size')
             
-            if row['flag'] == 'cnn_v':
+            if row['model_type'] == 'cnn_v':
+                padding = (params['kernel_size'] - 1) / 2
+                params['padding'] = padding
                 model_class = CNN_Autoencoder
                 input_type = ClassInputType.IMAGE
                 model_name = f"cnn_visual_{row['dataset']}"
@@ -374,7 +376,7 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
                 }
                 pat = visual_patience
                 min_d = visual_min_delta
-            elif row['flag'] == 'cnn_n':
+            elif row['model_type'] == 'cnn_n':
                 model_class = CNNTimeSeriesPredictor
                 input_type = ClassInputType.NUMERICAL
                 model_name = f"cnn_numerical_{row['dataset']}"
@@ -390,7 +392,7 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
                 pat = numerical_patience
                 min_d = numerical_min_delta
             else:
-                raise ValueError(f"Unknown flag: {row['flag']}")
+                raise ValueError(f"Unknown model_type: {row['model_type']}")
           
             
             # Train the model
