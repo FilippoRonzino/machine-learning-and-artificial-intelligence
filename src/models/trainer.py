@@ -18,6 +18,8 @@ from visualization.utils_visualization import plot_predictions
 
 from pytorch_lightning.loggers import TensorBoardLogger
 
+import pandas as pd
+
 
 
 
@@ -99,7 +101,7 @@ class ModelTrainer:
                 return self.best_model_path
         return None
     
-    def train(self, max_epochs=100, training_mode: TrainingMode = TrainingMode.RETRAIN_FROM_SCRATCH):
+    def train(self, max_epochs=100, training_mode: TrainingMode = TrainingMode.RETRAIN_FROM_SCRATCH, patience=10, min_delta=0.1):
         """
         Train the model or load a pre-trained model.
         
@@ -170,8 +172,8 @@ class ModelTrainer:
             # Create an early stopping callback
             early_stopping_callback = EarlyStopping(
                 monitor='val_loss',
-                patience=10,
-                min_delta=0.1,
+                patience=patience,
+                min_delta=min_delta,
                 mode='min',
                 verbose=True
             )
@@ -260,7 +262,9 @@ def train_and_evaluate_model(
     batch_size: int = 32,
     max_epochs: int = 100,
     force_retrain: bool = False,
-    n_plots: int = 5
+    n_plots: int = 5,
+    patience: int = 10,
+    min_delta: float = 0.1,
 ):
     """
     Utility function to train and evaluate a model on specified datasets.
@@ -275,37 +279,40 @@ def train_and_evaluate_model(
     :param max_epochs: Maximum number of epochs for training
     :param force_retrain: Whether to force retraining of the model
     :param n_plots: Number of plots to generate for evaluation
+    :param patience: Patience for early stopping
+    :param min_delta: Minimum delta for early stopping
     :return: Trained model
     """
 
     if input_type == ClassInputType.IMAGE:
         if not isinstance(data_path, dict) or 'train' not in data_path or 'test' not in data_path:
-            raise ValueError("For image data, data_path must be a dictionary with 'train' and 'test' keys")
+            raise ValueError("data_path must be a dictionary with 'train', 'val', and 'test' keys")
         
         train_dataset = ImageTimeSeriesDatasetSingleFolder(data_path['train'], prediction_percentage=prediction_percentage)
-        val_dataset = ImageTimeSeriesDatasetSingleFolder(data_path['test'], prediction_percentage=prediction_percentage)
-        test_datasets = [val_dataset]
+        val_dataset = ImageTimeSeriesDatasetSingleFolder(data_path['val'], prediction_percentage=prediction_percentage)
+        test_datasets = [ImageTimeSeriesDatasetSingleFolder(data_path['test'], prediction_percentage=prediction_percentage)]
         
     elif input_type == ClassInputType.NUMERICAL:
         if isinstance(data_path, dict):
             file_path_train = data_path.get('train')
             file_path_test = data_path.get('test')
+            file_path_val = data_path.get('val')
         else:
-            file_path_train = os.path.join(data_path, "train_harmonic.parquet")
-            file_path_test = os.path.join(data_path, "test_harmonic.parquet")
+            raise ValueError("data_path must be a dictionary with 'train', 'val', and 'test' keys")
         
         print("Loading and preparing numerical data...")
         X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=prediction_percentage)
         X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=prediction_percentage)
+        X_val, y_val = load_and_prepare_data(file_path_val, prediction_percentage=prediction_percentage)
         
         print("X_train sample shape:", X_train[0].shape)
         print("y_train sample shape:", y_train[0].shape)
         print(len(X_train), "samples loaded for training")
-        print(len(X_test), "samples loaded for testing")
+        print(len(X_val), "samples loaded for validation")
         
         train_dataset = torch.utils.data.TensorDataset(torch.stack(X_train), torch.stack(y_train))
-        val_dataset = torch.utils.data.TensorDataset(torch.stack(X_test), torch.stack(y_test))
-        test_datasets = [val_dataset]
+        val_dataset = torch.utils.data.TensorDataset(torch.stack(X_val), torch.stack(y_val))
+        test_datasets = [torch.utils.data.TensorDataset(torch.stack(X_test), torch.stack(y_test))]
     
     else:
         raise ValueError(f"Unsupported input type: {input_type}")
@@ -314,7 +321,7 @@ def train_and_evaluate_model(
     trainer.prepare_data(train_dataset, val_dataset, batch_size)
     
     retrain = force_retrain or trainer.ask_retrain()
-    model = trainer.train(max_epochs, retrain)
+    model = trainer.train(max_epochs, retrain, patience, min_delta)
     
     if test_datasets:
         if not isinstance(test_datasets, list):
@@ -325,76 +332,195 @@ def train_and_evaluate_model(
         
     return model
 
+def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percentage=0.25, force_retrain=False, patience=(10, 10), min_delta=(0.1, 0.01)):
+    """
+    Train multiple models defined in a parameter DataFrame.
+    
+    :param parameter_df: DataFrame containing model configurations
+        Expected columns:
+        - flag: either 'cnn_v' or 'cnn_n'
+        - dataset: name of the dataset ('ecg', 'harmonic', 'ou', 'sp500')
+        - params: dictionary of model parameters
+    :param force_retrain: Whether to force retraining all models
+    :param max_epochs: Maximum training epochs
+    :return: Dictionary mapping model names to trained models
+    """
+    trained_models = {}
+    
+    print(f"Starting training of {len(parameter_df)} models...")
+
+    visual_patience = patience[0]
+    numerical_patience = patience[1]
+    visual_min_delta = min_delta[0]
+    numerical_min_delta = min_delta[1]
+    
+    for idx, row in parameter_df.iterrows():
+        try:
+            print(f"\n{'='*20} Training model {idx+1}/{len(parameter_df)}: {row['flag']} on {row['dataset']} {'='*20}")
+
+            params = row['parameters']
+
+            batch_size = params.pop('batch_size')
+            
+            if row['flag'] == 'cnn_v':
+                model_class = CNN_Autoencoder
+                input_type = ClassInputType.IMAGE
+                model_name = f"cnn_visual_{row['dataset']}"
+                folder = os.path.join("data", "images", row['dataset'])
+                data_path = {
+                    "train": os.path.join(folder, "train"),
+                    "val": os.path.join(folder, "val"),
+                    "test": os.path.join(folder, "test")
+                }
+                pat = visual_patience
+                min_d = visual_min_delta
+            elif row['flag'] == 'cnn_n':
+                model_class = CNNTimeSeriesPredictor
+                input_type = ClassInputType.NUMERICAL
+                model_name = f"cnn_numerical_{row['dataset']}"
+                if row['dataset'] == 'ou' or row['dataset'] == 'harmonic':
+                    folder = os.path.join("data", "data_storage", "harmonic_ou_parquets")
+                else:
+                    folder = os.path.join("data", "data_storage", f"{row['dataset']}_parquets")
+                data_path = {
+                    "train": os.path.join(folder, f"train_{row['dataset']}.parquet"),
+                    "val": os.path.join(folder, f"val_{row['dataset']}.parquet"),
+                    "test": os.path.join(folder, f"test_{row['dataset']}.parquet")
+                }
+                pat = numerical_patience
+                min_d = numerical_min_delta
+            else:
+                raise ValueError(f"Unknown flag: {row['flag']}")
+          
+            
+            # Train the model
+            model = train_and_evaluate_model(
+                model_name=model_name,
+                model_class=model_class,
+                model_params=params,
+                input_type=input_type,
+                data_path=data_path,
+                prediction_percentage=prediction_percentage,
+                batch_size=batch_size,
+                max_epochs=max_epochs,
+                force_retrain=force_retrain,
+                patience=pat,
+                min_delta=min_d
+            )
+            
+            trained_models[row['model_name']] = model
+            print(f"Successfully trained model: {row['model_name']}")
+            
+        except Exception as e:
+            print(f"Error training model {row['model_name']}: {str(e)}")
+            continue
+    
+    print(f"\nCompleted training {len(trained_models)}/{len(parameter_df)} models")
+    return trained_models
+
 
 if __name__ == "__main__":
-    
 
-    # Example for CNN_Visual model
-    print("====== CNN Visual Model Example ======")
-    # Define model parameters for visual model
-    cnn_visual_params = {
-        "input_chanel": 1,
-        "chanel_list": [32, 64],
-        "activation_fn": torch.nn.ReLU,
-        "batchnorm": True,
-        "pool_type": "max",
-        "dropoutrate": 0.2,
-        "kernel_size": 5,
-        "padding": 2,
-        "stride": 1,
-        "lr": 1e-3
+    df_dict = {
+        "flag": 'cnn_v',
+        "dataset": 'harmonic',
+        "parameters": {
+            "input_chanel": 1,
+            "chanel_list": [32, 64],
+            "activation_fn": torch.nn.ReLU,
+            "batchnorm": True,
+            "pool_type": "max",
+            "dropoutrate": 0.2,
+            "kernel_size": 5,
+            "padding": 2,
+            "stride": 1,
+            "lr": 1e-3,
+            "batch_size": 32
+            }
     }
+    parameter_df = pd.DataFrame([df_dict])
+
+    # parameter_df_path = ""
+    # parameter_df = pd.read_parquet(parameter_df_path)
+
     
-    # Define data paths for image data
-    image_data_paths = {
-        "train": "data/images/harmonic/train",
-        "test": "data/images/harmonic/val"
-    }
+    visual_min_delta = 0.1
+    visual_patience = 10
+    numerical_min_delta = 0.01
+    numerical_patience = 10
+
+    patience = (visual_patience, numerical_patience)
+    min_delta = (visual_min_delta, numerical_min_delta)
     
-    # Train and evaluate image model
-    visual_model = train_and_evaluate_model(
-        model_name="cnn_visual",
-        model_class=CNN_Autoencoder,
-        model_params=cnn_visual_params,
-        input_type=ClassInputType.IMAGE,
-        data_path=image_data_paths,
-        prediction_percentage=0.25,
-        max_epochs=100
-    )
+    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
+
+
+    # # Example for CNN_Visual model
+    # print("====== CNN Visual Model Example ======")
+    # # Define model parameters for visual model
+    # cnn_visual_params = {
+    #     "input_chanel": 1,
+    #     "chanel_list": [32, 64],
+    #     "activation_fn": torch.nn.ReLU,
+    #     "batchnorm": True,
+    #     "pool_type": "max",
+    #     "dropoutrate": 0.2,
+    #     "kernel_size": 5,
+    #     "padding": 2,
+    #     "stride": 1,
+    #     "lr": 1e-3
+    # }
     
-    # Example for CNN_Numerical model
-    print("\n====== CNN Numerical Model Example ======")
+    # # Define data paths for image data
+    # image_data_paths = {
+    #     "train": "data/images/harmonic/train",
+    #     "test": "data/images/harmonic/val"
+    # }
     
-    # Define model parameters for numerical model
-    cnn_numerical_params = {
-        "input_features": 1,
-        "input_seq_len": 60,
-        "output_features": 1,
-        "model_output_seq_len": 60,
-        "actual_prediction_len": 20,
-        "cnn_layers": 3,
-        "kernel_size": 3,
-        "base_filters": 32,
-        "fc_size": 128,
-        "lr": 1e-3
-    }
+    # # Train and evaluate image model
+    # visual_model = train_and_evaluate_model(
+    #     model_name="cnn_visual",
+    #     model_class=CNN_Autoencoder,
+    #     model_params=cnn_visual_params,
+    #     input_type=ClassInputType.IMAGE,
+    #     data_path=image_data_paths,
+    #     prediction_percentage=0.25,
+    #     max_epochs=100
+    # )
     
-    # Define data paths for numerical data
-    numerical_data_paths = {
-        "train": "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet",
-        "test": "data/data_storage/harmonic_ou_parquets/val_harmonic.parquet"
-    }
+    # # Example for CNN_Numerical model
+    # print("\n====== CNN Numerical Model Example ======")
     
-    # Train and evaluate numerical model
-    numerical_model = train_and_evaluate_model(
-        model_name="cnn_numerical",
-        model_class=CNNTimeSeriesPredictor,
-        model_params=cnn_numerical_params,
-        input_type=ClassInputType.NUMERICAL,
-        data_path=numerical_data_paths,
-        prediction_percentage=0.25,
-        max_epochs=100,
-        batch_size=32
-    )
+    # # Define model parameters for numerical model
+    # cnn_numerical_params = {
+    #     "input_features": 1,
+    #     "input_seq_len": 60,
+    #     "output_features": 1,
+    #     "model_output_seq_len": 60,
+    #     "actual_prediction_len": 20,
+    #     "cnn_layers": 3,
+    #     "kernel_size": 3,
+    #     "base_filters": 32,
+    #     "fc_size": 128,
+    #     "lr": 1e-3
+    # }
     
-    print("Both models have been successfully trained and evaluated.")
+    # # Define data paths for numerical data
+    # numerical_data_paths = {
+    #     "train": "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet",
+    #     "test": "data/data_storage/harmonic_ou_parquets/val_harmonic.parquet"
+    # }
+    
+    # # Train and evaluate numerical model
+    # numerical_model = train_and_evaluate_model(
+    #     model_name="cnn_numerical",
+    #     model_class=CNNTimeSeriesPredictor,
+    #     model_params=cnn_numerical_params,
+    #     input_type=ClassInputType.NUMERICAL,
+    #     data_path=numerical_data_paths,
+    #     prediction_percentage=0.25,
+    #     max_epochs=100,
+    #     batch_size=32
+    # )
+    
+    # print("Both models have been successfully trained and evaluated.")
