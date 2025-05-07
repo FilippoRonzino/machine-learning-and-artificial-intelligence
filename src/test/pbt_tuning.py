@@ -198,8 +198,8 @@ def run_visual():
             input_type=ClassInputType.IMAGE,
             data_path=paths,
             num_samples=3,
-            max_epochs=10,
-            gpus_per_trial=0,  # Set to higher value if GPU is available
+            max_epochs=15,
+            gpus_per_trial=1,
             prediction_percentage=0.25
         )
         
@@ -252,8 +252,8 @@ def run_numerical():
             input_type=ClassInputType.NUMERICAL,
             data_path=paths,
             num_samples=3,
-            max_epochs=10,
-            gpus_per_trial=0,  # Set to higher value if GPU is available
+            max_epochs=15,
+            gpus_per_trial=1,
             prediction_percentage=0.25
         )
         
