@@ -1,0 +1,13 @@
+{
+  "actual_prediction_len": 20,
+  "base_filters": 64,
+  "batch_size": 32,
+  "cnn_layers": 2,
+  "fc_size": 256,
+  "input_features": 1,
+  "input_seq_len": 60,
+  "kernel_size": 7,
+  "lr": 0.001,
+  "model_output_seq_len": 60,
+  "output_features": 1
+}
