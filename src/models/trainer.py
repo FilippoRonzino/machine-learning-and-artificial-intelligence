@@ -24,6 +24,7 @@ import logging
 
 import pandas as pd
 
+import ast
 
 
 def setup_logging(log_file='training.log', console_level=logging.INFO, file_level=logging.DEBUG):
@@ -187,7 +188,7 @@ class ModelTrainer:
                 return self.best_model_path
         return None
     
-    def train(self, max_epochs=100, training_mode: TrainingMode = TrainingMode.RETRAIN_FROM_SCRATCH, patience=10, min_delta=0.1):
+    def train(self, max_epochs=100, training_mode: TrainingMode = TrainingMode.RETRAIN_FROM_SCRATCH, patience=10, min_delta=0.1, plot_loss=False):
         """
         Train the model or load a pre-trained model.
         
@@ -292,7 +293,9 @@ class ModelTrainer:
             logger.info(f"Starting trainer.fit for {max_epochs} epochs...")
 
             trainer.fit(self.model, self.train_loader, self.test_loader, ckpt_path=self.best_model_path)
-            loss_tracker.plot_losses()
+
+            if plot_loss:
+                loss_tracker.plot_losses()
 
             if hasattr(checkpoint_callback, 'best_model_path') and checkpoint_callback.best_model_path:
                 self.best_model_path = checkpoint_callback.best_model_path
@@ -363,6 +366,7 @@ def train_and_evaluate_model(
     n_plots: int = 5,
     patience: int = 10,
     min_delta: float = 0.1,
+    plot: bool = False
 ):
     """
     Utility function to train and evaluate a model on specified datasets.
@@ -404,10 +408,10 @@ def train_and_evaluate_model(
         X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=prediction_percentage)
         X_val, y_val = load_and_prepare_data(file_path_val, prediction_percentage=prediction_percentage)
         
-        logger.info("X_train sample shape:", X_train[0].shape)
-        logger.info("y_train sample shape:", y_train[0].shape)
-        logger.info(len(X_train), "samples loaded for training")
-        logger.info(len(X_val), "samples loaded for validation")
+        logger.info(f"X_train sample shape: {X_train[0].shape}")
+        logger.info("y_train sample shape: {y_train[0].shape}")
+        logger.info(f"{len(X_train)} samples loaded for training")
+        logger.info(f"{len(X_val)} samples loaded for validation")
         
         train_dataset = torch.utils.data.TensorDataset(torch.stack(X_train), torch.stack(y_train))
         val_dataset = torch.utils.data.TensorDataset(torch.stack(X_val), torch.stack(y_val))
@@ -425,9 +429,9 @@ def train_and_evaluate_model(
     if test_datasets:
         if not isinstance(test_datasets, list):
             test_datasets = [test_datasets]
-        
-        for dataset in test_datasets:
-            plot_predictions(model, dataset, n_plots=n_plots)
+        if plot:
+            for dataset in test_datasets:
+                plot_predictions(model, dataset, n_plots=n_plots)
         
     return model
 
@@ -459,12 +463,12 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
         try:
             logger.info(f"\n{'='*20} Training model {idx+1}/{len(parameter_df)}: {row['model_type']} on {row['dataset']} {'='*20}")
 
-            params = row['params']
+            params = ast.literal_eval(row['params'])
 
             batch_size = params.pop('batch_size')
             
             if row['model_type'] == 'cnn_v':
-                padding = (params['kernel_size'] - 1) / 2
+                padding = int((params['kernel_size'] - 1) / 2)
                 params['padding'] = padding
                 model_class = CNN_Autoencoder
                 input_type = ClassInputType.IMAGE
@@ -477,6 +481,16 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
                 }
                 pat = visual_patience
                 min_d = visual_min_delta
+
+                activation_fn = params.pop('activation_fn')
+                if activation_fn == 'relu':
+                    params['activation_fn'] = torch.nn.ReLU
+                elif activation_fn == 'leaky_relu':
+                    params['activation_fn'] = torch.nn.LeakyReLU
+                elif activation_fn == 'elu':
+                    params['activation_fn'] = torch.nn.ELU
+                else:
+                    raise ValueError(f"Unknown activation function: {activation_fn}")
             elif row['model_type'] == 'cnn_n':
                 model_class = CNNTimeSeriesPredictor
                 input_type = ClassInputType.NUMERICAL
@@ -515,9 +529,9 @@ def train_models_from_dataframe(parameter_df, max_epochs=100, prediction_percent
             logger.info(f"Successfully trained model: {model_name}")
             
         except Exception as e:
-            logger.info(f"Error training model {model_name}: {str(e)}")
+            logger.info(f"Error training model {row['model_type']} on {row['dataset']}: {str(e)}")
             continue
-    
+
     logger.info(f"\nCompleted training {len(trained_models)}/{len(parameter_df)} models")
     return trained_models
 
@@ -527,7 +541,7 @@ if __name__ == "__main__":
     logger = setup_logging(log_file=f'training_{timestamp}.log')
     logger.info("Starting training process")
 
-    parameter_df_path = os.path.join("src", "test", "pbt_checkpoints", "pbt_results.parquet")
+    parameter_df_path = os.path.join("src", "test", "pbt_results.parquet")
     parameter_df = pd.read_parquet(parameter_df_path)
 
     visual_min_delta = 0.1
@@ -538,7 +552,7 @@ if __name__ == "__main__":
     patience = (visual_patience, numerical_patience)
     min_delta = (visual_min_delta, numerical_min_delta)
     
-    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=1, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
+    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
 
     # =============== Deprecated Example Code ===============
     # Example for CNN_Visual model
