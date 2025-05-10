@@ -283,8 +283,8 @@ def run_numerical():
 
 
 if __name__ == "__main__":
-    # print("Running PBT tuning for numerical datasets...")
-    # numerical_df = run_numerical()
+    print("Running PBT tuning for numerical datasets...")
+    numerical_df = run_numerical()
     
     print("\nRunning PBT tuning for visual datasets...")
     visual_df = run_visual()
