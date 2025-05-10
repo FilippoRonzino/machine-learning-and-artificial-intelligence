@@ -56,7 +56,7 @@ def plot_actual_vs_predicted(y_true: np.ndarray,
 
 def plot_predictions_numerical_model(model: CNNTimeSeriesPredictor, 
                                      dataset: torch.utils.data.TensorDataset, 
-                                     n_plots: int = 5) -> None:
+                                     n_plots: int = 5, all_predictions: bool = False) -> None:
     """
     Plots actual vs predicted values from the model on `n_plots` random samples from the dataset.
     It only plots the last `actual_prediction_len` steps of the output sequence.
@@ -75,7 +75,9 @@ def plot_predictions_numerical_model(model: CNNTimeSeriesPredictor,
         with torch.no_grad():
             y_pred_full = model(x_input.to(model.device))  # Move input to device, output is [1, T, D]
 
+        
         y_pred_future = y_pred_full[0, -model.actual_prediction_len:, :].cpu()
+        
         y_true_future = y_sample[-model.actual_prediction_len:, :].cpu()
 
         x_part = x_sample.flatten().cpu().numpy()
@@ -84,12 +86,20 @@ def plot_predictions_numerical_model(model: CNNTimeSeriesPredictor,
 
         y_true_combined = np.concatenate((x_part, y_true_future_flat))
         y_pred_combined = np.concatenate((x_part, y_pred_future_flat))
-
-        plot_actual_vs_predicted(
-            y_true_combined,
-            y_pred_combined,
-            percentage_predicted=0.25
-        )
+        if all_predictions:
+            y_pred_future = y_pred_full.cpu().flatten().numpy()
+            y_pred_future = np.concatenate((np.full(20, np.nan), y_pred_future))
+            plot_actual_vs_predicted(
+                y_true_combined,
+                y_pred_future,
+                percentage_predicted=1
+            )
+        else:
+            plot_actual_vs_predicted(
+                y_true_combined,
+                y_pred_combined,
+                percentage_predicted=0.25)
+            
 
 
 def plot_predictions_visual_model(model: CNN_Autoencoder, 
@@ -131,7 +141,7 @@ def plot_predictions_visual_model(model: CNN_Autoencoder,
 
 def plot_predictions(model: CNNTimeSeriesPredictor | CNN_Autoencoder, 
                      dataset: torch.utils.data.TensorDataset | ImageTimeSeriesDatasetSingleFolder, 
-                     n_plots: int = 5) -> None:
+                     n_plots: int = 5, all_predictions: bool = False) -> None:
     """
     Plot predictions from the model on the dataset.
     
@@ -140,6 +150,6 @@ def plot_predictions(model: CNNTimeSeriesPredictor | CNN_Autoencoder,
     :param n_plots: Number of plots to generate.
     """
     if isinstance(model, CNNTimeSeriesPredictor):
-        plot_predictions_numerical_model(model, dataset, n_plots)
+        plot_predictions_numerical_model(model, dataset, n_plots, all_predictions)
     elif isinstance(model, CNN_Autoencoder):
         plot_predictions_visual_model(model, dataset, n_plots)
