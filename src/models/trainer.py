@@ -22,6 +22,8 @@ import time
 from datetime import datetime
 import logging
 
+import pandas as pd
+
 
 
 def setup_logging(log_file='training.log', console_level=logging.INFO, file_level=logging.DEBUG):
@@ -525,7 +527,7 @@ if __name__ == "__main__":
     logger = setup_logging(log_file=f'training_{timestamp}.log')
     logger.info("Starting training process")
 
-    parameter_df_path = os.path.join("src", "test", "pbt_results.parquet")
+    parameter_df_path = os.path.join("src", "test", "pbt_checkpoints", "pbt_results.parquet")
     parameter_df = pd.read_parquet(parameter_df_path)
 
     visual_min_delta = 0.1
@@ -536,7 +538,7 @@ if __name__ == "__main__":
     patience = (visual_patience, numerical_patience)
     min_delta = (visual_min_delta, numerical_min_delta)
     
-    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
+    train_models_from_dataframe(parameter_df=parameter_df, max_epochs=1, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
 
     # =============== Deprecated Example Code ===============
     # Example for CNN_Visual model
