@@ -1,0 +1,16 @@
+{
+  "activation_fn": "relu",
+  "batch_size": 16,
+  "batchnorm": true,
+  "chanel_list": [
+    128,
+    256,
+    512
+  ],
+  "dropoutrate": 0.23827804861748514,
+  "input_chanel": 1,
+  "kernel_size": 5,
+  "lr": 0.001,
+  "pool_type": "avg",
+  "stride": 1
+}
