@@ -1,6 +1,7 @@
-import wfdb
 import numpy as np
 import pandas as pd
+import wfdb
+
 
 def extract_signals(record_name: str, channel: int) -> np.ndarray:
     """

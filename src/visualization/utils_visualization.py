@@ -1,9 +1,11 @@
 import random
+
 import matplotlib.pyplot as plt
-from models.cnn_numerical import CNNTimeSeriesPredictor
-from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolder
 import numpy as np
 import torch
+
+from models.cnn_numerical import CNNTimeSeriesPredictor
+from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolder
 
 
 def plot_actual_vs_predicted(y_true: np.ndarray, 
@@ -14,7 +16,6 @@ def plot_actual_vs_predicted(y_true: np.ndarray,
     :param y_true: Actual values (1D array).
     :param y_pred: Predicted values (1D array).
     :param percentage_predicted: Percentage of predicted values over the total number of y_pred
-    :return: None
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)

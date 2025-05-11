@@ -1,6 +1,8 @@
-import numpy as np
 import os
+
+import numpy as np
 import pandas as pd
+
 
 def generate_harmonic_timeseries(
     T: int = 100, dt: float = 1,

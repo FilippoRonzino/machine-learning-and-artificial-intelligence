@@ -1,7 +1,9 @@
-import numpy as np
-from PIL import Image, ImageDraw
-import pandas as pd
 import os
+
+import numpy as np
+import pandas as pd
+from PIL import Image, ImageDraw
+
 
 def draw_line(data, size: int = 80) -> Image:
     """

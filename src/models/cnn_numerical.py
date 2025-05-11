@@ -1,45 +1,20 @@
-from models.utils_models import load_and_prepare_data, get_device
-import pytorch_lightning as pl 
+import matplotlib.pyplot as plt
+import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
-from torch.utils.data import TensorDataset, DataLoader
-import os
-import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader, TensorDataset
 
-# --- Configuration ---
-TOTAL_SEQUENCE_LENGTH = 80
-INPUT_SEQUENCE_LENGTH = 60  
-MODEL_OUTPUT_SEQUENCE_LENGTH = 60  
-ACTUAL_PREDICTION_LENGTH = TOTAL_SEQUENCE_LENGTH - INPUT_SEQUENCE_LENGTH  
+from models.utils_models import get_device, load_and_prepare_data
+from visualization.utils_visualization import plot_predictions
 
-if INPUT_SEQUENCE_LENGTH + ACTUAL_PREDICTION_LENGTH != TOTAL_SEQUENCE_LENGTH:
-    raise ValueError("Inconsistency: INPUT_SEQUENCE_LENGTH + ACTUAL_PREDICTION_LENGTH must equal TOTAL_SEQUENCE_LENGTH")
-if MODEL_OUTPUT_SEQUENCE_LENGTH != TOTAL_SEQUENCE_LENGTH - (TOTAL_SEQUENCE_LENGTH - MODEL_OUTPUT_SEQUENCE_LENGTH):
-    target_start_index = TOTAL_SEQUENCE_LENGTH - MODEL_OUTPUT_SEQUENCE_LENGTH
-    if target_start_index < 0:
-        raise ValueError("MODEL_OUTPUT_SEQUENCE_LENGTH cannot be greater than TOTAL_SEQUENCE_LENGTH")
-    print(f"Model output corresponds to original sequence steps {target_start_index} to {TOTAL_SEQUENCE_LENGTH-1}")
 
-INPUT_FEATURES = 1          
-OUTPUT_FEATURES = 1        
-LEARNING_RATE = 0.001
-BATCH_SIZE = 32
-MAX_EPOCHS = 1
-
-# CNN parameters
-CNN_LAYERS = 3              # Number of convolutional layers
-KERNEL_SIZE = 3             # Size of convolutional kernels
-BASE_FILTERS = 32           # Number of filters in first conv layer
-FC_SIZE = 128               # Size of fully connected layer
-
-# --- CNN Model ---
 class CNNTimeSeriesPredictor(pl.LightningModule):
     def __init__(self, input_features, input_seq_len, output_features,
                  model_output_seq_len, actual_prediction_len,
-                 cnn_layers=CNN_LAYERS, kernel_size=KERNEL_SIZE, 
-                 base_filters=BASE_FILTERS, fc_size=FC_SIZE, lr=LEARNING_RATE):
+                 cnn_layers = 3, kernel_size = 3, 
+                 base_filters = 32, fc_size = 128, lr = 0.001):
         super().__init__()
         self.save_hyperparameters()
         
@@ -147,7 +122,7 @@ class LossTrackerCallback(pl.Callback):
         if self.val_losses:
             plt.plot(self.val_losses, label="Validation Loss")
         plt.xlabel("Epoch")
-        plt.ylabel("Loss (MSE on last {} steps)".format(ACTUAL_PREDICTION_LENGTH))
+        plt.ylabel("Loss (MSE on last {} steps)".format(self.actual_prediction_len))
         plt.title("Training and Validation Loss Over Epochs")
         plt.legend()
         plt.grid(True)
@@ -155,59 +130,57 @@ class LossTrackerCallback(pl.Callback):
         plt.show()
     
 
+if __name__ == "__main__":
+    device = get_device()
 
-# if __name__ == "__main__":
-    # device = get_device()
+    model = CNNTimeSeriesPredictor(
+        input_features = 1,
+        input_seq_len = 60,
+        output_features = 1,
+        model_output_seq_len = 60,  
+        actual_prediction_len = 20,     
+        cnn_layers = 3,
+        kernel_size = 3,
+        base_filters = 32,
+        fc_size = 128,
+        lr = 0.001
+    )
 
-    # model = CNNTimeSeriesPredictor(
-    #     input_features=INPUT_FEATURES,
-    #     input_seq_len=INPUT_SEQUENCE_LENGTH,
-    #     output_features=OUTPUT_FEATURES,
-    #     model_output_seq_len=MODEL_OUTPUT_SEQUENCE_LENGTH,  
-    #     actual_prediction_len=ACTUAL_PREDICTION_LENGTH,     
-    #     cnn_layers=CNN_LAYERS,
-    #     kernel_size=KERNEL_SIZE,
-    #     base_filters=BASE_FILTERS,
-    #     fc_size=FC_SIZE,
-    #     lr=LEARNING_RATE
-    # )
+    model = model.to(device)
 
-    # model = model.to(device)
+    file_path_train = "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"
+    file_path_test = "data/data_storage/harmonic_ou_parquets/test_harmonic.parquet"
+    
+    X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
+    X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
 
-    # base_dir = "/Users/giuseppeiannone/machine-learning-and-artificial-intelligence"
-    # file_path_train = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "train_harmonic.parquet")
-    # file_path_test = os.path.join(base_dir, "data", "data_storage", "harmonic_ou_parquets", "test_harmonic.parquet")
+    print("X_train sample shape:", X_train[0].shape)
+    print("y_train sample shape:", y_train[0].shape)
+    print(len(X_train), "samples loaded for training")
+    print(len(X_test), "samples loaded for testing")
 
-    # X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
-    # X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
+    train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
+    val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
 
-    # print("X_train sample shape:", X_train[0].shape)
-    # print("y_train sample shape:", y_train[0].shape)
-    # print(len(X_train), "samples loaded for training")
-    # print(len(X_test), "samples loaded for testing")
+    train_loader = DataLoader(train_dataset, batch_size = 32, shuffle=True, num_workers=7)
+    val_loader = DataLoader(val_dataset, batch_size = 32, num_workers=7)
 
-    # train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
-    # val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
+    print("Setting up trainer...")
+    loss_tracker = LossTrackerCallback()
+    trainer = pl.Trainer(
+        max_epochs = 1,
+        enable_checkpointing = False,
+        logger = False,
+        accelerator = "auto",
+        callbacks = [loss_tracker],
+        # num_sanity_val_steps = 0
+    )
 
-    # train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=7)
-    # val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, num_workers=7)
+    print("Starting training...")
+    trainer.fit(model, train_loader, val_loader)
+    print("Training finished.")
 
-    # print("Setting up trainer...")
-    # loss_tracker = LossTrackerCallback()
-    # trainer = pl.Trainer(
-    #     max_epochs=MAX_EPOCHS,
-    #     enable_checkpointing=False,
-    #     logger=False,
-    #     accelerator="auto",
-    #     callbacks=[loss_tracker],
-    #     #num_sanity_val_steps=0
-    # )
+    print("Plotting losses...")
+    loss_tracker.plot_losses()
 
-    # print("Starting training...")
-    # trainer.fit(model, train_loader, val_loader)
-    # print("Training finished.")
-
-    # print("Plotting losses...")
-    # loss_tracker.plot_losses()
-
-    # # plot_predictions_numerical_model(model, val_dataset, n_plots=5)
+    plot_predictions(model, val_dataset, n_plots=5)

@@ -1,10 +1,16 @@
+import ast
+import logging
 import os
+import time
+from datetime import datetime
 from enum import Enum
 from typing import Type, Union
 
+import pandas as pd
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
+from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
+from pytorch_lightning.loggers import TensorBoardLogger
 from torch.utils.data import DataLoader
 
 from models.cnn_numerical import CNNTimeSeriesPredictor
@@ -15,16 +21,6 @@ from models.cnn_visual import (
 )
 from models.utils_models import get_device, get_val_loss, load_and_prepare_data
 from visualization.utils_visualization import plot_predictions
-
-from pytorch_lightning.loggers import TensorBoardLogger
-
-import time
-from datetime import datetime
-import logging
-
-import pandas as pd
-
-import ast
 
 
 def setup_logging(log_file='training.log', console_level=logging.INFO, file_level=logging.DEBUG):
