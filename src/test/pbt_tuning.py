@@ -172,18 +172,18 @@ def run_visual():
         DataFrame with columns: model_type, dataset, params
     """
     image_datasets = OrderedDict([
-        # ("ecg", {
-        #     "train": os.path.join(PROJECT_ROOT, "data/images/ecg/train"),
-        #     "val": os.path.join(PROJECT_ROOT, "data/images/ecg/val")
-        # }),
-        # ("harmonic", {
-        #     "train": os.path.join(PROJECT_ROOT, "data/images/harmonic/train"),
-        #     "val": os.path.join(PROJECT_ROOT, "data/images/harmonic/val")
-        # }),
-        # ("ou", {
-        #     "train": os.path.join(PROJECT_ROOT, "data/images/ou/train"),
-        #     "val": os.path.join(PROJECT_ROOT, "data/images/ou/val")
-        # }),
+        ("ecg", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/ecg/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/ecg/val")
+        }),
+        ("harmonic", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/harmonic/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/harmonic/val")
+        }),
+        ("ou", {
+            "train": os.path.join(PROJECT_ROOT, "data/images/ou/train"),
+            "val": os.path.join(PROJECT_ROOT, "data/images/ou/val")
+        }),
         ("sp500", {
             "train": os.path.join(PROJECT_ROOT, "data/images/sp500/train"),
             "val": os.path.join(PROJECT_ROOT, "data/images/sp500/val")

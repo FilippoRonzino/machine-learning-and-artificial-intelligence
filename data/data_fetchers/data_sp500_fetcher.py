@@ -1,11 +1,13 @@
-import yfinance as yf
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
-import time
 import os
+import time
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import requests
+import yfinance as yf
+from bs4 import BeautifulSoup
+
 
 def get_sp500_tickers() -> list:
     """
