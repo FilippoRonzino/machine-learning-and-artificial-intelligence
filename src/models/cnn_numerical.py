@@ -7,7 +7,6 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader, TensorDataset
 
 from models.utils_models import get_device, load_and_prepare_data
-from visualization.utils_visualization import plot_predictions
 
 
 class CNNTimeSeriesPredictor(pl.LightningModule):
@@ -183,4 +182,4 @@ if __name__ == "__main__":
     print("Plotting losses...")
     loss_tracker.plot_losses()
 
-    plot_predictions(model, val_dataset, n_plots=5)
+    

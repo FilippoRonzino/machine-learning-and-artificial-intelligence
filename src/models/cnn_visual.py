@@ -12,7 +12,6 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 
 from models.utils_models import get_device
-from visualization.utils_visualization import plot_predictions
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):
@@ -381,8 +380,4 @@ if __name__ == "__main__":
         model = CNN_Autoencoder.load_from_checkpoint(best_model_path)
         model = model.to(device)
         model.eval()  # Set model to evaluation mode
-
-    # Visualize predictions with the final model
-    print("Generating predictions visualization...")
-    plot_predictions(model, dataset)
-    plot_predictions(model, validation_data)
+        print("Model loaded successfully.")
