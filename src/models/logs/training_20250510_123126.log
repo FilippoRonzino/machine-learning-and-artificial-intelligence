@@ -1,0 +1,1561 @@
+2025-05-10 12:31:26,137 - root - INFO - Starting training process
+2025-05-10 12:31:26,187 - root - INFO - Starting training of 8 models...
+2025-05-10 12:31:26,187 - root - INFO - 
+==================== Training model 1/8: cnn_n on ecg ====================
+2025-05-10 12:31:26,188 - root - INFO - Loading and preparing numerical data...
+2025-05-10 12:31:29,293 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-10 12:31:29,293 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-10 12:31:29,293 - root - INFO - 50000 samples loaded for training
+2025-05-10 12:31:29,293 - root - INFO - 6250 samples loaded for validation
+2025-05-10 12:31:29,392 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 12:31:29,393 - root - INFO - Retraining model from scratch...
+2025-05-10 12:31:29,747 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 12:31:29,789 - root - INFO - 
+
+[2025-05-10 12:31:29] STATUS UPDATE - Training numerical on ecg | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 12:31:30,055 - root - INFO - Epoch 0 | val_loss: 0.0475
+2025-05-10 12:31:35,513 - root - INFO - Epoch 0 | val_loss: 0.0164
+2025-05-10 12:31:40,902 - root - INFO - Epoch 1 | val_loss: 0.0144
+2025-05-10 12:31:46,312 - root - INFO - Epoch 2 | val_loss: 0.0140
+2025-05-10 12:31:51,717 - root - INFO - Epoch 3 | val_loss: 0.0162
+2025-05-10 12:31:57,072 - root - INFO - Epoch 4 | val_loss: 0.0146
+2025-05-10 12:32:02,430 - root - INFO - Epoch 5 | val_loss: 0.0152
+2025-05-10 12:32:07,784 - root - INFO - Epoch 6 | val_loss: 0.0144
+2025-05-10 12:32:13,079 - root - INFO - Epoch 7 | val_loss: 0.0144
+2025-05-10 12:32:18,515 - root - INFO - Epoch 8 | val_loss: 0.0150
+2025-05-10 12:32:23,799 - root - INFO - Epoch 9 | val_loss: 0.0140
+2025-05-10 12:32:29,108 - root - INFO - Epoch 10 | val_loss: 0.0146
+2025-05-10 12:32:34,460 - root - INFO - Epoch 11 | val_loss: 0.0144
+2025-05-10 12:32:39,777 - root - INFO - Epoch 12 | val_loss: 0.0143
+2025-05-10 12:32:45,155 - root - INFO - Epoch 13 | val_loss: 0.0140
+2025-05-10 12:32:50,578 - root - INFO - Epoch 14 | val_loss: 0.0143
+2025-05-10 12:32:55,931 - root - INFO - Epoch 15 | val_loss: 0.0144
+2025-05-10 12:33:01,243 - root - INFO - Epoch 16 | val_loss: 0.0160
+2025-05-10 12:33:06,701 - root - INFO - Epoch 17 | val_loss: 0.0144
+2025-05-10 12:33:12,107 - root - INFO - Epoch 18 | val_loss: 0.0145
+2025-05-10 12:33:17,558 - root - INFO - Epoch 19 | val_loss: 0.0143
+2025-05-10 12:33:17,566 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_numerical_ecg/epoch=epoch=9-val_loss=val_loss=0.013960.ckpt
+2025-05-10 12:33:17,676 - root - INFO - Successfully trained model: cnn_numerical_ecg
+2025-05-10 12:33:17,682 - root - INFO - 
+==================== Training model 2/8: cnn_n on harmonic ====================
+2025-05-10 12:33:17,687 - root - INFO - Loading and preparing numerical data...
+2025-05-10 12:33:20,759 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-10 12:33:20,760 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-10 12:33:20,760 - root - INFO - 50000 samples loaded for training
+2025-05-10 12:33:20,760 - root - INFO - 6250 samples loaded for validation
+2025-05-10 12:33:20,843 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 12:33:20,843 - root - INFO - Retraining model from scratch...
+2025-05-10 12:33:20,862 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 12:33:20,864 - root - INFO - 
+
+[2025-05-10 12:33:20] STATUS UPDATE - Training numerical on harmonic | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 12:33:20,875 - root - INFO - Epoch 0 | val_loss: 1.5925
+2025-05-10 12:33:25,960 - root - INFO - Epoch 0 | val_loss: 0.1048
+2025-05-10 12:33:31,178 - root - INFO - Epoch 1 | val_loss: 0.0807
+2025-05-10 12:33:36,471 - root - INFO - Epoch 2 | val_loss: 0.0679
+2025-05-10 12:33:41,676 - root - INFO - Epoch 3 | val_loss: 0.0640
+2025-05-10 12:33:46,876 - root - INFO - Epoch 4 | val_loss: 0.0572
+2025-05-10 12:33:52,138 - root - INFO - Epoch 5 | val_loss: 0.0544
+2025-05-10 12:33:57,379 - root - INFO - Epoch 6 | val_loss: 0.0471
+2025-05-10 12:34:02,634 - root - INFO - Epoch 7 | val_loss: 0.0491
+2025-05-10 12:34:07,796 - root - INFO - Epoch 8 | val_loss: 0.0448
+2025-05-10 12:34:13,152 - root - INFO - Epoch 9 | val_loss: 0.0432
+2025-05-10 12:34:18,422 - root - INFO - Epoch 10 | val_loss: 0.0411
+2025-05-10 12:34:23,755 - root - INFO - Epoch 11 | val_loss: 0.0401
+2025-05-10 12:34:29,065 - root - INFO - Epoch 12 | val_loss: 0.0398
+2025-05-10 12:34:34,333 - root - INFO - Epoch 13 | val_loss: 0.0405
+2025-05-10 12:34:39,518 - root - INFO - Epoch 14 | val_loss: 0.0375
+2025-05-10 12:34:44,725 - root - INFO - Epoch 15 | val_loss: 0.0355
+2025-05-10 12:34:50,013 - root - INFO - Epoch 16 | val_loss: 0.0376
+2025-05-10 12:34:55,304 - root - INFO - Epoch 17 | val_loss: 0.0338
+2025-05-10 12:35:00,546 - root - INFO - Epoch 18 | val_loss: 0.0353
+2025-05-10 12:35:05,795 - root - INFO - Epoch 19 | val_loss: 0.0334
+2025-05-10 12:35:11,001 - root - INFO - Epoch 20 | val_loss: 0.0340
+2025-05-10 12:35:16,295 - root - INFO - Epoch 21 | val_loss: 0.0338
+2025-05-10 12:35:21,474 - root - INFO - Epoch 22 | val_loss: 0.0350
+2025-05-10 12:35:26,604 - root - INFO - Epoch 23 | val_loss: 0.0332
+2025-05-10 12:35:31,794 - root - INFO - Epoch 24 | val_loss: 0.0332
+2025-05-10 12:35:37,004 - root - INFO - Epoch 25 | val_loss: 0.0370
+2025-05-10 12:35:42,112 - root - INFO - Epoch 26 | val_loss: 0.0325
+2025-05-10 12:35:47,376 - root - INFO - Epoch 27 | val_loss: 0.0327
+2025-05-10 12:35:52,645 - root - INFO - Epoch 28 | val_loss: 0.0312
+2025-05-10 12:35:57,845 - root - INFO - Epoch 29 | val_loss: 0.0325
+2025-05-10 12:36:03,070 - root - INFO - Epoch 30 | val_loss: 0.0320
+2025-05-10 12:36:08,260 - root - INFO - Epoch 31 | val_loss: 0.0322
+2025-05-10 12:36:13,465 - root - INFO - Epoch 32 | val_loss: 0.0327
+2025-05-10 12:36:18,582 - root - INFO - Epoch 33 | val_loss: 0.0321
+2025-05-10 12:36:23,734 - root - INFO - Epoch 34 | val_loss: 0.0313
+2025-05-10 12:36:28,909 - root - INFO - Epoch 35 | val_loss: 0.0314
+2025-05-10 12:36:34,251 - root - INFO - Epoch 36 | val_loss: 0.0318
+2025-05-10 12:36:39,376 - root - INFO - Epoch 37 | val_loss: 0.0300
+2025-05-10 12:36:44,495 - root - INFO - Epoch 38 | val_loss: 0.0306
+2025-05-10 12:36:49,768 - root - INFO - Epoch 39 | val_loss: 0.0304
+2025-05-10 12:36:55,014 - root - INFO - Epoch 40 | val_loss: 0.0321
+2025-05-10 12:37:00,074 - root - INFO - Epoch 41 | val_loss: 0.0324
+2025-05-10 12:37:05,180 - root - INFO - Epoch 42 | val_loss: 0.0306
+2025-05-10 12:37:10,308 - root - INFO - Epoch 43 | val_loss: 0.0314
+2025-05-10 12:37:15,328 - root - INFO - Epoch 44 | val_loss: 0.0324
+2025-05-10 12:37:20,451 - root - INFO - Epoch 45 | val_loss: 0.0311
+2025-05-10 12:37:25,573 - root - INFO - Epoch 46 | val_loss: 0.0301
+2025-05-10 12:37:30,721 - root - INFO - Epoch 47 | val_loss: 0.0306
+2025-05-10 12:37:30,730 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_numerical_harmonic/epoch=epoch=37-val_loss=val_loss=0.029972.ckpt
+2025-05-10 12:37:30,858 - root - INFO - Successfully trained model: cnn_numerical_harmonic
+2025-05-10 12:37:30,864 - root - INFO - 
+==================== Training model 3/8: cnn_n on ou ====================
+2025-05-10 12:37:30,870 - root - INFO - Loading and preparing numerical data...
+2025-05-10 12:37:34,036 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-10 12:37:34,036 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-10 12:37:34,036 - root - INFO - 50000 samples loaded for training
+2025-05-10 12:37:34,036 - root - INFO - 6250 samples loaded for validation
+2025-05-10 12:37:34,112 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 12:37:34,112 - root - INFO - Retraining model from scratch...
+2025-05-10 12:37:34,122 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 12:37:34,124 - root - INFO - 
+
+[2025-05-10 12:37:34] STATUS UPDATE - Training numerical on ou | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 12:37:34,134 - root - INFO - Epoch 0 | val_loss: 1.9946
+2025-05-10 12:37:44,581 - root - INFO - Epoch 0 | val_loss: 0.1850
+2025-05-10 12:37:55,052 - root - INFO - Epoch 1 | val_loss: 0.1815
+2025-05-10 12:38:05,400 - root - INFO - Epoch 2 | val_loss: 0.1812
+2025-05-10 12:38:15,842 - root - INFO - Epoch 3 | val_loss: 0.1798
+2025-05-10 12:38:26,024 - root - INFO - Epoch 4 | val_loss: 0.1767
+2025-05-10 12:38:36,247 - root - INFO - Epoch 5 | val_loss: 0.1777
+2025-05-10 12:38:46,752 - root - INFO - Epoch 6 | val_loss: 0.1782
+2025-05-10 12:38:57,078 - root - INFO - Epoch 7 | val_loss: 0.1772
+2025-05-10 12:39:07,364 - root - INFO - Epoch 8 | val_loss: 0.1767
+2025-05-10 12:39:17,584 - root - INFO - Epoch 9 | val_loss: 0.1774
+2025-05-10 12:39:28,035 - root - INFO - Epoch 10 | val_loss: 0.1776
+2025-05-10 12:39:38,305 - root - INFO - Epoch 11 | val_loss: 0.1766
+2025-05-10 12:39:48,666 - root - INFO - Epoch 12 | val_loss: 0.1813
+2025-05-10 12:39:59,085 - root - INFO - Epoch 13 | val_loss: 0.1792
+2025-05-10 12:40:09,506 - root - INFO - Epoch 14 | val_loss: 0.1785
+2025-05-10 12:40:19,948 - root - INFO - Epoch 15 | val_loss: 0.1824
+2025-05-10 12:40:30,135 - root - INFO - Epoch 16 | val_loss: 0.1796
+2025-05-10 12:40:40,456 - root - INFO - Epoch 17 | val_loss: 0.1800
+2025-05-10 12:40:50,864 - root - INFO - Epoch 18 | val_loss: 0.1817
+2025-05-10 12:41:01,326 - root - INFO - Epoch 19 | val_loss: 0.1804
+2025-05-10 12:41:11,697 - root - INFO - Epoch 20 | val_loss: 0.1812
+2025-05-10 12:41:21,976 - root - INFO - Epoch 21 | val_loss: 0.1820
+2025-05-10 12:41:21,984 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_numerical_ou/epoch=epoch=11-val_loss=val_loss=0.176636.ckpt
+2025-05-10 12:41:22,109 - root - INFO - Successfully trained model: cnn_numerical_ou
+2025-05-10 12:41:22,113 - root - INFO - 
+==================== Training model 4/8: cnn_n on sp500 ====================
+2025-05-10 12:41:22,118 - root - INFO - Loading and preparing numerical data...
+2025-05-10 12:41:23,847 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-10 12:41:23,847 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-10 12:41:23,847 - root - INFO - 27109 samples loaded for training
+2025-05-10 12:41:23,847 - root - INFO - 3467 samples loaded for validation
+2025-05-10 12:41:23,887 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 12:41:23,887 - root - INFO - Retraining model from scratch...
+2025-05-10 12:41:23,921 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 12:41:23,923 - root - INFO - 
+
+[2025-05-10 12:41:23] STATUS UPDATE - Training numerical on sp500 | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 12:41:23,934 - root - INFO - Epoch 0 | val_loss: 0.8374
+2025-05-10 12:41:32,001 - root - INFO - Epoch 0 | val_loss: 0.1292
+2025-05-10 12:41:40,231 - root - INFO - Epoch 1 | val_loss: 0.1157
+2025-05-10 12:41:48,509 - root - INFO - Epoch 2 | val_loss: 0.1068
+2025-05-10 12:41:56,747 - root - INFO - Epoch 3 | val_loss: 0.1161
+2025-05-10 12:42:05,084 - root - INFO - Epoch 4 | val_loss: 0.1165
+2025-05-10 12:42:13,112 - root - INFO - Epoch 5 | val_loss: 0.1208
+2025-05-10 12:42:21,149 - root - INFO - Epoch 6 | val_loss: 0.1284
+2025-05-10 12:42:29,197 - root - INFO - Epoch 7 | val_loss: 0.1338
+2025-05-10 12:42:37,254 - root - INFO - Epoch 8 | val_loss: 0.1238
+2025-05-10 12:42:45,327 - root - INFO - Epoch 9 | val_loss: 0.1295
+2025-05-10 12:42:53,408 - root - INFO - Epoch 10 | val_loss: 0.1268
+2025-05-10 12:43:01,496 - root - INFO - Epoch 11 | val_loss: 0.1402
+2025-05-10 12:43:09,598 - root - INFO - Epoch 12 | val_loss: 0.1280
+2025-05-10 12:43:09,619 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_numerical_sp500/epoch=epoch=2-val_loss=val_loss=0.106761.ckpt
+2025-05-10 12:43:09,688 - root - INFO - Successfully trained model: cnn_numerical_sp500
+2025-05-10 12:43:09,692 - root - INFO - 
+==================== Training model 5/8: cnn_v on ecg ====================
+2025-05-10 12:43:10,000 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 12:43:10,000 - root - INFO - Retraining model from scratch...
+2025-05-10 12:43:10,022 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 12:43:10,024 - root - INFO - 
+
+[2025-05-10 12:43:10] STATUS UPDATE - Training visual on ecg | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 12:43:10,136 - root - INFO - Epoch 0 | val_loss: 113.2263
+2025-05-10 12:48:10,134 - root - INFO - 
+
+[2025-05-10 12:48:10] STATUS UPDATE - Training visual on ecg | Current epoch: 0 | Elapsed time: 0h 5m 0s
+
+2025-05-10 12:52:47,390 - root - INFO - Epoch 0 | val_loss: 110.6984
+2025-05-10 12:53:10,238 - root - INFO - 
+
+[2025-05-10 12:53:10] STATUS UPDATE - Training visual on ecg | Current epoch: 1 | Elapsed time: 0h 10m 0s
+
+2025-05-10 12:58:10,245 - root - INFO - 
+
+[2025-05-10 12:58:10] STATUS UPDATE - Training visual on ecg | Current epoch: 1 | Elapsed time: 0h 15m 0s
+
+2025-05-10 13:01:02,514 - root - INFO - Epoch 1 | val_loss: 110.6984
+2025-05-10 13:03:10,293 - root - INFO - 
+
+[2025-05-10 13:03:10] STATUS UPDATE - Training visual on ecg | Current epoch: 2 | Elapsed time: 0h 20m 0s
+
+2025-05-10 13:08:10,310 - root - INFO - 
+
+[2025-05-10 13:08:10] STATUS UPDATE - Training visual on ecg | Current epoch: 2 | Elapsed time: 0h 25m 0s
+
+2025-05-10 13:09:17,672 - root - INFO - Epoch 2 | val_loss: 110.6984
+2025-05-10 13:13:10,443 - root - INFO - 
+
+[2025-05-10 13:13:10] STATUS UPDATE - Training visual on ecg | Current epoch: 3 | Elapsed time: 0h 30m 0s
+
+2025-05-10 13:17:32,761 - root - INFO - Epoch 3 | val_loss: 110.6984
+2025-05-10 13:18:10,552 - root - INFO - 
+
+[2025-05-10 13:18:10] STATUS UPDATE - Training visual on ecg | Current epoch: 4 | Elapsed time: 0h 35m 0s
+
+2025-05-10 13:23:10,638 - root - INFO - 
+
+[2025-05-10 13:23:10] STATUS UPDATE - Training visual on ecg | Current epoch: 4 | Elapsed time: 0h 40m 0s
+
+2025-05-10 13:25:47,807 - root - INFO - Epoch 4 | val_loss: 110.6984
+2025-05-10 13:28:10,723 - root - INFO - 
+
+[2025-05-10 13:28:10] STATUS UPDATE - Training visual on ecg | Current epoch: 5 | Elapsed time: 0h 45m 0s
+
+2025-05-10 13:33:10,815 - root - INFO - 
+
+[2025-05-10 13:33:10] STATUS UPDATE - Training visual on ecg | Current epoch: 5 | Elapsed time: 0h 50m 0s
+
+2025-05-10 13:34:02,804 - root - INFO - Epoch 5 | val_loss: 110.6984
+2025-05-10 13:38:10,900 - root - INFO - 
+
+[2025-05-10 13:38:10] STATUS UPDATE - Training visual on ecg | Current epoch: 6 | Elapsed time: 0h 55m 0s
+
+2025-05-10 13:42:17,845 - root - INFO - Epoch 6 | val_loss: 110.6984
+2025-05-10 13:43:10,998 - root - INFO - 
+
+[2025-05-10 13:43:10] STATUS UPDATE - Training visual on ecg | Current epoch: 7 | Elapsed time: 1h 0m 0s
+
+2025-05-10 13:48:11,046 - root - INFO - 
+
+[2025-05-10 13:48:11] STATUS UPDATE - Training visual on ecg | Current epoch: 7 | Elapsed time: 1h 5m 1s
+
+2025-05-10 13:50:32,993 - root - INFO - Epoch 7 | val_loss: 110.6984
+2025-05-10 13:53:11,052 - root - INFO - 
+
+[2025-05-10 13:53:11] STATUS UPDATE - Training visual on ecg | Current epoch: 8 | Elapsed time: 1h 10m 1s
+
+2025-05-10 13:58:11,115 - root - INFO - 
+
+[2025-05-10 13:58:11] STATUS UPDATE - Training visual on ecg | Current epoch: 8 | Elapsed time: 1h 15m 1s
+
+2025-05-10 13:58:48,224 - root - INFO - Epoch 8 | val_loss: 110.6984
+2025-05-10 14:03:11,190 - root - INFO - 
+
+[2025-05-10 14:03:11] STATUS UPDATE - Training visual on ecg | Current epoch: 9 | Elapsed time: 1h 20m 1s
+
+2025-05-10 14:07:03,430 - root - INFO - Epoch 9 | val_loss: 110.6984
+2025-05-10 14:08:11,200 - root - INFO - 
+
+[2025-05-10 14:08:11] STATUS UPDATE - Training visual on ecg | Current epoch: 10 | Elapsed time: 1h 25m 1s
+
+2025-05-10 14:13:11,232 - root - INFO - 
+
+[2025-05-10 14:13:11] STATUS UPDATE - Training visual on ecg | Current epoch: 10 | Elapsed time: 1h 30m 1s
+
+2025-05-10 14:15:18,321 - root - INFO - Epoch 10 | val_loss: 110.6984
+2025-05-10 14:15:18,343 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_visual_ecg/epoch=epoch=0-val_loss=val_loss=110.698380.ckpt
+2025-05-10 14:15:18,344 - root - INFO - Successfully trained model: cnn_visual_ecg
+2025-05-10 14:15:18,344 - root - INFO - 
+==================== Training model 6/8: cnn_v on harmonic ====================
+2025-05-10 14:15:18,639 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-10 14:15:18,639 - root - INFO - Retraining model from scratch...
+2025-05-10 14:15:18,666 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-10 14:15:18,668 - root - INFO - 
+
+[2025-05-10 14:15:18] STATUS UPDATE - Training visual on harmonic | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-10 14:15:18,904 - root - INFO - Epoch 0 | val_loss: 100.3207
+2025-05-10 14:20:18,830 - root - INFO - 
+
+[2025-05-10 14:20:18] STATUS UPDATE - Training visual on harmonic | Current epoch: 0 | Elapsed time: 0h 5m 0s
+
+2025-05-10 14:25:18,852 - root - INFO - 
+
+[2025-05-10 14:25:18] STATUS UPDATE - Training visual on harmonic | Current epoch: 0 | Elapsed time: 0h 10m 0s
+
+2025-05-10 14:28:12,640 - root - INFO - Epoch 0 | val_loss: 63.8901
+2025-05-10 14:30:18,931 - root - INFO - 
+
+[2025-05-10 14:30:18] STATUS UPDATE - Training visual on harmonic | Current epoch: 1 | Elapsed time: 0h 15m 0s
+
+2025-05-10 14:35:18,979 - root - INFO - 
+
+[2025-05-10 14:35:18] STATUS UPDATE - Training visual on harmonic | Current epoch: 1 | Elapsed time: 0h 20m 0s
+
+2025-05-10 14:38:57,448 - root - INFO - Epoch 1 | val_loss: 64.1868
+2025-05-10 14:40:19,176 - root - INFO - 
+
+[2025-05-10 14:40:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 2 | Elapsed time: 0h 25m 0s
+
+2025-05-10 14:45:19,301 - root - INFO - 
+
+[2025-05-10 14:45:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 2 | Elapsed time: 0h 30m 0s
+
+2025-05-10 14:49:40,625 - root - INFO - Epoch 2 | val_loss: 63.5300
+2025-05-10 14:50:19,423 - root - INFO - 
+
+[2025-05-10 14:50:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 3 | Elapsed time: 0h 35m 0s
+
+2025-05-10 14:55:19,582 - root - INFO - 
+
+[2025-05-10 14:55:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 3 | Elapsed time: 0h 40m 0s
+
+2025-05-10 15:00:23,692 - root - INFO - Epoch 3 | val_loss: 56.1068
+2025-05-10 15:00:23,813 - root - INFO - 
+
+[2025-05-10 15:00:23] STATUS UPDATE - Training visual on harmonic | Current epoch: 4 | Elapsed time: 0h 45m 5s
+
+2025-05-10 15:05:24,004 - root - INFO - 
+
+[2025-05-10 15:05:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 4 | Elapsed time: 0h 50m 5s
+
+2025-05-10 15:10:24,046 - root - INFO - 
+
+[2025-05-10 15:10:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 4 | Elapsed time: 0h 55m 5s
+
+2025-05-10 15:11:06,297 - root - INFO - Epoch 4 | val_loss: 56.0011
+2025-05-10 15:15:24,188 - root - INFO - 
+
+[2025-05-10 15:15:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 5 | Elapsed time: 1h 0m 5s
+
+2025-05-10 15:20:24,341 - root - INFO - 
+
+[2025-05-10 15:20:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 5 | Elapsed time: 1h 5m 5s
+
+2025-05-10 15:21:48,710 - root - INFO - Epoch 5 | val_loss: 54.8227
+2025-05-10 15:25:24,398 - root - INFO - 
+
+[2025-05-10 15:25:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 6 | Elapsed time: 1h 10m 5s
+
+2025-05-10 15:30:24,415 - root - INFO - 
+
+[2025-05-10 15:30:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 6 | Elapsed time: 1h 15m 5s
+
+2025-05-10 15:32:30,606 - root - INFO - Epoch 6 | val_loss: 53.0042
+2025-05-10 15:35:24,442 - root - INFO - 
+
+[2025-05-10 15:35:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 7 | Elapsed time: 1h 20m 5s
+
+2025-05-10 15:40:24,550 - root - INFO - 
+
+[2025-05-10 15:40:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 7 | Elapsed time: 1h 25m 5s
+
+2025-05-10 15:43:12,616 - root - INFO - Epoch 7 | val_loss: 55.1768
+2025-05-10 15:45:24,587 - root - INFO - 
+
+[2025-05-10 15:45:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 8 | Elapsed time: 1h 30m 5s
+
+2025-05-10 15:50:24,748 - root - INFO - 
+
+[2025-05-10 15:50:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 8 | Elapsed time: 1h 35m 6s
+
+2025-05-10 15:53:54,447 - root - INFO - Epoch 8 | val_loss: 56.7533
+2025-05-10 15:55:24,920 - root - INFO - 
+
+[2025-05-10 15:55:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 9 | Elapsed time: 1h 40m 6s
+
+2025-05-10 16:00:24,995 - root - INFO - 
+
+[2025-05-10 16:00:24] STATUS UPDATE - Training visual on harmonic | Current epoch: 9 | Elapsed time: 1h 45m 6s
+
+2025-05-10 16:04:35,891 - root - INFO - Epoch 9 | val_loss: 53.1898
+2025-05-10 16:05:25,155 - root - INFO - 
+
+[2025-05-10 16:05:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 10 | Elapsed time: 1h 50m 6s
+
+2025-05-10 16:10:25,262 - root - INFO - 
+
+[2025-05-10 16:10:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 10 | Elapsed time: 1h 55m 6s
+
+2025-05-10 16:15:17,154 - root - INFO - Epoch 10 | val_loss: 50.5130
+2025-05-10 16:15:25,444 - root - INFO - 
+
+[2025-05-10 16:15:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 11 | Elapsed time: 2h 0m 6s
+
+2025-05-10 16:20:25,541 - root - INFO - 
+
+[2025-05-10 16:20:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 11 | Elapsed time: 2h 5m 6s
+
+2025-05-10 16:25:25,610 - root - INFO - 
+
+[2025-05-10 16:25:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 11 | Elapsed time: 2h 10m 6s
+
+2025-05-10 16:25:58,339 - root - INFO - Epoch 11 | val_loss: 52.1761
+2025-05-10 16:30:25,776 - root - INFO - 
+
+[2025-05-10 16:30:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 12 | Elapsed time: 2h 15m 7s
+
+2025-05-10 16:35:25,889 - root - INFO - 
+
+[2025-05-10 16:35:25] STATUS UPDATE - Training visual on harmonic | Current epoch: 12 | Elapsed time: 2h 20m 7s
+
+2025-05-10 16:36:39,523 - root - INFO - Epoch 12 | val_loss: 53.7486
+2025-05-10 16:40:26,079 - root - INFO - 
+
+[2025-05-10 16:40:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 13 | Elapsed time: 2h 25m 7s
+
+2025-05-10 16:45:26,102 - root - INFO - 
+
+[2025-05-10 16:45:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 13 | Elapsed time: 2h 30m 7s
+
+2025-05-10 16:47:20,398 - root - INFO - Epoch 13 | val_loss: 48.8439
+2025-05-10 16:50:26,119 - root - INFO - 
+
+[2025-05-10 16:50:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 14 | Elapsed time: 2h 35m 7s
+
+2025-05-10 16:55:26,195 - root - INFO - 
+
+[2025-05-10 16:55:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 14 | Elapsed time: 2h 40m 7s
+
+2025-05-10 16:58:01,600 - root - INFO - Epoch 14 | val_loss: 49.1048
+2025-05-10 17:00:26,223 - root - INFO - 
+
+[2025-05-10 17:00:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 15 | Elapsed time: 2h 45m 7s
+
+2025-05-10 17:05:26,422 - root - INFO - 
+
+[2025-05-10 17:05:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 15 | Elapsed time: 2h 50m 7s
+
+2025-05-10 17:08:42,787 - root - INFO - Epoch 15 | val_loss: 48.8199
+2025-05-10 17:10:26,504 - root - INFO - 
+
+[2025-05-10 17:10:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 16 | Elapsed time: 2h 55m 7s
+
+2025-05-10 17:15:26,667 - root - INFO - 
+
+[2025-05-10 17:15:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 16 | Elapsed time: 3h 0m 7s
+
+2025-05-10 17:19:23,906 - root - INFO - Epoch 16 | val_loss: 50.1030
+2025-05-10 17:20:26,761 - root - INFO - 
+
+[2025-05-10 17:20:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 17 | Elapsed time: 3h 5m 8s
+
+2025-05-10 17:25:26,906 - root - INFO - 
+
+[2025-05-10 17:25:26] STATUS UPDATE - Training visual on harmonic | Current epoch: 17 | Elapsed time: 3h 10m 8s
+
+2025-05-10 17:30:04,953 - root - INFO - Epoch 17 | val_loss: 48.4254
+2025-05-10 17:30:27,084 - root - INFO - 
+
+[2025-05-10 17:30:27] STATUS UPDATE - Training visual on harmonic | Current epoch: 18 | Elapsed time: 3h 15m 8s
+
+2025-05-10 17:35:27,191 - root - INFO - 
+
+[2025-05-10 17:35:27] STATUS UPDATE - Training visual on harmonic | Current epoch: 18 | Elapsed time: 3h 20m 8s
+
+2025-05-10 17:40:45,844 - root - INFO - Epoch 18 | val_loss: 47.9334
+2025-05-10 17:40:45,967 - root - INFO - 
+
+[2025-05-10 17:40:45] STATUS UPDATE - Training visual on harmonic | Current epoch: 19 | Elapsed time: 3h 25m 27s
+
+2025-05-10 17:45:46,144 - root - INFO - 
+
+[2025-05-10 17:45:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 19 | Elapsed time: 3h 30m 27s
+
+2025-05-10 17:50:46,172 - root - INFO - 
+
+[2025-05-10 17:50:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 19 | Elapsed time: 3h 35m 27s
+
+2025-05-10 17:51:26,718 - root - INFO - Epoch 19 | val_loss: 49.1321
+2025-05-10 17:55:46,273 - root - INFO - 
+
+[2025-05-10 17:55:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 20 | Elapsed time: 3h 40m 27s
+
+2025-05-10 18:00:46,471 - root - INFO - 
+
+[2025-05-10 18:00:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 20 | Elapsed time: 3h 45m 27s
+
+2025-05-10 18:02:07,583 - root - INFO - Epoch 20 | val_loss: 48.2023
+2025-05-10 18:05:46,628 - root - INFO - 
+
+[2025-05-10 18:05:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 21 | Elapsed time: 3h 50m 27s
+
+2025-05-10 18:10:46,789 - root - INFO - 
+
+[2025-05-10 18:10:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 21 | Elapsed time: 3h 55m 28s
+
+2025-05-10 18:12:48,549 - root - INFO - Epoch 21 | val_loss: 47.3291
+2025-05-10 18:15:46,841 - root - INFO - 
+
+[2025-05-10 18:15:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 22 | Elapsed time: 4h 0m 28s
+
+2025-05-10 18:20:46,895 - root - INFO - 
+
+[2025-05-10 18:20:46] STATUS UPDATE - Training visual on harmonic | Current epoch: 22 | Elapsed time: 4h 5m 28s
+
+2025-05-10 18:23:29,554 - root - INFO - Epoch 22 | val_loss: 49.0918
+2025-05-10 18:25:47,077 - root - INFO - 
+
+[2025-05-10 18:25:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 23 | Elapsed time: 4h 10m 28s
+
+2025-05-10 18:30:47,077 - root - INFO - 
+
+[2025-05-10 18:30:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 23 | Elapsed time: 4h 15m 28s
+
+2025-05-10 18:34:10,494 - root - INFO - Epoch 23 | val_loss: 47.3428
+2025-05-10 18:35:47,106 - root - INFO - 
+
+[2025-05-10 18:35:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 24 | Elapsed time: 4h 20m 28s
+
+2025-05-10 18:40:47,242 - root - INFO - 
+
+[2025-05-10 18:40:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 24 | Elapsed time: 4h 25m 28s
+
+2025-05-10 18:44:51,404 - root - INFO - Epoch 24 | val_loss: 47.6920
+2025-05-10 18:45:47,426 - root - INFO - 
+
+[2025-05-10 18:45:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 25 | Elapsed time: 4h 30m 28s
+
+2025-05-10 18:50:47,466 - root - INFO - 
+
+[2025-05-10 18:50:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 25 | Elapsed time: 4h 35m 28s
+
+2025-05-10 18:55:32,396 - root - INFO - Epoch 25 | val_loss: 48.2669
+2025-05-10 18:55:47,504 - root - INFO - 
+
+[2025-05-10 18:55:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 26 | Elapsed time: 4h 40m 28s
+
+2025-05-10 19:00:47,678 - root - INFO - 
+
+[2025-05-10 19:00:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 26 | Elapsed time: 4h 45m 29s
+
+2025-05-10 19:05:47,780 - root - INFO - 
+
+[2025-05-10 19:05:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 26 | Elapsed time: 4h 50m 29s
+
+2025-05-10 19:06:13,053 - root - INFO - Epoch 26 | val_loss: 49.7910
+2025-05-10 19:10:47,913 - root - INFO - 
+
+[2025-05-10 19:10:47] STATUS UPDATE - Training visual on harmonic | Current epoch: 27 | Elapsed time: 4h 55m 29s
+
+2025-05-10 19:15:48,038 - root - INFO - 
+
+[2025-05-10 19:15:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 27 | Elapsed time: 5h 0m 29s
+
+2025-05-10 19:16:53,443 - root - INFO - Epoch 27 | val_loss: 48.2296
+2025-05-10 19:20:48,209 - root - INFO - 
+
+[2025-05-10 19:20:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 28 | Elapsed time: 5h 5m 29s
+
+2025-05-10 19:25:48,217 - root - INFO - 
+
+[2025-05-10 19:25:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 28 | Elapsed time: 5h 10m 29s
+
+2025-05-10 19:27:33,919 - root - INFO - Epoch 28 | val_loss: 46.8444
+2025-05-10 19:30:48,381 - root - INFO - 
+
+[2025-05-10 19:30:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 29 | Elapsed time: 5h 15m 29s
+
+2025-05-10 19:35:48,425 - root - INFO - 
+
+[2025-05-10 19:35:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 29 | Elapsed time: 5h 20m 29s
+
+2025-05-10 19:38:14,428 - root - INFO - Epoch 29 | val_loss: 46.7830
+2025-05-10 19:40:48,604 - root - INFO - 
+
+[2025-05-10 19:40:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 30 | Elapsed time: 5h 25m 29s
+
+2025-05-10 19:45:48,762 - root - INFO - 
+
+[2025-05-10 19:45:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 30 | Elapsed time: 5h 30m 30s
+
+2025-05-10 19:48:54,932 - root - INFO - Epoch 30 | val_loss: 47.5336
+2025-05-10 19:50:48,887 - root - INFO - 
+
+[2025-05-10 19:50:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 31 | Elapsed time: 5h 35m 30s
+
+2025-05-10 19:55:48,960 - root - INFO - 
+
+[2025-05-10 19:55:48] STATUS UPDATE - Training visual on harmonic | Current epoch: 31 | Elapsed time: 5h 40m 30s
+
+2025-05-10 19:59:35,271 - root - INFO - Epoch 31 | val_loss: 47.6989
+2025-05-10 20:00:49,156 - root - INFO - 
+
+[2025-05-10 20:00:49] STATUS UPDATE - Training visual on harmonic | Current epoch: 32 | Elapsed time: 5h 45m 30s
+
+2025-05-10 20:05:49,218 - root - INFO - 
+
+[2025-05-10 20:05:49] STATUS UPDATE - Training visual on harmonic | Current epoch: 32 | Elapsed time: 5h 50m 30s
+
+2025-05-10 20:10:15,672 - root - INFO - Epoch 32 | val_loss: 46.9931
+2025-05-10 20:10:49,333 - root - INFO - 
+
+[2025-05-10 20:10:49] STATUS UPDATE - Training visual on harmonic | Current epoch: 33 | Elapsed time: 5h 55m 30s
+
+2025-05-10 20:15:49,483 - root - INFO - 
+
+[2025-05-10 20:15:49] STATUS UPDATE - Training visual on harmonic | Current epoch: 33 | Elapsed time: 6h 0m 30s
+
+2025-05-10 20:20:56,082 - root - INFO - Epoch 33 | val_loss: 47.8138
+2025-05-10 20:20:56,145 - root - INFO - 
+
+[2025-05-10 20:20:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 34 | Elapsed time: 6h 5m 37s
+
+2025-05-10 20:25:56,221 - root - INFO - 
+
+[2025-05-10 20:25:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 34 | Elapsed time: 6h 10m 37s
+
+2025-05-10 20:30:56,344 - root - INFO - 
+
+[2025-05-10 20:30:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 34 | Elapsed time: 6h 15m 37s
+
+2025-05-10 20:31:36,053 - root - INFO - Epoch 34 | val_loss: 46.3594
+2025-05-10 20:35:56,536 - root - INFO - 
+
+[2025-05-10 20:35:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 35 | Elapsed time: 6h 20m 37s
+
+2025-05-10 20:40:56,643 - root - INFO - 
+
+[2025-05-10 20:40:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 35 | Elapsed time: 6h 25m 37s
+
+2025-05-10 20:42:16,338 - root - INFO - Epoch 35 | val_loss: 46.5331
+2025-05-10 20:45:56,756 - root - INFO - 
+
+[2025-05-10 20:45:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 36 | Elapsed time: 6h 30m 38s
+
+2025-05-10 20:50:56,936 - root - INFO - 
+
+[2025-05-10 20:50:56] STATUS UPDATE - Training visual on harmonic | Current epoch: 36 | Elapsed time: 6h 35m 38s
+
+2025-05-10 20:52:56,711 - root - INFO - Epoch 36 | val_loss: 47.5492
+2025-05-10 20:55:57,026 - root - INFO - 
+
+[2025-05-10 20:55:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 37 | Elapsed time: 6h 40m 38s
+
+2025-05-10 21:00:57,075 - root - INFO - 
+
+[2025-05-10 21:00:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 37 | Elapsed time: 6h 45m 38s
+
+2025-05-10 21:03:37,558 - root - INFO - Epoch 37 | val_loss: 47.5734
+2025-05-10 21:05:57,117 - root - INFO - 
+
+[2025-05-10 21:05:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 38 | Elapsed time: 6h 50m 38s
+
+2025-05-10 21:10:57,163 - root - INFO - 
+
+[2025-05-10 21:10:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 38 | Elapsed time: 6h 55m 38s
+
+2025-05-10 21:14:17,946 - root - INFO - Epoch 38 | val_loss: 49.4887
+2025-05-10 21:15:57,209 - root - INFO - 
+
+[2025-05-10 21:15:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 39 | Elapsed time: 7h 0m 38s
+
+2025-05-10 21:20:57,344 - root - INFO - 
+
+[2025-05-10 21:20:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 39 | Elapsed time: 7h 5m 38s
+
+2025-05-10 21:24:58,457 - root - INFO - Epoch 39 | val_loss: 46.8032
+2025-05-10 21:25:57,527 - root - INFO - 
+
+[2025-05-10 21:25:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 40 | Elapsed time: 7h 10m 38s
+
+2025-05-10 21:30:57,700 - root - INFO - 
+
+[2025-05-10 21:30:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 40 | Elapsed time: 7h 15m 39s
+
+2025-05-10 21:35:38,702 - root - INFO - Epoch 40 | val_loss: 46.1352
+2025-05-10 21:35:57,853 - root - INFO - 
+
+[2025-05-10 21:35:57] STATUS UPDATE - Training visual on harmonic | Current epoch: 41 | Elapsed time: 7h 20m 39s
+
+2025-05-10 21:40:58,006 - root - INFO - 
+
+[2025-05-10 21:40:58] STATUS UPDATE - Training visual on harmonic | Current epoch: 41 | Elapsed time: 7h 25m 39s
+
+2025-05-10 21:46:19,160 - root - INFO - Epoch 41 | val_loss: 47.7267
+2025-05-10 21:46:19,222 - root - INFO - 
+
+[2025-05-10 21:46:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 42 | Elapsed time: 7h 31m 0s
+
+2025-05-10 21:51:19,236 - root - INFO - 
+
+[2025-05-10 21:51:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 42 | Elapsed time: 7h 36m 0s
+
+2025-05-10 21:56:19,259 - root - INFO - 
+
+[2025-05-10 21:56:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 42 | Elapsed time: 7h 41m 0s
+
+2025-05-10 21:56:59,513 - root - INFO - Epoch 42 | val_loss: 45.9681
+2025-05-10 22:01:19,408 - root - INFO - 
+
+[2025-05-10 22:01:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 43 | Elapsed time: 7h 46m 0s
+
+2025-05-10 22:06:19,463 - root - INFO - 
+
+[2025-05-10 22:06:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 43 | Elapsed time: 7h 51m 0s
+
+2025-05-10 22:07:39,969 - root - INFO - Epoch 43 | val_loss: 46.2759
+2025-05-10 22:11:19,468 - root - INFO - 
+
+[2025-05-10 22:11:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 44 | Elapsed time: 7h 56m 0s
+
+2025-05-10 22:16:19,572 - root - INFO - 
+
+[2025-05-10 22:16:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 44 | Elapsed time: 8h 1m 0s
+
+2025-05-10 22:18:20,488 - root - INFO - Epoch 44 | val_loss: 47.2888
+2025-05-10 22:21:19,677 - root - INFO - 
+
+[2025-05-10 22:21:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 45 | Elapsed time: 8h 6m 1s
+
+2025-05-10 22:26:19,864 - root - INFO - 
+
+[2025-05-10 22:26:19] STATUS UPDATE - Training visual on harmonic | Current epoch: 45 | Elapsed time: 8h 11m 1s
+
+2025-05-10 22:29:00,898 - root - INFO - Epoch 45 | val_loss: 47.8941
+2025-05-10 22:31:20,052 - root - INFO - 
+
+[2025-05-10 22:31:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 46 | Elapsed time: 8h 16m 1s
+
+2025-05-10 22:36:20,144 - root - INFO - 
+
+[2025-05-10 22:36:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 46 | Elapsed time: 8h 21m 1s
+
+2025-05-10 22:39:40,828 - root - INFO - Epoch 46 | val_loss: 46.6617
+2025-05-10 22:41:20,170 - root - INFO - 
+
+[2025-05-10 22:41:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 47 | Elapsed time: 8h 26m 1s
+
+2025-05-10 22:46:20,180 - root - INFO - 
+
+[2025-05-10 22:46:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 47 | Elapsed time: 8h 31m 1s
+
+2025-05-10 22:50:20,835 - root - INFO - Epoch 47 | val_loss: 46.0706
+2025-05-10 22:51:20,325 - root - INFO - 
+
+[2025-05-10 22:51:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 48 | Elapsed time: 8h 36m 1s
+
+2025-05-10 22:56:20,379 - root - INFO - 
+
+[2025-05-10 22:56:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 48 | Elapsed time: 8h 41m 1s
+
+2025-05-10 23:01:01,017 - root - INFO - Epoch 48 | val_loss: 45.6949
+2025-05-10 23:01:20,535 - root - INFO - 
+
+[2025-05-10 23:01:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 49 | Elapsed time: 8h 46m 1s
+
+2025-05-10 23:06:20,653 - root - INFO - 
+
+[2025-05-10 23:06:20] STATUS UPDATE - Training visual on harmonic | Current epoch: 49 | Elapsed time: 8h 51m 1s
+
+2025-05-10 23:11:41,084 - root - INFO - Epoch 49 | val_loss: 47.4653
+2025-05-10 23:11:41,147 - root - INFO - 
+
+[2025-05-10 23:11:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 50 | Elapsed time: 8h 56m 22s
+
+2025-05-10 23:16:41,346 - root - INFO - 
+
+[2025-05-10 23:16:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 50 | Elapsed time: 9h 1m 22s
+
+2025-05-10 23:21:41,454 - root - INFO - 
+
+[2025-05-10 23:21:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 50 | Elapsed time: 9h 6m 22s
+
+2025-05-10 23:22:21,334 - root - INFO - Epoch 50 | val_loss: 45.5905
+2025-05-10 23:26:41,560 - root - INFO - 
+
+[2025-05-10 23:26:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 51 | Elapsed time: 9h 11m 22s
+
+2025-05-10 23:31:41,747 - root - INFO - 
+
+[2025-05-10 23:31:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 51 | Elapsed time: 9h 16m 23s
+
+2025-05-10 23:33:01,838 - root - INFO - Epoch 51 | val_loss: 46.0295
+2025-05-10 23:36:41,851 - root - INFO - 
+
+[2025-05-10 23:36:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 52 | Elapsed time: 9h 21m 23s
+
+2025-05-10 23:41:41,906 - root - INFO - 
+
+[2025-05-10 23:41:41] STATUS UPDATE - Training visual on harmonic | Current epoch: 52 | Elapsed time: 9h 26m 23s
+
+2025-05-10 23:43:42,021 - root - INFO - Epoch 52 | val_loss: 45.6755
+2025-05-10 23:46:42,055 - root - INFO - 
+
+[2025-05-10 23:46:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 53 | Elapsed time: 9h 31m 23s
+
+2025-05-10 23:51:42,239 - root - INFO - 
+
+[2025-05-10 23:51:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 53 | Elapsed time: 9h 36m 23s
+
+2025-05-10 23:54:22,377 - root - INFO - Epoch 53 | val_loss: 46.8687
+2025-05-10 23:56:42,380 - root - INFO - 
+
+[2025-05-10 23:56:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 54 | Elapsed time: 9h 41m 23s
+
+2025-05-11 00:01:42,483 - root - INFO - 
+
+[2025-05-11 00:01:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 54 | Elapsed time: 9h 46m 23s
+
+2025-05-11 00:05:02,925 - root - INFO - Epoch 54 | val_loss: 45.9614
+2025-05-11 00:06:42,508 - root - INFO - 
+
+[2025-05-11 00:06:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 55 | Elapsed time: 9h 51m 23s
+
+2025-05-11 00:11:42,654 - root - INFO - 
+
+[2025-05-11 00:11:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 55 | Elapsed time: 9h 56m 23s
+
+2025-05-11 00:15:43,221 - root - INFO - Epoch 55 | val_loss: 47.0878
+2025-05-11 00:16:42,680 - root - INFO - 
+
+[2025-05-11 00:16:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 56 | Elapsed time: 10h 1m 24s
+
+2025-05-11 00:21:42,828 - root - INFO - 
+
+[2025-05-11 00:21:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 56 | Elapsed time: 10h 6m 24s
+
+2025-05-11 00:26:23,458 - root - INFO - Epoch 56 | val_loss: 47.8541
+2025-05-11 00:26:42,915 - root - INFO - 
+
+[2025-05-11 00:26:42] STATUS UPDATE - Training visual on harmonic | Current epoch: 57 | Elapsed time: 10h 11m 24s
+
+2025-05-11 00:31:43,066 - root - INFO - 
+
+[2025-05-11 00:31:43] STATUS UPDATE - Training visual on harmonic | Current epoch: 57 | Elapsed time: 10h 16m 24s
+
+2025-05-11 00:37:03,515 - root - INFO - Epoch 57 | val_loss: 46.0776
+2025-05-11 00:37:03,580 - root - INFO - 
+
+[2025-05-11 00:37:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 58 | Elapsed time: 10h 21m 44s
+
+2025-05-11 00:42:03,733 - root - INFO - 
+
+[2025-05-11 00:42:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 58 | Elapsed time: 10h 26m 45s
+
+2025-05-11 00:47:03,840 - root - INFO - 
+
+[2025-05-11 00:47:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 58 | Elapsed time: 10h 31m 45s
+
+2025-05-11 00:47:43,737 - root - INFO - Epoch 58 | val_loss: 46.3393
+2025-05-11 00:52:03,845 - root - INFO - 
+
+[2025-05-11 00:52:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 59 | Elapsed time: 10h 36m 45s
+
+2025-05-11 00:57:03,883 - root - INFO - 
+
+[2025-05-11 00:57:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 59 | Elapsed time: 10h 41m 45s
+
+2025-05-11 00:58:23,726 - root - INFO - Epoch 59 | val_loss: 45.6341
+2025-05-11 01:02:03,949 - root - INFO - 
+
+[2025-05-11 01:02:03] STATUS UPDATE - Training visual on harmonic | Current epoch: 60 | Elapsed time: 10h 46m 45s
+
+2025-05-11 01:07:04,081 - root - INFO - 
+
+[2025-05-11 01:07:04] STATUS UPDATE - Training visual on harmonic | Current epoch: 60 | Elapsed time: 10h 51m 45s
+
+2025-05-11 01:09:03,700 - root - INFO - Epoch 60 | val_loss: 46.0953
+2025-05-11 01:09:03,724 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_visual_harmonic/epoch=epoch=50-val_loss=val_loss=45.590500.ckpt
+2025-05-11 01:09:03,724 - root - INFO - Successfully trained model: cnn_visual_harmonic
+2025-05-11 01:09:03,724 - root - INFO - 
+==================== Training model 7/8: cnn_v on ou ====================
+2025-05-11 01:09:04,019 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-11 01:09:04,019 - root - INFO - Retraining model from scratch...
+2025-05-11 01:09:04,040 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-11 01:09:04,042 - root - INFO - 
+
+[2025-05-11 01:09:04] STATUS UPDATE - Training visual on ou | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-11 01:09:04,154 - root - INFO - Epoch 0 | val_loss: 63.3706
+2025-05-11 01:14:04,125 - root - INFO - 
+
+[2025-05-11 01:14:04] STATUS UPDATE - Training visual on ou | Current epoch: 0 | Elapsed time: 0h 5m 0s
+
+2025-05-11 01:19:04,240 - root - INFO - 
+
+[2025-05-11 01:19:04] STATUS UPDATE - Training visual on ou | Current epoch: 0 | Elapsed time: 0h 10m 0s
+
+2025-05-11 01:20:44,211 - root - INFO - Epoch 0 | val_loss: 50.2238
+2025-05-11 01:24:04,271 - root - INFO - 
+
+[2025-05-11 01:24:04] STATUS UPDATE - Training visual on ou | Current epoch: 1 | Elapsed time: 0h 15m 0s
+
+2025-05-11 01:29:04,423 - root - INFO - 
+
+[2025-05-11 01:29:04] STATUS UPDATE - Training visual on ou | Current epoch: 1 | Elapsed time: 0h 20m 0s
+
+2025-05-11 01:30:15,722 - root - INFO - Epoch 1 | val_loss: 50.1866
+2025-05-11 01:34:04,577 - root - INFO - 
+
+[2025-05-11 01:34:04] STATUS UPDATE - Training visual on ou | Current epoch: 2 | Elapsed time: 0h 25m 0s
+
+2025-05-11 01:39:04,719 - root - INFO - 
+
+[2025-05-11 01:39:04] STATUS UPDATE - Training visual on ou | Current epoch: 2 | Elapsed time: 0h 30m 0s
+
+2025-05-11 01:39:46,245 - root - INFO - Epoch 2 | val_loss: 50.1382
+2025-05-11 01:44:04,780 - root - INFO - 
+
+[2025-05-11 01:44:04] STATUS UPDATE - Training visual on ou | Current epoch: 3 | Elapsed time: 0h 35m 0s
+
+2025-05-11 01:49:15,989 - root - INFO - Epoch 3 | val_loss: 50.0873
+2025-05-11 01:49:16,091 - root - INFO - 
+
+[2025-05-11 01:49:16] STATUS UPDATE - Training visual on ou | Current epoch: 4 | Elapsed time: 0h 40m 12s
+
+2025-05-11 01:54:16,255 - root - INFO - 
+
+[2025-05-11 01:54:16] STATUS UPDATE - Training visual on ou | Current epoch: 4 | Elapsed time: 0h 45m 12s
+
+2025-05-11 01:58:44,785 - root - INFO - Epoch 4 | val_loss: 50.0647
+2025-05-11 01:59:16,371 - root - INFO - 
+
+[2025-05-11 01:59:16] STATUS UPDATE - Training visual on ou | Current epoch: 5 | Elapsed time: 0h 50m 12s
+
+2025-05-11 02:04:16,380 - root - INFO - 
+
+[2025-05-11 02:04:16] STATUS UPDATE - Training visual on ou | Current epoch: 5 | Elapsed time: 0h 55m 12s
+
+2025-05-11 02:08:13,191 - root - INFO - Epoch 5 | val_loss: 50.0552
+2025-05-11 02:09:16,454 - root - INFO - 
+
+[2025-05-11 02:09:16] STATUS UPDATE - Training visual on ou | Current epoch: 6 | Elapsed time: 1h 0m 12s
+
+2025-05-11 02:14:16,563 - root - INFO - 
+
+[2025-05-11 02:14:16] STATUS UPDATE - Training visual on ou | Current epoch: 6 | Elapsed time: 1h 5m 12s
+
+2025-05-11 02:17:41,669 - root - INFO - Epoch 6 | val_loss: 50.0383
+2025-05-11 02:19:16,570 - root - INFO - 
+
+[2025-05-11 02:19:16] STATUS UPDATE - Training visual on ou | Current epoch: 7 | Elapsed time: 1h 10m 12s
+
+2025-05-11 02:24:16,669 - root - INFO - 
+
+[2025-05-11 02:24:16] STATUS UPDATE - Training visual on ou | Current epoch: 7 | Elapsed time: 1h 15m 12s
+
+2025-05-11 02:27:09,462 - root - INFO - Epoch 7 | val_loss: 50.0310
+2025-05-11 02:29:16,674 - root - INFO - 
+
+[2025-05-11 02:29:16] STATUS UPDATE - Training visual on ou | Current epoch: 8 | Elapsed time: 1h 20m 12s
+
+2025-05-11 02:34:16,826 - root - INFO - 
+
+[2025-05-11 02:34:16] STATUS UPDATE - Training visual on ou | Current epoch: 8 | Elapsed time: 1h 25m 12s
+
+2025-05-11 02:36:37,084 - root - INFO - Epoch 8 | val_loss: 50.0232
+2025-05-11 02:39:16,931 - root - INFO - 
+
+[2025-05-11 02:39:16] STATUS UPDATE - Training visual on ou | Current epoch: 9 | Elapsed time: 1h 30m 12s
+
+2025-05-11 02:44:17,018 - root - INFO - 
+
+[2025-05-11 02:44:17] STATUS UPDATE - Training visual on ou | Current epoch: 9 | Elapsed time: 1h 35m 12s
+
+2025-05-11 02:46:04,555 - root - INFO - Epoch 9 | val_loss: 50.0075
+2025-05-11 02:49:17,151 - root - INFO - 
+
+[2025-05-11 02:49:17] STATUS UPDATE - Training visual on ou | Current epoch: 10 | Elapsed time: 1h 40m 13s
+
+2025-05-11 02:54:17,265 - root - INFO - 
+
+[2025-05-11 02:54:17] STATUS UPDATE - Training visual on ou | Current epoch: 10 | Elapsed time: 1h 45m 13s
+
+2025-05-11 02:55:32,218 - root - INFO - Epoch 10 | val_loss: 50.0040
+2025-05-11 02:59:17,403 - root - INFO - 
+
+[2025-05-11 02:59:17] STATUS UPDATE - Training visual on ou | Current epoch: 11 | Elapsed time: 1h 50m 13s
+
+2025-05-11 03:04:17,487 - root - INFO - 
+
+[2025-05-11 03:04:17] STATUS UPDATE - Training visual on ou | Current epoch: 11 | Elapsed time: 1h 55m 13s
+
+2025-05-11 03:04:59,805 - root - INFO - Epoch 11 | val_loss: 50.0260
+2025-05-11 03:09:17,548 - root - INFO - 
+
+[2025-05-11 03:09:17] STATUS UPDATE - Training visual on ou | Current epoch: 12 | Elapsed time: 2h 0m 13s
+
+2025-05-11 03:14:27,539 - root - INFO - Epoch 12 | val_loss: 50.0154
+2025-05-11 03:14:27,678 - root - INFO - 
+
+[2025-05-11 03:14:27] STATUS UPDATE - Training visual on ou | Current epoch: 13 | Elapsed time: 2h 5m 23s
+
+2025-05-11 03:19:27,714 - root - INFO - 
+
+[2025-05-11 03:19:27] STATUS UPDATE - Training visual on ou | Current epoch: 13 | Elapsed time: 2h 10m 23s
+
+2025-05-11 03:23:54,958 - root - INFO - Epoch 13 | val_loss: 49.9910
+2025-05-11 03:23:55,050 - root - INFO - Training finished. Best model saved at: /home/default/machine-learning-and-artificial-intelligence/src/models/checkpoints/cnn_visual_ou/epoch=epoch=13-val_loss=val_loss=49.990959.ckpt
+2025-05-11 03:23:55,050 - root - INFO - Successfully trained model: cnn_visual_ou
+2025-05-11 03:23:55,050 - root - INFO - 
+==================== Training model 8/8: cnn_v on sp500 ====================
+2025-05-11 03:23:55,213 - root - INFO - No existing model found. Will train new model from scratch.
+2025-05-11 03:23:55,213 - root - INFO - Retraining model from scratch...
+2025-05-11 03:23:55,243 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-11 03:23:55,245 - root - INFO - 
+
+[2025-05-11 03:23:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-11 03:23:55,871 - root - INFO - Epoch 0 | val_loss: 109.4743
+2025-05-11 03:28:55,646 - root - INFO - 
+
+[2025-05-11 03:28:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 0 | Elapsed time: 0h 5m 0s
+
+2025-05-11 03:33:55,814 - root - INFO - 
+
+[2025-05-11 03:33:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 0 | Elapsed time: 0h 10m 0s
+
+2025-05-11 03:36:23,624 - root - INFO - Epoch 0 | val_loss: 66.6057
+2025-05-11 03:38:56,442 - root - INFO - 
+
+[2025-05-11 03:38:56] STATUS UPDATE - Training visual on sp500 | Current epoch: 1 | Elapsed time: 0h 15m 1s
+
+2025-05-11 03:43:57,106 - root - INFO - 
+
+[2025-05-11 03:43:57] STATUS UPDATE - Training visual on sp500 | Current epoch: 1 | Elapsed time: 0h 20m 1s
+
+2025-05-11 03:47:41,367 - root - INFO - Epoch 1 | val_loss: 51.0265
+2025-05-11 03:48:57,573 - root - INFO - 
+
+[2025-05-11 03:48:57] STATUS UPDATE - Training visual on sp500 | Current epoch: 2 | Elapsed time: 0h 25m 2s
+
+2025-05-11 03:53:58,240 - root - INFO - 
+
+[2025-05-11 03:53:58] STATUS UPDATE - Training visual on sp500 | Current epoch: 2 | Elapsed time: 0h 30m 2s
+
+2025-05-11 03:58:59,009 - root - INFO - Epoch 2 | val_loss: 51.8834
+2025-05-11 03:58:59,515 - root - INFO - 
+
+[2025-05-11 03:58:59] STATUS UPDATE - Training visual on sp500 | Current epoch: 3 | Elapsed time: 0h 35m 4s
+
+2025-05-11 04:04:00,145 - root - INFO - 
+
+[2025-05-11 04:04:00] STATUS UPDATE - Training visual on sp500 | Current epoch: 3 | Elapsed time: 0h 40m 4s
+
+2025-05-11 04:09:00,808 - root - INFO - 
+
+[2025-05-11 04:09:00] STATUS UPDATE - Training visual on sp500 | Current epoch: 3 | Elapsed time: 0h 45m 5s
+
+2025-05-11 04:10:16,724 - root - INFO - Epoch 3 | val_loss: 48.3284
+2025-05-11 04:14:01,351 - root - INFO - 
+
+[2025-05-11 04:14:01] STATUS UPDATE - Training visual on sp500 | Current epoch: 4 | Elapsed time: 0h 50m 6s
+
+2025-05-11 04:19:01,396 - root - INFO - 
+
+[2025-05-11 04:19:01] STATUS UPDATE - Training visual on sp500 | Current epoch: 4 | Elapsed time: 0h 55m 6s
+
+2025-05-11 04:21:34,598 - root - INFO - Epoch 4 | val_loss: 47.9557
+2025-05-11 04:24:02,000 - root - INFO - 
+
+[2025-05-11 04:24:02] STATUS UPDATE - Training visual on sp500 | Current epoch: 5 | Elapsed time: 1h 0m 6s
+
+2025-05-11 04:29:02,010 - root - INFO - 
+
+[2025-05-11 04:29:02] STATUS UPDATE - Training visual on sp500 | Current epoch: 5 | Elapsed time: 1h 5m 6s
+
+2025-05-11 04:32:52,437 - root - INFO - Epoch 5 | val_loss: 45.1760
+2025-05-11 04:34:02,440 - root - INFO - 
+
+[2025-05-11 04:34:02] STATUS UPDATE - Training visual on sp500 | Current epoch: 6 | Elapsed time: 1h 10m 7s
+
+2025-05-11 04:39:03,136 - root - INFO - 
+
+[2025-05-11 04:39:03] STATUS UPDATE - Training visual on sp500 | Current epoch: 6 | Elapsed time: 1h 15m 7s
+
+2025-05-11 04:44:10,129 - root - INFO - Epoch 6 | val_loss: 45.5545
+2025-05-11 04:44:10,648 - root - INFO - 
+
+[2025-05-11 04:44:10] STATUS UPDATE - Training visual on sp500 | Current epoch: 7 | Elapsed time: 1h 20m 15s
+
+2025-05-11 04:49:11,334 - root - INFO - 
+
+[2025-05-11 04:49:11] STATUS UPDATE - Training visual on sp500 | Current epoch: 7 | Elapsed time: 1h 25m 16s
+
+2025-05-11 04:54:12,016 - root - INFO - 
+
+[2025-05-11 04:54:12] STATUS UPDATE - Training visual on sp500 | Current epoch: 7 | Elapsed time: 1h 30m 16s
+
+2025-05-11 04:55:27,850 - root - INFO - Epoch 7 | val_loss: 44.9684
+2025-05-11 04:59:12,620 - root - INFO - 
+
+[2025-05-11 04:59:12] STATUS UPDATE - Training visual on sp500 | Current epoch: 8 | Elapsed time: 1h 35m 17s
+
+2025-05-11 05:04:13,335 - root - INFO - 
+
+[2025-05-11 05:04:13] STATUS UPDATE - Training visual on sp500 | Current epoch: 8 | Elapsed time: 1h 40m 18s
+
+2025-05-11 05:06:45,737 - root - INFO - Epoch 8 | val_loss: 44.6434
+2025-05-11 05:09:13,790 - root - INFO - 
+
+[2025-05-11 05:09:13] STATUS UPDATE - Training visual on sp500 | Current epoch: 9 | Elapsed time: 1h 45m 18s
+
+2025-05-11 05:14:14,540 - root - INFO - 
+
+[2025-05-11 05:14:14] STATUS UPDATE - Training visual on sp500 | Current epoch: 9 | Elapsed time: 1h 50m 19s
+
+2025-05-11 05:18:03,436 - root - INFO - Epoch 9 | val_loss: 44.7958
+2025-05-11 05:19:15,119 - root - INFO - 
+
+[2025-05-11 05:19:15] STATUS UPDATE - Training visual on sp500 | Current epoch: 10 | Elapsed time: 1h 55m 19s
+
+2025-05-11 05:24:15,756 - root - INFO - 
+
+[2025-05-11 05:24:15] STATUS UPDATE - Training visual on sp500 | Current epoch: 10 | Elapsed time: 2h 0m 20s
+
+2025-05-11 05:29:21,085 - root - INFO - Epoch 10 | val_loss: 45.0905
+2025-05-11 05:29:21,303 - root - INFO - 
+
+[2025-05-11 05:29:21] STATUS UPDATE - Training visual on sp500 | Current epoch: 11 | Elapsed time: 2h 5m 26s
+
+2025-05-11 05:34:21,997 - root - INFO - 
+
+[2025-05-11 05:34:21] STATUS UPDATE - Training visual on sp500 | Current epoch: 11 | Elapsed time: 2h 10m 26s
+
+2025-05-11 05:39:22,590 - root - INFO - 
+
+[2025-05-11 05:39:22] STATUS UPDATE - Training visual on sp500 | Current epoch: 11 | Elapsed time: 2h 15m 27s
+
+2025-05-11 05:40:38,438 - root - INFO - Epoch 11 | val_loss: 42.9951
+2025-05-11 05:44:22,992 - root - INFO - 
+
+[2025-05-11 05:44:22] STATUS UPDATE - Training visual on sp500 | Current epoch: 12 | Elapsed time: 2h 20m 27s
+
+2025-05-11 05:49:23,698 - root - INFO - 
+
+[2025-05-11 05:49:23] STATUS UPDATE - Training visual on sp500 | Current epoch: 12 | Elapsed time: 2h 25m 28s
+
+2025-05-11 05:51:56,074 - root - INFO - Epoch 12 | val_loss: 42.5614
+2025-05-11 05:54:24,157 - root - INFO - 
+
+[2025-05-11 05:54:24] STATUS UPDATE - Training visual on sp500 | Current epoch: 13 | Elapsed time: 2h 30m 28s
+
+2025-05-11 05:59:24,170 - root - INFO - 
+
+[2025-05-11 05:59:24] STATUS UPDATE - Training visual on sp500 | Current epoch: 13 | Elapsed time: 2h 35m 28s
+
+2025-05-11 06:03:13,883 - root - INFO - Epoch 13 | val_loss: 42.3801
+2025-05-11 06:04:24,770 - root - INFO - 
+
+[2025-05-11 06:04:24] STATUS UPDATE - Training visual on sp500 | Current epoch: 14 | Elapsed time: 2h 40m 29s
+
+2025-05-11 06:09:25,477 - root - INFO - 
+
+[2025-05-11 06:09:25] STATUS UPDATE - Training visual on sp500 | Current epoch: 14 | Elapsed time: 2h 45m 30s
+
+2025-05-11 06:14:31,559 - root - INFO - Epoch 14 | val_loss: 47.2942
+2025-05-11 06:14:31,779 - root - INFO - 
+
+[2025-05-11 06:14:31] STATUS UPDATE - Training visual on sp500 | Current epoch: 15 | Elapsed time: 2h 50m 36s
+
+2025-05-11 06:19:32,488 - root - INFO - 
+
+[2025-05-11 06:19:32] STATUS UPDATE - Training visual on sp500 | Current epoch: 15 | Elapsed time: 2h 55m 37s
+
+2025-05-11 06:24:33,142 - root - INFO - 
+
+[2025-05-11 06:24:33] STATUS UPDATE - Training visual on sp500 | Current epoch: 15 | Elapsed time: 3h 0m 37s
+
+2025-05-11 06:25:48,997 - root - INFO - Epoch 15 | val_loss: 45.8643
+2025-05-11 06:29:33,374 - root - INFO - 
+
+[2025-05-11 06:29:33] STATUS UPDATE - Training visual on sp500 | Current epoch: 16 | Elapsed time: 3h 5m 38s
+
+2025-05-11 06:34:34,072 - root - INFO - 
+
+[2025-05-11 06:34:34] STATUS UPDATE - Training visual on sp500 | Current epoch: 16 | Elapsed time: 3h 10m 38s
+
+2025-05-11 06:37:06,465 - root - INFO - Epoch 16 | val_loss: 41.6114
+2025-05-11 06:39:34,712 - root - INFO - 
+
+[2025-05-11 06:39:34] STATUS UPDATE - Training visual on sp500 | Current epoch: 17 | Elapsed time: 3h 15m 39s
+
+2025-05-11 06:44:35,399 - root - INFO - 
+
+[2025-05-11 06:44:35] STATUS UPDATE - Training visual on sp500 | Current epoch: 17 | Elapsed time: 3h 20m 40s
+
+2025-05-11 06:48:24,343 - root - INFO - Epoch 17 | val_loss: 42.4217
+2025-05-11 06:49:36,023 - root - INFO - 
+
+[2025-05-11 06:49:36] STATUS UPDATE - Training visual on sp500 | Current epoch: 18 | Elapsed time: 3h 25m 40s
+
+2025-05-11 06:54:36,718 - root - INFO - 
+
+[2025-05-11 06:54:36] STATUS UPDATE - Training visual on sp500 | Current epoch: 18 | Elapsed time: 3h 30m 41s
+
+2025-05-11 06:59:42,175 - root - INFO - Epoch 18 | val_loss: 42.1024
+2025-05-11 06:59:42,689 - root - INFO - 
+
+[2025-05-11 06:59:42] STATUS UPDATE - Training visual on sp500 | Current epoch: 19 | Elapsed time: 3h 35m 47s
+
+2025-05-11 07:04:43,442 - root - INFO - 
+
+[2025-05-11 07:04:43] STATUS UPDATE - Training visual on sp500 | Current epoch: 19 | Elapsed time: 3h 40m 48s
+
+2025-05-11 07:09:44,111 - root - INFO - 
+
+[2025-05-11 07:09:44] STATUS UPDATE - Training visual on sp500 | Current epoch: 19 | Elapsed time: 3h 45m 48s
+
+2025-05-11 07:10:59,928 - root - INFO - Epoch 19 | val_loss: 43.3936
+2025-05-11 07:14:44,405 - root - INFO - 
+
+[2025-05-11 07:14:44] STATUS UPDATE - Training visual on sp500 | Current epoch: 20 | Elapsed time: 3h 50m 49s
+
+2025-05-11 07:19:45,123 - root - INFO - 
+
+[2025-05-11 07:19:45] STATUS UPDATE - Training visual on sp500 | Current epoch: 20 | Elapsed time: 3h 55m 49s
+
+2025-05-11 07:22:17,515 - root - INFO - Epoch 20 | val_loss: 42.2238
+2025-05-11 07:24:45,687 - root - INFO - 
+
+[2025-05-11 07:24:45] STATUS UPDATE - Training visual on sp500 | Current epoch: 21 | Elapsed time: 4h 0m 50s
+
+2025-05-11 07:29:46,334 - root - INFO - 
+
+[2025-05-11 07:29:46] STATUS UPDATE - Training visual on sp500 | Current epoch: 21 | Elapsed time: 4h 5m 51s
+
+2025-05-11 07:33:35,331 - root - INFO - Epoch 21 | val_loss: 41.9047
+2025-05-11 07:34:46,987 - root - INFO - 
+
+[2025-05-11 07:34:46] STATUS UPDATE - Training visual on sp500 | Current epoch: 22 | Elapsed time: 4h 10m 51s
+
+2025-05-11 07:39:47,566 - root - INFO - 
+
+[2025-05-11 07:39:47] STATUS UPDATE - Training visual on sp500 | Current epoch: 22 | Elapsed time: 4h 15m 52s
+
+2025-05-11 07:44:52,956 - root - INFO - Epoch 22 | val_loss: 41.9517
+2025-05-11 07:44:53,463 - root - INFO - 
+
+[2025-05-11 07:44:53] STATUS UPDATE - Training visual on sp500 | Current epoch: 23 | Elapsed time: 4h 20m 58s
+
+2025-05-11 07:49:54,220 - root - INFO - 
+
+[2025-05-11 07:49:54] STATUS UPDATE - Training visual on sp500 | Current epoch: 23 | Elapsed time: 4h 25m 58s
+
+2025-05-11 07:54:54,894 - root - INFO - 
+
+[2025-05-11 07:54:54] STATUS UPDATE - Training visual on sp500 | Current epoch: 23 | Elapsed time: 4h 30m 59s
+
+2025-05-11 07:56:10,860 - root - INFO - Epoch 23 | val_loss: 41.1028
+2025-05-11 07:59:54,922 - root - INFO - 
+
+[2025-05-11 07:59:54] STATUS UPDATE - Training visual on sp500 | Current epoch: 24 | Elapsed time: 4h 35m 59s
+
+2025-05-11 08:04:55,048 - root - INFO - 
+
+[2025-05-11 08:04:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 24 | Elapsed time: 4h 40m 59s
+
+2025-05-11 08:07:29,048 - root - INFO - Epoch 24 | val_loss: 42.0306
+2025-05-11 08:09:55,463 - root - INFO - 
+
+[2025-05-11 08:09:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 25 | Elapsed time: 4h 46m 0s
+
+2025-05-11 08:14:55,495 - root - INFO - 
+
+[2025-05-11 08:14:55] STATUS UPDATE - Training visual on sp500 | Current epoch: 25 | Elapsed time: 4h 51m 0s
+
+2025-05-11 08:18:46,726 - root - INFO - Epoch 25 | val_loss: 41.8828
+2025-05-11 08:19:56,119 - root - INFO - 
+
+[2025-05-11 08:19:56] STATUS UPDATE - Training visual on sp500 | Current epoch: 26 | Elapsed time: 4h 56m 0s
+
+2025-05-11 08:24:56,235 - root - INFO - 
+
+[2025-05-11 08:24:56] STATUS UPDATE - Training visual on sp500 | Current epoch: 26 | Elapsed time: 5h 1m 0s
+
+2025-05-11 08:30:04,831 - root - INFO - Epoch 26 | val_loss: 40.6023
+2025-05-11 08:30:05,347 - root - INFO - 
+
+[2025-05-11 08:30:05] STATUS UPDATE - Training visual on sp500 | Current epoch: 27 | Elapsed time: 5h 6m 10s
+
+2025-05-11 08:35:05,368 - root - INFO - 
+
+[2025-05-11 08:35:05] STATUS UPDATE - Training visual on sp500 | Current epoch: 27 | Elapsed time: 5h 11m 10s
+
+2025-05-11 08:40:05,371 - root - INFO - 
+
+[2025-05-11 08:40:05] STATUS UPDATE - Training visual on sp500 | Current epoch: 27 | Elapsed time: 5h 16m 10s
+
+2025-05-11 08:41:22,740 - root - INFO - Epoch 27 | val_loss: 41.0064
+2025-05-11 08:45:05,797 - root - INFO - 
+
+[2025-05-11 08:45:05] STATUS UPDATE - Training visual on sp500 | Current epoch: 28 | Elapsed time: 5h 21m 10s
+
+2025-05-11 08:50:06,479 - root - INFO - 
+
+[2025-05-11 08:50:06] STATUS UPDATE - Training visual on sp500 | Current epoch: 28 | Elapsed time: 5h 26m 11s
+
+2025-05-11 08:52:40,448 - root - INFO - Epoch 28 | val_loss: 42.1666
+2025-05-11 08:55:06,945 - root - INFO - 
+
+[2025-05-11 08:55:06] STATUS UPDATE - Training visual on sp500 | Current epoch: 29 | Elapsed time: 5h 31m 11s
+
+2025-05-11 09:00:07,651 - root - INFO - 
+
+[2025-05-11 09:00:07] STATUS UPDATE - Training visual on sp500 | Current epoch: 29 | Elapsed time: 5h 36m 12s
+
+2025-05-11 09:03:58,273 - root - INFO - Epoch 29 | val_loss: 39.1502
+2025-05-11 09:05:07,668 - root - INFO - 
+
+[2025-05-11 09:05:07] STATUS UPDATE - Training visual on sp500 | Current epoch: 30 | Elapsed time: 5h 41m 12s
+
+2025-05-11 09:10:07,705 - root - INFO - 
+
+[2025-05-11 09:10:07] STATUS UPDATE - Training visual on sp500 | Current epoch: 30 | Elapsed time: 5h 46m 12s
+
+2025-05-11 09:15:16,378 - root - INFO - Epoch 30 | val_loss: 40.4816
+2025-05-11 09:15:16,893 - root - INFO - 
+
+[2025-05-11 09:15:16] STATUS UPDATE - Training visual on sp500 | Current epoch: 31 | Elapsed time: 5h 51m 21s
+
+2025-05-11 09:20:17,630 - root - INFO - 
+
+[2025-05-11 09:20:17] STATUS UPDATE - Training visual on sp500 | Current epoch: 31 | Elapsed time: 5h 56m 22s
+
+2025-05-11 09:25:18,365 - root - INFO - 
+
+[2025-05-11 09:25:18] STATUS UPDATE - Training visual on sp500 | Current epoch: 31 | Elapsed time: 6h 1m 23s
+
+2025-05-11 09:26:34,234 - root - INFO - Epoch 31 | val_loss: 40.6697
+2025-05-11 09:30:18,738 - root - INFO - 
+
+[2025-05-11 09:30:18] STATUS UPDATE - Training visual on sp500 | Current epoch: 32 | Elapsed time: 6h 6m 23s
+
+2025-05-11 09:35:19,497 - root - INFO - 
+
+[2025-05-11 09:35:19] STATUS UPDATE - Training visual on sp500 | Current epoch: 32 | Elapsed time: 6h 11m 24s
+
+2025-05-11 09:37:51,898 - root - INFO - Epoch 32 | val_loss: 40.2359
+2025-05-11 09:40:20,070 - root - INFO - 
+
+[2025-05-11 09:40:20] STATUS UPDATE - Training visual on sp500 | Current epoch: 33 | Elapsed time: 6h 16m 24s
+
+2025-05-11 09:45:20,110 - root - INFO - 
+
+[2025-05-11 09:45:20] STATUS UPDATE - Training visual on sp500 | Current epoch: 33 | Elapsed time: 6h 21m 24s
+
+2025-05-11 09:49:09,911 - root - INFO - Epoch 33 | val_loss: 39.0407
+2025-05-11 09:50:20,841 - root - INFO - 
+
+[2025-05-11 09:50:20] STATUS UPDATE - Training visual on sp500 | Current epoch: 34 | Elapsed time: 6h 26m 25s
+
+2025-05-11 09:55:20,855 - root - INFO - 
+
+[2025-05-11 09:55:20] STATUS UPDATE - Training visual on sp500 | Current epoch: 34 | Elapsed time: 6h 31m 25s
+
+2025-05-11 10:00:27,953 - root - INFO - Epoch 34 | val_loss: 40.3178
+2025-05-11 10:00:28,172 - root - INFO - 
+
+[2025-05-11 10:00:28] STATUS UPDATE - Training visual on sp500 | Current epoch: 35 | Elapsed time: 6h 36m 32s
+
+2025-05-11 10:05:28,943 - root - INFO - 
+
+[2025-05-11 10:05:28] STATUS UPDATE - Training visual on sp500 | Current epoch: 35 | Elapsed time: 6h 41m 33s
+
+2025-05-11 10:10:29,670 - root - INFO - 
+
+[2025-05-11 10:10:29] STATUS UPDATE - Training visual on sp500 | Current epoch: 35 | Elapsed time: 6h 46m 34s
+
+2025-05-11 10:11:45,571 - root - INFO - Epoch 35 | val_loss: 39.3100
+2025-05-11 10:15:30,105 - root - INFO - 
+
+[2025-05-11 10:15:30] STATUS UPDATE - Training visual on sp500 | Current epoch: 36 | Elapsed time: 6h 51m 34s
+
+2025-05-11 10:20:30,140 - root - INFO - 
+
+[2025-05-11 10:20:30] STATUS UPDATE - Training visual on sp500 | Current epoch: 36 | Elapsed time: 6h 56m 34s
+
+2025-05-11 10:23:03,327 - root - INFO - Epoch 36 | val_loss: 39.5490
+2025-05-11 10:25:30,529 - root - INFO - 
+
+[2025-05-11 10:25:30] STATUS UPDATE - Training visual on sp500 | Current epoch: 37 | Elapsed time: 7h 1m 35s
+
+2025-05-11 10:30:31,298 - root - INFO - 
+
+[2025-05-11 10:30:31] STATUS UPDATE - Training visual on sp500 | Current epoch: 37 | Elapsed time: 7h 6m 36s
+
+2025-05-11 10:34:21,090 - root - INFO - Epoch 37 | val_loss: 40.1488
+2025-05-11 10:35:31,739 - root - INFO - 
+
+[2025-05-11 10:35:31] STATUS UPDATE - Training visual on sp500 | Current epoch: 38 | Elapsed time: 7h 11m 36s
+
+2025-05-11 10:40:32,483 - root - INFO - 
+
+[2025-05-11 10:40:32] STATUS UPDATE - Training visual on sp500 | Current epoch: 38 | Elapsed time: 7h 16m 37s
+
+2025-05-11 10:45:38,734 - root - INFO - Epoch 38 | val_loss: 39.9585
+2025-05-11 10:45:38,952 - root - INFO - 
+
+[2025-05-11 10:45:38] STATUS UPDATE - Training visual on sp500 | Current epoch: 39 | Elapsed time: 7h 21m 43s
+
+2025-05-11 10:50:39,071 - root - INFO - 
+
+[2025-05-11 10:50:39] STATUS UPDATE - Training visual on sp500 | Current epoch: 39 | Elapsed time: 7h 26m 43s
+
+2025-05-11 10:55:39,794 - root - INFO - 
+
+[2025-05-11 10:55:39] STATUS UPDATE - Training visual on sp500 | Current epoch: 39 | Elapsed time: 7h 31m 44s
+
+2025-05-11 10:56:56,505 - root - INFO - Epoch 39 | val_loss: 41.4287
+2025-05-11 11:00:40,203 - root - INFO - 
+
+[2025-05-11 11:00:40] STATUS UPDATE - Training visual on sp500 | Current epoch: 40 | Elapsed time: 7h 36m 44s
+
+2025-05-11 11:05:40,204 - root - INFO - 
+
+[2025-05-11 11:05:40] STATUS UPDATE - Training visual on sp500 | Current epoch: 40 | Elapsed time: 7h 41m 44s
+
+2025-05-11 11:08:14,202 - root - INFO - Epoch 40 | val_loss: 40.9298
+2025-05-11 11:10:40,700 - root - INFO - 
+
+[2025-05-11 11:10:40] STATUS UPDATE - Training visual on sp500 | Current epoch: 41 | Elapsed time: 7h 46m 45s
+
+2025-05-11 11:15:40,841 - root - INFO - 
+
+[2025-05-11 11:15:40] STATUS UPDATE - Training visual on sp500 | Current epoch: 41 | Elapsed time: 7h 51m 45s
+
+2025-05-11 11:19:32,138 - root - INFO - Epoch 41 | val_loss: 40.2417
+2025-05-11 11:20:41,131 - root - INFO - 
+
+[2025-05-11 11:20:41] STATUS UPDATE - Training visual on sp500 | Current epoch: 42 | Elapsed time: 7h 56m 45s
+
+2025-05-11 11:25:41,894 - root - INFO - 
+
+[2025-05-11 11:25:41] STATUS UPDATE - Training visual on sp500 | Current epoch: 42 | Elapsed time: 8h 1m 46s
+
+2025-05-11 11:30:49,759 - root - INFO - Epoch 42 | val_loss: 38.7044
+2025-05-11 11:30:50,205 - root - INFO - 
+
+[2025-05-11 11:30:50] STATUS UPDATE - Training visual on sp500 | Current epoch: 43 | Elapsed time: 8h 6m 54s
+
+2025-05-11 11:35:50,225 - root - INFO - 
+
+[2025-05-11 11:35:50] STATUS UPDATE - Training visual on sp500 | Current epoch: 43 | Elapsed time: 8h 11m 54s
+
+2025-05-11 11:40:50,251 - root - INFO - 
+
+[2025-05-11 11:40:50] STATUS UPDATE - Training visual on sp500 | Current epoch: 43 | Elapsed time: 8h 16m 55s
+
+2025-05-11 11:42:07,697 - root - INFO - Epoch 43 | val_loss: 39.2232
+2025-05-11 11:45:50,526 - root - INFO - 
+
+[2025-05-11 11:45:50] STATUS UPDATE - Training visual on sp500 | Current epoch: 44 | Elapsed time: 8h 21m 55s
+
+2025-05-11 11:50:50,597 - root - INFO - 
+
+[2025-05-11 11:50:50] STATUS UPDATE - Training visual on sp500 | Current epoch: 44 | Elapsed time: 8h 26m 55s
+
+2025-05-11 11:53:25,352 - root - INFO - Epoch 44 | val_loss: 40.0959
+2025-05-11 11:55:51,003 - root - INFO - 
+
+[2025-05-11 11:55:51] STATUS UPDATE - Training visual on sp500 | Current epoch: 45 | Elapsed time: 8h 31m 55s
+
+2025-05-11 12:00:51,005 - root - INFO - 
+
+[2025-05-11 12:00:51] STATUS UPDATE - Training visual on sp500 | Current epoch: 45 | Elapsed time: 8h 36m 55s
+
+2025-05-11 12:04:43,038 - root - INFO - Epoch 45 | val_loss: 40.9520
+2025-05-11 12:05:51,374 - root - INFO - 
+
+[2025-05-11 12:05:51] STATUS UPDATE - Training visual on sp500 | Current epoch: 46 | Elapsed time: 8h 41m 56s
+
+2025-05-11 12:10:52,104 - root - INFO - 
+
+[2025-05-11 12:10:52] STATUS UPDATE - Training visual on sp500 | Current epoch: 46 | Elapsed time: 8h 46m 56s
+
+2025-05-11 12:16:00,699 - root - INFO - Epoch 46 | val_loss: 39.6926
+2025-05-11 12:16:00,919 - root - INFO - 
+
+[2025-05-11 12:16:00] STATUS UPDATE - Training visual on sp500 | Current epoch: 47 | Elapsed time: 8h 52m 5s
+
+2025-05-11 12:21:00,962 - root - INFO - 
+
+[2025-05-11 12:21:00] STATUS UPDATE - Training visual on sp500 | Current epoch: 47 | Elapsed time: 8h 57m 5s
+
+2025-05-11 12:26:00,985 - root - INFO - 
+
+[2025-05-11 12:26:00] STATUS UPDATE - Training visual on sp500 | Current epoch: 47 | Elapsed time: 9h 2m 5s
+
+2025-05-11 12:27:18,385 - root - INFO - Epoch 47 | val_loss: 40.2573
+2025-05-11 12:31:01,272 - root - INFO - 
+
+[2025-05-11 12:31:01] STATUS UPDATE - Training visual on sp500 | Current epoch: 48 | Elapsed time: 9h 7m 6s
+
+2025-05-11 12:36:01,996 - root - INFO - 
+
+[2025-05-11 12:36:01] STATUS UPDATE - Training visual on sp500 | Current epoch: 48 | Elapsed time: 9h 12m 6s
+
+2025-05-11 12:38:35,992 - root - INFO - Epoch 48 | val_loss: 38.7267
+2025-05-11 12:41:02,620 - root - INFO - 
+
+[2025-05-11 12:41:02] STATUS UPDATE - Training visual on sp500 | Current epoch: 49 | Elapsed time: 9h 17m 7s
+
+2025-05-11 12:46:02,651 - root - INFO - 
+
+[2025-05-11 12:46:02] STATUS UPDATE - Training visual on sp500 | Current epoch: 49 | Elapsed time: 9h 22m 7s
+
+2025-05-11 12:49:53,926 - root - INFO - Epoch 49 | val_loss: 38.1226
+2025-05-11 12:51:03,157 - root - INFO - 
+
+[2025-05-11 12:51:03] STATUS UPDATE - Training visual on sp500 | Current epoch: 50 | Elapsed time: 9h 27m 7s
+
+2025-05-11 12:56:03,214 - root - INFO - 
+
+[2025-05-11 12:56:03] STATUS UPDATE - Training visual on sp500 | Current epoch: 50 | Elapsed time: 9h 32m 7s
+
+2025-05-11 13:01:11,853 - root - INFO - Epoch 50 | val_loss: 40.0474
+2025-05-11 13:01:12,071 - root - INFO - 
+
+[2025-05-11 13:01:12] STATUS UPDATE - Training visual on sp500 | Current epoch: 51 | Elapsed time: 9h 37m 16s
+
+2025-05-11 13:06:12,828 - root - INFO - 
+
+[2025-05-11 13:06:12] STATUS UPDATE - Training visual on sp500 | Current epoch: 51 | Elapsed time: 9h 42m 17s
+
+2025-05-11 13:11:13,534 - root - INFO - 
+
+[2025-05-11 13:11:13] STATUS UPDATE - Training visual on sp500 | Current epoch: 51 | Elapsed time: 9h 47m 18s
+
+2025-05-11 13:12:29,395 - root - INFO - Epoch 51 | val_loss: 39.6322
+2025-05-11 13:16:13,865 - root - INFO - 
+
+[2025-05-11 13:16:13] STATUS UPDATE - Training visual on sp500 | Current epoch: 52 | Elapsed time: 9h 52m 18s
+
+2025-05-11 13:21:13,952 - root - INFO - 
+
+[2025-05-11 13:21:13] STATUS UPDATE - Training visual on sp500 | Current epoch: 52 | Elapsed time: 9h 57m 18s
+
+2025-05-11 13:23:47,160 - root - INFO - Epoch 52 | val_loss: 39.4358
+2025-05-11 13:26:14,380 - root - INFO - 
+
+[2025-05-11 13:26:14] STATUS UPDATE - Training visual on sp500 | Current epoch: 53 | Elapsed time: 10h 2m 19s
+
+2025-05-11 13:31:15,116 - root - INFO - 
+
+[2025-05-11 13:31:15] STATUS UPDATE - Training visual on sp500 | Current epoch: 53 | Elapsed time: 10h 7m 19s
+
+2025-05-11 13:35:04,797 - root - INFO - Epoch 53 | val_loss: 39.0247
+2025-05-11 13:36:15,446 - root - INFO - 
+
+[2025-05-11 13:36:15] STATUS UPDATE - Training visual on sp500 | Current epoch: 54 | Elapsed time: 10h 12m 20s
+
+2025-05-11 13:41:16,195 - root - INFO - 
+
+[2025-05-11 13:41:16] STATUS UPDATE - Training visual on sp500 | Current epoch: 54 | Elapsed time: 10h 17m 20s
+
+2025-05-11 13:46:22,472 - root - INFO - Epoch 54 | val_loss: 38.8790
+2025-05-11 13:46:22,692 - root - INFO - 
+
+[2025-05-11 13:46:22] STATUS UPDATE - Training visual on sp500 | Current epoch: 55 | Elapsed time: 10h 22m 27s
+
+2025-05-11 13:51:22,698 - root - INFO - 
+
+[2025-05-11 13:51:22] STATUS UPDATE - Training visual on sp500 | Current epoch: 55 | Elapsed time: 10h 27m 27s
+
+2025-05-11 13:56:23,423 - root - INFO - 
+
+[2025-05-11 13:56:23] STATUS UPDATE - Training visual on sp500 | Current epoch: 55 | Elapsed time: 10h 32m 28s
+
+2025-05-11 13:57:40,049 - root - INFO - Epoch 55 | val_loss: 38.5011
