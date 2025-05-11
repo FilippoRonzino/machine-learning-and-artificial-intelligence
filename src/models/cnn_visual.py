@@ -7,12 +7,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
-from pytorch_lightning.callbacks import ModelCheckpoint
+# from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 
-from models.utils_models import get_device
-from visualization.utils_visualization import plot_predictions
+# from models.utils_models import get_device
+# from visualization.utils_visualization import plot_predictions
 
 
 class ImageTimeSeriesDatasetSingleFolder(Dataset):

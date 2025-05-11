@@ -6,8 +6,8 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from torch.utils.data import DataLoader, TensorDataset
 
-from models.utils_models import get_device, load_and_prepare_data
-from visualization.utils_visualization import plot_predictions
+# from models.utils_models import get_device, load_and_prepare_data
+# from visualization.utils_visualization import plot_predictions
 
 
 class CNNTimeSeriesPredictor(pl.LightningModule):
