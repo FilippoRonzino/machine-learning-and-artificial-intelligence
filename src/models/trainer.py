@@ -546,7 +546,7 @@ if __name__ == "__main__":
 
     visual_min_delta = 0.1
     visual_patience = 10
-    numerical_min_delta = 0.0001
+    numerical_min_delta = 0.00001
     numerical_patience = 10
 
     patience = (visual_patience, numerical_patience)
