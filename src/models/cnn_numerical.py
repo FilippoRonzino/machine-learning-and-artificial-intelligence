@@ -6,8 +6,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from torch.utils.data import DataLoader, TensorDataset
 
-# from models.utils_models import get_device, load_and_prepare_data
-# from visualization.utils_visualization import plot_predictions
+from models.utils_models import get_device, load_and_prepare_data
 
 
 class CNNTimeSeriesPredictor(pl.LightningModule):
@@ -130,57 +129,57 @@ class LossTrackerCallback(pl.Callback):
         plt.show()
     
 
-# if __name__ == "__main__":
-#     device = get_device()
+if __name__ == "__main__":
+    device = get_device()
 
-#     model = CNNTimeSeriesPredictor(
-#         input_features = 1,
-#         input_seq_len = 60,
-#         output_features = 1,
-#         model_output_seq_len = 60,  
-#         actual_prediction_len = 20,     
-#         cnn_layers = 3,
-#         kernel_size = 3,
-#         base_filters = 32,
-#         fc_size = 128,
-#         lr = 0.001
-#     )
+    model = CNNTimeSeriesPredictor(
+        input_features = 1,
+        input_seq_len = 60,
+        output_features = 1,
+        model_output_seq_len = 60,  
+        actual_prediction_len = 20,     
+        cnn_layers = 3,
+        kernel_size = 3,
+        base_filters = 32,
+        fc_size = 128,
+        lr = 0.001
+    )
 
-#     model = model.to(device)
+    model = model.to(device)
 
-#     file_path_train = "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"
-#     file_path_test = "data/data_storage/harmonic_ou_parquets/test_harmonic.parquet"
+    file_path_train = "data/data_storage/harmonic_ou_parquets/train_harmonic.parquet"
+    file_path_test = "data/data_storage/harmonic_ou_parquets/test_harmonic.parquet"
     
-#     X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
-#     X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
+    X_train, y_train = load_and_prepare_data(file_path_train, prediction_percentage=0.25)
+    X_test, y_test = load_and_prepare_data(file_path_test, prediction_percentage=0.25)
 
-#     print("X_train sample shape:", X_train[0].shape)
-#     print("y_train sample shape:", y_train[0].shape)
-#     print(len(X_train), "samples loaded for training")
-#     print(len(X_test), "samples loaded for testing")
+    print("X_train sample shape:", X_train[0].shape)
+    print("y_train sample shape:", y_train[0].shape)
+    print(len(X_train), "samples loaded for training")
+    print(len(X_test), "samples loaded for testing")
 
-#     train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
-#     val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
+    train_dataset = TensorDataset(torch.stack(X_train), torch.stack(y_train))
+    val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
 
-#     train_loader = DataLoader(train_dataset, batch_size = 32, shuffle=True, num_workers=7)
-#     val_loader = DataLoader(val_dataset, batch_size = 32, num_workers=7)
+    train_loader = DataLoader(train_dataset, batch_size = 32, shuffle=True, num_workers=7)
+    val_loader = DataLoader(val_dataset, batch_size = 32, num_workers=7)
 
-#     print("Setting up trainer...")
-#     loss_tracker = LossTrackerCallback()
-#     trainer = pl.Trainer(
-#         max_epochs = 1,
-#         enable_checkpointing = False,
-#         logger = False,
-#         accelerator = "auto",
-#         callbacks = [loss_tracker],
-#         # num_sanity_val_steps = 0
-#     )
+    print("Setting up trainer...")
+    loss_tracker = LossTrackerCallback()
+    trainer = pl.Trainer(
+        max_epochs = 1,
+        enable_checkpointing = False,
+        logger = False,
+        accelerator = "auto",
+        callbacks = [loss_tracker],
+        # num_sanity_val_steps = 0
+    )
 
-#     print("Starting training...")
-#     trainer.fit(model, train_loader, val_loader)
-#     print("Training finished.")
+    print("Starting training...")
+    trainer.fit(model, train_loader, val_loader)
+    print("Training finished.")
 
-#     print("Plotting losses...")
-#     loss_tracker.plot_losses()
+    print("Plotting losses...")
+    loss_tracker.plot_losses()
 
-#     plot_predictions(model, val_dataset, n_plots=5)
+    
