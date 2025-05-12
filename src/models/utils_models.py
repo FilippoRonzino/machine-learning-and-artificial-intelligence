@@ -138,6 +138,25 @@ def extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_los
     
     return (train_steps, train_values), (val_steps, val_values)
 
+def smooth_data(values, factor):
+    """
+    Apply exponential moving average smoothing to values.
+
+    :param values: List of values to smooth.
+    :param factor: Smoothing factor (0 < factor < 1). A higher factor means less smoothing.
+    :return: List of smoothed values.
+    """
+    if factor <= 0:
+        return values
+    
+    smoothed = []
+    last = values[0]
+    for value in values:
+        smoothed_val = last * factor + (1 - factor) * value
+        smoothed.append(smoothed_val)
+        last = smoothed_val
+    return smoothed
+
 
 if __name__ == "__main__":
     file_path = "data/data_storage/ecg_parquets/test_ecg.parquet" 
