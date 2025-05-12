@@ -12,7 +12,7 @@ from torch.utils.data import TensorDataset
 
 from models.cnn_numerical import CNNTimeSeriesPredictor
 from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolder
-from models.utils_models import extract_loss_from_event, load_and_prepare_data
+from models.utils_models import extract_loss_from_event, load_and_prepare_data, smooth_data
 
 
 class DatasetType(Enum):
@@ -359,7 +359,6 @@ def automated_evaluation(model_type: ModelType,
         )
     
     elif model_type == ModelType.CNN_VISUAL:
-        # Path to test data for visual models
         data_dir = f"data/images/{dataset_name}/test"
         
         run_visual_evaluation(
@@ -375,6 +374,65 @@ def automated_evaluation(model_type: ModelType,
     else:
         raise ValueError(f"Unsupported model type: {model_type}")
     
+def plot_multiple_models_loss(model_dataset_pairs: list[tuple[ModelType, DatasetType]], 
+                             include_val: bool = True,
+                             title: str = "Model Loss Comparison",
+                             smoothing_factor: float = 0.0) -> None:
+    """
+    Plot loss curves for multiple models in a single plot.
+    
+    :param model_dataset_pairs: List of tuples containing (model_type, dataset_type) pairs to plot
+    :param include_val: Whether to include validation loss (True) or just training loss (False)
+    :param title: Title for the plot
+    :param smoothing_factor: Factor for exponential moving average smoothing (0.0 to 0.99)
+                            0.0 means no smoothing, higher values mean more smoothing
+    """
+    plt.figure(figsize=(10, 6))
+    
+    for i, (model_type, dataset_type) in enumerate(model_dataset_pairs):
+        model_name = model_type.value if hasattr(model_type, 'value') else model_type
+        dataset_name = dataset_type.value if hasattr(dataset_type, 'value') else dataset_type
+        
+        try:
+            event_file = find_event_file(model_type, dataset_type)
+            train_data, val_data = extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_loss')
+            
+            train_steps, train_values = train_data
+            
+            label = f"{model_name} on {dataset_name}"
+            if smoothing_factor > 0:
+                line, = plt.plot(train_steps, train_values, alpha=0.3, label=None)
+                color = line.get_color()  
+                
+                smoothed_values = smooth_data(train_values, smoothing_factor)
+                plt.plot(train_steps, smoothed_values, label=label, linewidth=2, color=color)
+            else:
+                plt.plot(train_steps, train_values, label=label)
+            
+            if include_val:
+                val_steps, val_values = val_data
+                
+                label_val = f"{model_name} on {dataset_name} (val)"
+                if smoothing_factor > 0:
+                    val_line, = plt.plot(val_steps, val_values, alpha=0.3, linestyle='--', label=None)
+                    val_color = val_line.get_color()  
+                    
+                    smoothed_val_values = smooth_data(val_values, smoothing_factor)
+                    plt.plot(val_steps, smoothed_val_values, label=label_val, linestyle='--', linewidth=2, color=val_color)
+                else:
+                    plt.plot(val_steps, val_values, label=label_val, linestyle='--')
+                
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Error plotting {model_name} on {dataset_name}: {e}")
+    
+    plt.xlabel('Step')
+    plt.ylabel('Loss')
+    plt.title(title)
+    plt.legend(loc='upper right')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+    
 if __name__ == "__main__":
     automated_evaluation(
         model_type=ModelType.CNN_NUMERICAL,
@@ -389,3 +447,10 @@ if __name__ == "__main__":
         n_plots=1,
         all_predictions=True
     )
+
+    plot_multiple_models_loss([
+        (ModelType.CNN_VISUAL, DatasetType.ECG),
+        (ModelType.CNN_VISUAL, DatasetType.OU),
+        (ModelType.CNN_VISUAL, DatasetType.HARMONIC),
+        (ModelType.CNN_VISUAL, DatasetType.SP500),
+    ], include_val=False, smoothing_factor=0.6)
