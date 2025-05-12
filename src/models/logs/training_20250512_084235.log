@@ -1,0 +1,67 @@
+2025-05-12 08:42:35,671 - root - INFO - Starting training process
+2025-05-12 08:42:36,259 - root - INFO - Starting training of 8 models...
+2025-05-12 08:42:36,274 - root - INFO - 
+==================== Training model 1/8: cnn_n on ecg ====================
+2025-05-12 08:42:36,275 - root - INFO - Loading and preparing numerical data...
+2025-05-12 08:42:39,553 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-12 08:42:39,553 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-12 08:42:39,553 - root - INFO - 50000 samples loaded for training
+2025-05-12 08:42:39,553 - root - INFO - 6250 samples loaded for validation
+2025-05-12 08:42:39,714 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_ecg/epoch=epoch=9-val_loss=val_loss=0.013960.ckpt
+2025-05-12 08:42:39,714 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_ecg/
+2025-05-12 08:42:45,277 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_ecg/epoch=epoch=9-val_loss=val_loss=0.013960.ckpt
+2025-05-12 08:42:45,277 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_ecg/
+2025-05-12 08:42:45,277 - root - INFO - Loading existing model from src/models/checkpoints/cnn_numerical_ecg/epoch=epoch=9-val_loss=val_loss=0.013960.ckpt
+2025-05-12 08:42:45,953 - root - INFO - Successfully trained model: cnn_numerical_ecg
+2025-05-12 08:42:45,954 - root - INFO - 
+==================== Training model 2/8: cnn_n on harmonic ====================
+2025-05-12 08:42:45,954 - root - INFO - Loading and preparing numerical data...
+2025-05-12 08:42:49,342 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-12 08:42:49,342 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-12 08:42:49,342 - root - INFO - 50000 samples loaded for training
+2025-05-12 08:42:49,342 - root - INFO - 6250 samples loaded for validation
+2025-05-12 08:42:49,422 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_harmonic/epoch=epoch=37-val_loss=val_loss=0.029972.ckpt
+2025-05-12 08:42:49,423 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_harmonic/
+2025-05-12 08:42:50,730 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_harmonic/epoch=epoch=37-val_loss=val_loss=0.029972.ckpt
+2025-05-12 08:42:50,730 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_harmonic/
+2025-05-12 08:42:50,730 - root - INFO - Loading existing model from src/models/checkpoints/cnn_numerical_harmonic/epoch=epoch=37-val_loss=val_loss=0.029972.ckpt
+2025-05-12 08:42:50,915 - root - INFO - Successfully trained model: cnn_numerical_harmonic
+2025-05-12 08:42:50,916 - root - INFO - 
+==================== Training model 3/8: cnn_n on ou ====================
+2025-05-12 08:42:50,916 - root - INFO - Loading and preparing numerical data...
+2025-05-12 08:42:54,462 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-12 08:42:54,462 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-12 08:42:54,462 - root - INFO - 50000 samples loaded for training
+2025-05-12 08:42:54,462 - root - INFO - 6250 samples loaded for validation
+2025-05-12 08:42:54,544 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_ou/epoch=epoch=11-val_loss=val_loss=0.176636.ckpt
+2025-05-12 08:42:54,544 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_ou/
+2025-05-12 08:42:55,651 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_ou/epoch=epoch=11-val_loss=val_loss=0.176636.ckpt
+2025-05-12 08:42:55,651 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_ou/
+2025-05-12 08:42:55,651 - root - INFO - Loading existing model from src/models/checkpoints/cnn_numerical_ou/epoch=epoch=11-val_loss=val_loss=0.176636.ckpt
+2025-05-12 08:42:55,729 - root - INFO - Successfully trained model: cnn_numerical_ou
+2025-05-12 08:42:55,729 - root - INFO - 
+==================== Training model 4/8: cnn_n on sp500 ====================
+2025-05-12 08:42:55,729 - root - INFO - Loading and preparing numerical data...
+2025-05-12 08:42:57,583 - root - INFO - X_train sample shape: torch.Size([60, 1])
+2025-05-12 08:42:57,583 - root - INFO - y_train sample shape: {y_train[0].shape}
+2025-05-12 08:42:57,583 - root - INFO - 27109 samples loaded for training
+2025-05-12 08:42:57,583 - root - INFO - 3467 samples loaded for validation
+2025-05-12 08:42:57,624 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_sp500/epoch=epoch=2-val_loss=val_loss=0.106761.ckpt
+2025-05-12 08:42:57,624 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_sp500/
+2025-05-12 08:42:59,073 - root - INFO - Found best model: src/models/checkpoints/cnn_numerical_sp500/epoch=epoch=2-val_loss=val_loss=0.106761.ckpt
+2025-05-12 08:42:59,073 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_numerical_sp500/
+2025-05-12 08:42:59,073 - root - INFO - Loading existing model from src/models/checkpoints/cnn_numerical_sp500/epoch=epoch=2-val_loss=val_loss=0.106761.ckpt
+2025-05-12 08:42:59,475 - root - INFO - Successfully trained model: cnn_numerical_sp500
+2025-05-12 08:42:59,476 - root - INFO - 
+==================== Training model 5/8: cnn_v on ecg ====================
+2025-05-12 08:42:59,777 - root - INFO - Found best model: src/models/checkpoints/cnn_visual_ecg/epoch=epoch=1-val_loss=val_loss=110.698380.ckpt
+2025-05-12 08:42:59,777 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_visual_ecg/
+2025-05-12 08:43:04,139 - root - INFO - Found best model: src/models/checkpoints/cnn_visual_ecg/epoch=epoch=1-val_loss=val_loss=110.698380.ckpt
+2025-05-12 08:43:04,139 - root - INFO - Deleted other checkpoints in src/models/checkpoints/cnn_visual_ecg/
+2025-05-12 08:43:04,139 - root - INFO - Retraining model from scratch...
+2025-05-12 08:43:04,262 - root - INFO - Starting trainer.fit for 200 epochs...
+2025-05-12 08:43:04,650 - root - INFO - 
+
+[2025-05-12 08:43:04] STATUS UPDATE - Training visual on ecg | Current epoch: 0 | Elapsed time: 0h 0m 0s
+
+2025-05-12 08:43:07,193 - root - INFO - Epoch 0 | val_loss: 114.2369

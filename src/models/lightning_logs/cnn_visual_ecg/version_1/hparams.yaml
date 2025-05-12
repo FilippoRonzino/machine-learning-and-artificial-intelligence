@@ -1,0 +1,13 @@
+activation_fn: !!python/name:torch.nn.modules.activation.ELU ''
+batchnorm: false
+chanel_list:
+- 64
+- 128
+- 256
+dropoutrate: 0.3779175927043613
+input_chanel: 1
+kernel_size: 5
+lr: 0.001
+padding: 2
+pool_type: none
+stride: 1
