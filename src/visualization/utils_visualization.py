@@ -1,11 +1,83 @@
+import glob
+import os
 import random
+import re
+from enum import Enum
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from torch.utils.data import TensorDataset
 
 from models.cnn_numerical import CNNTimeSeriesPredictor
 from models.cnn_visual import CNN_Autoencoder, ImageTimeSeriesDatasetSingleFolder
+from models.utils_models import extract_loss_from_event, load_and_prepare_data, smooth_data
+
+
+class DatasetType(Enum):
+    ECG = "ecg"
+    OU = "ou"
+    SP500 = "sp500"
+    HARMONIC = "harmonic"
+
+class ModelType(Enum):
+    CNN_NUMERICAL = "cnn_numerical"
+    CNN_VISUAL = "cnn_visual"
+
+
+def find_latest_checkpoint(checkpoint_folder: str) -> str:
+    """
+    Find the checkpoint file with the highest epoch number in the folder.
+    
+    :param checkpoint_folder: Folder containing the checkpoint files
+    :return: Name of the latest checkpoint file
+    """
+    checkpoint_path = os.path.join("src/models", checkpoint_folder)
+    checkpoint_files = glob.glob(os.path.join(checkpoint_path, "*.ckpt"))
+    
+    if not checkpoint_files:
+        raise FileNotFoundError(f"No checkpoint files found in {checkpoint_path}")
+    
+    epoch_pattern = re.compile(r'epoch=epoch=(\d+)')
+    
+    def get_epoch(filename):
+        match = epoch_pattern.search(filename)
+        if match:
+            return int(match.group(1))
+        return -1
+    
+    latest_checkpoint = max(checkpoint_files, key=get_epoch)
+    print(f"Latest checkpoint found: {latest_checkpoint}")
+    return os.path.basename(latest_checkpoint)
+
+def find_event_file(model_type: Union[ModelType, str], dataset_type: Union[DatasetType, str]) -> str:
+    """
+    Find the most recent event file for the given model and dataset type.
+    
+    :param model_type: ModelType enum or string representing model type
+    :param dataset_type: DatasetType enum or string representing dataset type
+    :return: Path to the most recent event file
+    """
+    model_name = model_type.value if hasattr(model_type, 'value') else model_type
+    dataset_name = dataset_type.value if hasattr(dataset_type, 'value') else dataset_type
+    
+    log_path = f"src/models/lightning_logs/{model_name}_{dataset_name}"
+    
+    # Find the highest version number
+    versions = glob.glob(os.path.join(log_path, "version_*"))
+    if not versions:
+        raise FileNotFoundError(f"No version folders found in {log_path}")
+    
+    latest_version = max(versions, key=lambda x: int(x.split('_')[-1]))
+    
+    event_files = glob.glob(os.path.join(latest_version, "events.out.*"))
+    if not event_files:
+        raise FileNotFoundError(f"No event files found in {latest_version}")
+    
+    most_recent = sorted(event_files)[-1]
+    print(f"Most recent event file found: {most_recent}")
+    return most_recent
 
 
 def plot_actual_vs_predicted(y_true: np.ndarray, 
@@ -100,8 +172,6 @@ def plot_predictions_numerical_model(model: CNNTimeSeriesPredictor,
                 y_true_combined,
                 y_pred_combined,
                 percentage_predicted=0.25)
-            
-
 
 def plot_predictions_visual_model(model: CNN_Autoencoder, 
                                   dataset: ImageTimeSeriesDatasetSingleFolder, 
@@ -116,6 +186,11 @@ def plot_predictions_visual_model(model: CNN_Autoencoder,
     model.eval()
     indices = random.sample(range(len(dataset)), n_images)
     fig, axes = plt.subplots(n_images, 3, figsize=(12, 3 * n_images))
+
+    # For a single plot, convert to 2D array with shape (1, 3)
+    if n_images == 1:
+        print("Only one image to plot, converting axes to 2D array.")
+        axes = np.array([axes])
 
     for i, idx in enumerate(indices):
         input_tensor, target_tensor = dataset[idx]
@@ -154,3 +229,228 @@ def plot_predictions(model: CNNTimeSeriesPredictor | CNN_Autoencoder,
         plot_predictions_numerical_model(model, dataset, n_plots, all_predictions)
     elif isinstance(model, CNN_Autoencoder):
         plot_predictions_visual_model(model, dataset, n_plots)
+    else:
+        raise ValueError("Unsupported model type. Please provide a CNNTimeSeriesPredictor or CNN_Autoencoder.")
+
+def plot_train_val_loss(train_data: tuple[list[int], list[float]], 
+                       val_data: tuple[list[int], list[float]], 
+                       title: str = "Training and Validation Loss") -> None:
+    """
+    Plots training and validation loss curves.
+    
+    :param train_data: Tuple containing (step_indices, training_loss_values)
+    :param val_data: Tuple containing (step_indices, validation_loss_values)
+    :param title: Title for the plot
+    """
+    train_steps, train_values = train_data
+    val_steps, val_values = val_data
+    plt.figure(figsize=(8, 5))
+    plt.plot(train_steps, train_values, label='Training Loss')
+    plt.plot(val_steps, val_values, label='Validation Loss')
+    plt.xlabel('Step')
+    plt.ylabel('Loss')
+    plt.title(title)
+    plt.legend()
+    plt.show()
+
+def run_numerical_evaluation(checkpoint_folder: str, 
+                            ckpt_file: str, 
+                            parquet_path: str, 
+                            event_file: str, 
+                            base_dir: str = "src/models", 
+                            prediction_percentage: float = 0.25, 
+                            n_plots: int = 1, 
+                            all_predictions: bool = True) -> None:
+    """
+    Run evaluation for numerical models.
+    
+    :param checkpoint_folder: Path to folder containing model checkpoints
+    :param ckpt_file: Checkpoint filename
+    :param parquet_path: Path to test data in parquet format
+    :param event_file: Path to TensorBoard event file with training history
+    :param base_dir: Base directory for models
+    :param prediction_percentage: Percentage of sequence to predict
+    :param n_plots: Number of plots to generate
+    :param all_predictions: Whether to show all predictions or only future ones
+    """
+    model = CNNTimeSeriesPredictor.load_from_checkpoint(
+        os.path.join(base_dir, checkpoint_folder, ckpt_file),
+        map_location=torch.device("cpu")
+    )
+    model.eval()
+
+    X_test, y_test = load_and_prepare_data(parquet_path, prediction_percentage=prediction_percentage)
+    val_dataset = TensorDataset(torch.stack(X_test), torch.stack(y_test))
+    plot_predictions(model, val_dataset, n_plots=n_plots, all_predictions=all_predictions)
+
+    train_data, val_data = extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_loss')
+    plot_train_val_loss(train_data, val_data, title="Training and Validation Loss")
+
+def run_visual_evaluation(base_dir: str, 
+                         checkpoint_folder: str, 
+                         ckpt_file: str, 
+                         data_dir: str, 
+                         event_file: str, 
+                         prediction_percentage: float = 0.25, 
+                         n_plots: int = 5) -> None:
+    """
+    Run evaluation for visual models.
+    
+    :param base_dir: Base directory for models
+    :param checkpoint_folder: Path to folder containing model checkpoints
+    :param ckpt_file: Checkpoint filename
+    :param data_dir: Directory containing test images
+    :param event_file: Path to TensorBoard event file with training history
+    :param prediction_percentage: Percentage of sequence to predict
+    :param n_plots: Number of plots to generate
+    """
+    model = CNN_Autoencoder.load_from_checkpoint(
+        os.path.join(base_dir, checkpoint_folder, ckpt_file),
+        map_location=torch.device("cpu")
+    )
+    model.eval()
+
+    dataset = ImageTimeSeriesDatasetSingleFolder(data_dir, prediction_percentage=prediction_percentage)
+    plot_predictions(model, dataset, n_plots=n_plots)
+
+    train_data, val_data = extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_loss')
+    plot_train_val_loss(train_data, val_data, title="Training and Validation Loss")
+
+def automated_evaluation(model_type: ModelType, 
+                        dataset_type: DatasetType, 
+                        base_dir: str = "src/models", 
+                        prediction_percentage: float = 0.25, 
+                        n_plots: int = 3, 
+                        all_predictions: bool = True) -> None:
+    """
+    Automated evaluation that finds the latest checkpoint and runs evaluation.
+    
+    :param model_type: ModelType enum (CNN_NUMERICAL or CNN_VISUAL)
+    :param dataset_type: DatasetType enum (ECG, OU, SP500, HARMONIC)
+    :param base_dir: Base directory for models
+    :param prediction_percentage: Percentage of the sequence to predict
+    :param n_plots: Number of plots to generate
+    :param all_predictions: Whether to show all predictions or only future ones
+    """
+    dataset_name = dataset_type.value
+    model_name = model_type.value
+    
+    checkpoint_folder = f"checkpoints/{model_name}_{dataset_name}"
+    
+    ckpt_file = find_latest_checkpoint(checkpoint_folder)
+    event_file = find_event_file(model_type, dataset_type)
+    
+    if model_type == ModelType.CNN_NUMERICAL:
+        # Special case for OU and HARMONIC numerical datasets
+        if dataset_type in [DatasetType.HARMONIC, DatasetType.OU]:
+            parquet_path = f"data/data_storage/harmonic_ou_parquets/test_{dataset_name}.parquet"
+        else:
+            parquet_path = f"data/data_storage/{dataset_name}_parquets/test_{dataset_name}.parquet"
+        
+        run_numerical_evaluation(
+            checkpoint_folder=checkpoint_folder,
+            ckpt_file=ckpt_file,
+            parquet_path=parquet_path,
+            event_file=event_file,
+            base_dir=base_dir,
+            prediction_percentage=prediction_percentage,
+            n_plots=n_plots,
+            all_predictions=all_predictions
+        )
+    
+    elif model_type == ModelType.CNN_VISUAL:
+        data_dir = f"data/images/{dataset_name}/test"
+        
+        run_visual_evaluation(
+            base_dir=base_dir,
+            checkpoint_folder=checkpoint_folder,
+            ckpt_file=ckpt_file,
+            data_dir=data_dir,
+            event_file=event_file,
+            prediction_percentage=prediction_percentage,
+            n_plots=n_plots
+        )
+    
+    else:
+        raise ValueError(f"Unsupported model type: {model_type}")
+    
+def plot_multiple_models_loss(model_dataset_pairs: list[tuple[ModelType, DatasetType]], 
+                             include_val: bool = True,
+                             title: str = "Model Loss Comparison",
+                             smoothing_factor: float = 0.0) -> None:
+    """
+    Plot loss curves for multiple models in a single plot.
+    
+    :param model_dataset_pairs: List of tuples containing (model_type, dataset_type) pairs to plot
+    :param include_val: Whether to include validation loss (True) or just training loss (False)
+    :param title: Title for the plot
+    :param smoothing_factor: Factor for exponential moving average smoothing (0.0 to 0.99)
+                            0.0 means no smoothing, higher values mean more smoothing
+    """
+    plt.figure(figsize=(10, 6))
+    
+    for i, (model_type, dataset_type) in enumerate(model_dataset_pairs):
+        model_name = model_type.value if hasattr(model_type, 'value') else model_type
+        dataset_name = dataset_type.value if hasattr(dataset_type, 'value') else dataset_type
+        
+        try:
+            event_file = find_event_file(model_type, dataset_type)
+            train_data, val_data = extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_loss')
+            
+            train_steps, train_values = train_data
+            
+            label = f"{model_name} on {dataset_name}"
+            if smoothing_factor > 0:
+                line, = plt.plot(train_steps, train_values, alpha=0.3, label=None)
+                color = line.get_color()  
+                
+                smoothed_values = smooth_data(train_values, smoothing_factor)
+                plt.plot(train_steps, smoothed_values, label=label, linewidth=2, color=color)
+            else:
+                plt.plot(train_steps, train_values, label=label)
+            
+            if include_val:
+                val_steps, val_values = val_data
+                
+                label_val = f"{model_name} on {dataset_name} (val)"
+                if smoothing_factor > 0:
+                    val_line, = plt.plot(val_steps, val_values, alpha=0.3, linestyle='--', label=None)
+                    val_color = val_line.get_color()  
+                    
+                    smoothed_val_values = smooth_data(val_values, smoothing_factor)
+                    plt.plot(val_steps, smoothed_val_values, label=label_val, linestyle='--', linewidth=2, color=val_color)
+                else:
+                    plt.plot(val_steps, val_values, label=label_val, linestyle='--')
+                
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Error plotting {model_name} on {dataset_name}: {e}")
+    
+    plt.xlabel('Step')
+    plt.ylabel('Loss')
+    plt.title(title)
+    plt.legend(loc='upper right')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+    
+if __name__ == "__main__":
+    automated_evaluation(
+        model_type=ModelType.CNN_NUMERICAL,
+        dataset_type=DatasetType.ECG,
+        n_plots=1,
+        all_predictions=True
+    )
+    
+    automated_evaluation(
+        model_type=ModelType.CNN_VISUAL,
+        dataset_type=DatasetType.SP500,
+        n_plots=1,
+        all_predictions=True
+    )
+
+    plot_multiple_models_loss([
+        (ModelType.CNN_VISUAL, DatasetType.ECG),
+        (ModelType.CNN_VISUAL, DatasetType.OU),
+        (ModelType.CNN_VISUAL, DatasetType.HARMONIC),
+        (ModelType.CNN_VISUAL, DatasetType.SP500),
+    ], include_val=False, smoothing_factor=0.6)

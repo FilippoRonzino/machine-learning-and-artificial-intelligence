@@ -1,6 +1,8 @@
+import os
 import numpy as np
 import pandas as pd
 import torch
+from tensorboard.backend.event_processing import event_accumulator
 from statsmodels.tsa.stattools import adfuller
 
 def load_time_series_parquet(file_path: str) -> pd.DataFrame:
@@ -112,7 +114,49 @@ def get_val_loss(filename):
         return float(val_loss_str)
     except (ValueError, IndexError):
         return float('inf')  
-      
+    
+def extract_loss_from_event(event_file, train_tag='train_loss', val_tag='val_loss'):
+    """
+    Extracts training and validation loss from a TensorBoard event file.
+    
+    :param event_file: Path to the TensorBoard event file (e.g., "events.out.tfevents...").
+    :param train_tag: Tag for training loss.
+    :param val_tag: Tag for validation loss.
+    :return: Tuple of (train_steps, train_values), (val_steps, val_values)
+    """
+    ea = event_accumulator.EventAccumulator(event_file)
+    ea.Reload()
+    print("Available tags:", ea.Tags())
+    
+    train_loss = ea.Scalars(train_tag)
+    val_loss = ea.Scalars(val_tag)
+    
+    train_steps = [x.step for x in train_loss]
+    train_values = [x.value for x in train_loss]
+    val_steps = [x.step for x in val_loss]
+    val_values = [x.value for x in val_loss]
+    
+    return (train_steps, train_values), (val_steps, val_values)
+
+def smooth_data(values, factor):
+    """
+    Apply exponential moving average smoothing to values.
+
+    :param values: List of values to smooth.
+    :param factor: Smoothing factor (0 < factor < 1). A higher factor means less smoothing.
+    :return: List of smoothed values.
+    """
+    if factor <= 0:
+        return values
+    
+    smoothed = []
+    last = values[0]
+    for value in values:
+        smoothed_val = last * factor + (1 - factor) * value
+        smoothed.append(smoothed_val)
+        last = smoothed_val
+    return smoothed
+
 
 if __name__ == "__main__":
     file_path = "data/data_storage/ecg_parquets/test_ecg.parquet" 
