@@ -1,3 +1,6 @@
+# DEPRECATED: This ARIMA implementation is maintained only as an old baseline model.
+# Consider using more advanced time series models in the main codebase instead.
+
 import warnings
 from typing import Dict, Union
 
