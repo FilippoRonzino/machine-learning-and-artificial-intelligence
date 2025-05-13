@@ -1,3 +1,6 @@
+# DEPRECATED: This ARIMA implementation is maintained only as an old baseline model.
+# Consider using more advanced time series models in the main codebase instead.
+
 import numpy as np
 import pandas as pd
 
@@ -51,25 +54,21 @@ def test_arima_on_dataset(data_path, dataset_name, row_index=0, seasonal=False):
     }
 
 if __name__ == "__main__":
-    # Test ECG data
     ecg_results = test_arima_on_dataset(
         data_path='data/data_storage/ecg_parquets/test_ecg.parquet',
         dataset_name='ECG'
     )
 
-    # Test Harmonic data
     harmonic_results = test_arima_on_dataset(
         data_path='data/data_storage/harmonic_ou_parquets/test_harmonic.parquet',
         dataset_name='Harmonic'
     )
 
-    # Test OU data
     ou_results = test_arima_on_dataset(
         data_path='data/data_storage/harmonic_ou_parquets/test_ou.parquet',
         dataset_name='OU'
     )
 
-    # Test S&P 500 data
     sp500_results = test_arima_on_dataset(
         data_path='data/data_storage/sp500_parquets/test_sp500.parquet',
         dataset_name='S&P 500',
