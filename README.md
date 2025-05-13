@@ -127,7 +127,10 @@ numerical_patience = 10
 patience = (visual_patience, numerical_patience)
 min_delta = (visual_min_delta, numerical_min_delta)
 
-train_models_from_dataframe(parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, force_retrain=False, patience=patience, min_delta=min_delta)
+train_models_from_dataframe(
+    parameter_df=parameter_df, max_epochs=200, prediction_percentage=0.25, 
+    force_retrain=False, patience=patience, min_delta=min_delta
+    )
 ```
 The function `train_models_from_dataframe()` uses `ModelTrainer` class which wraps around the two model classes `CNNTimeSeriesPredictor` and `CNN_Autoencoder` managing training, evaluation, and testing of the models. It takes as input a dataframe with the parameters for each model, the maximum number of epochs, the percentage of data to use for prediction, a boolean to force retraining and the patience and min_delta values for early stopping.
 It is thought to be used in conjunction with the `pbt_tuning.py` script which generates the parameter dataframe. Ideally, one should run the `pbt_tuning.py` script first to generate the parameter dataframe and then use it to train the models, see the next example.
@@ -163,6 +166,7 @@ On the other hand, `plot_multiple_models_loss()` allows you to compare the train
 
 - Instantiating models directly:
 ```python 
+device = get_device()
 model = CNNTimeSeriesPredictor(
         input_features = 1,
         input_seq_len = 60,
@@ -198,7 +202,41 @@ trainer = pl.Trainer(
 trainer.fit(model, train_loader, val_loader)
 loss_tracker.plot_losses()
 ```
-For more customized experimentation, the `CNNTimeSeriesPredictor` and `CNN_Autoencoder` classes can also be instantiated directly. This approach allows for fine-grained control over model architecture, training parameters, and evaluation procedures seeing what's available under the automated pipeline.
+```python 
+device = get_device()
+model = CNN_Autoencoder(
+            input_chanel=1,
+            chanel_list=[32, 64, 128],
+            activation_fn=nn.ReLU,
+            batchnorm=True,  
+            pool_type="max", 
+            dropoutrate=0.2,
+            kernel_size=3,
+            padding=1,
+            stride=1,
+            lr=1e-3
+        )
+model = model.to(device)
 
+data_dir = "data/images/harmonic/test"
+valid_dir = "data/images/harmonic/val"
+dataset = ImageTimeSeriesDatasetSingleFolder(data_dir, prediction_percentage=0.25)
+validation_data = ImageTimeSeriesDatasetSingleFolder(valid_dir, prediction_percentage=0.25)
+
+train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(validation_data, batch_size=32)
+
+loss_tracker = LossTrackerCallback()
+trainer = pl.Trainer(
+    max_epochs=3,
+    enable_checkpointing=True,
+    logger=False,
+    accelerator="auto",
+    callbacks=[loss_tracker],
+)
+trainer.fit(model, train_loader, val_loader)
+loss_tracker.plot_losses()
+```
+For more customized experimentation, the `CNNTimeSeriesPredictor` and `CNN_Autoencoder` classes can also be instantiated directly. This approach allows for fine-grained control over model architecture, training parameters, and evaluation procedures seeing what's available under the automated pipeline. Indeed, the `trainer.py` script is designed to be a wrapper around the two model classes that adds checkpointing, logging and training callbacks. The two models can be trained and evaluated independently, but the pipeline is designed to work with the `ModelTrainer` class which manages the training and evaluation process for both models as explained above.
 
 TBC
