@@ -2,7 +2,8 @@
 
 # Visual Intuition in Time Series Forecasting: A CNN Approach Inspired by Human Perception
 #### 30562 - Machine Learning and Artificial Intelligence, Bocconi University
-### Edoardo Ghirardo, Francois Maurice Hoche, Giuseppe Iannone, Filippo Antonio Ronzino, Elisa Tofanelli
+### Edoardo Ghirardo, Francois Maurice Hoche, \\
+### Giuseppe Iannone, Filippo Antonio Ronzino, Elisa Tofanelli
 
 </div>
 
@@ -238,5 +239,3 @@ trainer.fit(model, train_loader, val_loader)
 loss_tracker.plot_losses()
 ```
 For more customized experimentation, the `CNNTimeSeriesPredictor` and `CNN_Autoencoder` classes can also be instantiated directly. This approach allows for fine-grained control over model architecture, training parameters, and evaluation procedures seeing what's available under the automated pipeline. Indeed, the `trainer.py` script is designed to be a wrapper around the two model classes that adds checkpointing, logging and training callbacks. The two models can be trained and evaluated independently, but the pipeline is designed to work with the `ModelTrainer` class which manages the training and evaluation process for both models as explained above.
-
-TBC
