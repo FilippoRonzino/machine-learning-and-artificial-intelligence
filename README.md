@@ -2,8 +2,7 @@
 
 # Visual Intuition in Time Series Forecasting: A CNN Approach Inspired by Human Perception
 #### 30562 - Machine Learning and Artificial Intelligence, Bocconi University
-### Edoardo Ghirardo, Francois Maurice Hoche, \\
-### Giuseppe Iannone, Filippo Antonio Ronzino, Elisa Tofanelli
+### Edoardo Ghirardo, Francois Maurice Hoche, Giuseppe Iannone, Filippo Antonio Ronzino, Elisa Tofanelli
 
 </div>
 
