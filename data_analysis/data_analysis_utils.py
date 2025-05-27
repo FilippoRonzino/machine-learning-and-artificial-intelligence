@@ -29,32 +29,34 @@ def weighted_permutation_entropy(time_series, order:int=3, delay:int=1) -> float
         raise ValueError("Time series length must be at least order * delay.")
 
     n = len(time_series)
-    permutations_list = list(permutations(range(order))) # list of possible permutations of length order
-    c = Counter() # counter for the occurences of each permutation
-    weights = {p: 0.0 for p in permutations_list} # weights to compute the WPE instead of the vanilla PE
+    permutations_list = list(permutations(range(order))) 
+    c = Counter() 
+    weights = {p: 0.0 for p in permutations_list} 
     
     for i in range(n - delay * (order - 1)):
         window = time_series[i:i + delay * order:delay]
-        sorted_idx = tuple(np.argsort(window)) # we only care about the ordinal pattern
+        sorted_idx = tuple(np.argsort(window)) 
         var = np.var(window) # the weight of each permutation is the variance (following approach from https://doi.org/10.1103/PhysRevE.87.022911)
-        c[sorted_idx] += 1 # update counter
-        weights[sorted_idx] += var # add variance to weight
+        c[sorted_idx] += 1 
+        weights[sorted_idx] += var 
 
     total_weight = sum(weights.values())
     if total_weight == 0:
-        return 0.0 # if variance = 0 we return 0.0 to avoid division by zero
+        return 0.0 
 
     wpe = 0.0
     for p in permutations_list:
-        w = weights[p] / total_weight # normalize weights
-        # compute entropy term by term
+        w = weights[p] / total_weight 
         if w > 0:
             wpe -= w * np.log2(w)
 
-    return wpe / np.log2(len(permutations_list)) # normalize by the number of permutations
+    return wpe / np.log2(len(permutations_list))
 
 def wpe_row(row):
     """
     Compute the weighted permutation entropy for a row of data.
+
+    :param row: row of a data
+    :return: The weighted permutation entropy for a row of data
     """
     return weighted_permutation_entropy(row, order=3, delay=1)

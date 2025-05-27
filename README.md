@@ -7,7 +7,17 @@
 </div>
 
 ## Abstract
-This project investigates the potential of Convolutional Neural Networks (CNNs) to forecast time series data by emulating human visual intuition. Humans often demonstrate superior pattern recognition and extrapolation abilities when time series are presented graphically rather than as raw numerical data. Building on this observation, this research explores whether CNNs, traditionally used for image processing, can achieve a similar level of "visual intuition" for temporal data. The study evaluates CNN performance in two primary areas: the numerical continuation of a time series and its visual (graphical) completion. The project aims to determine if machines can effectively "see" future trends in sequences, mirroring human perceptual capabilities. The methodology involves training CNNs on diverse datasets, including synthetic harmonic and Ornstein-Uhlenbeck process data, as well as real-world ECG and S&P 500 pricing data, presented in both numerical and visual formats.
+This project investigates the potential of Convolutional Neural Networks (CNNs) to fore-
+cast time series data by emulating human visual intuition. Humans often demonstrate su-
+perior pattern recognition and extrapolation abilities when time series are presented graphi-
+cally rather than as raw numerical data. Building on this observation, this research explores
+whether CNNs, traditionally used for image processing, can achieve a similar level of ”visual
+intuition” for temporal data. The study evaluates CNN performance in two primary areas:
+the numerical continuation of a time series and its visual (graphical) completion. The project
+aims to determine if machines can effectively ”see” future trends in sequences, mirroring hu-
+man perceptual capabilities. The methodology involves training CNNs on diverse datasets,
+including synthetic harmonic and Ornstein-Uhlenbeck process data, as well as real-world
+ECG and S&P 500 pricing data, presented in both numerical and visual formats.
 
 ## Structure
 **Repo organization:**
